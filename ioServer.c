@@ -4,38 +4,46 @@
 #include "stdio.h"
 #include "mpi.h"
 #include "iocomp.h"
-
+#define filename "write_time.csv"
 void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeComm, MPI_Comm globalComm)
 {
 
-	int ierr, globalRank, globalSize, computeRankSize; 
-	int i; 
-	int global_size[NDIM];
-	int array_start[NDIM]; 
-	
+	int i, ierr, globalRank, globalSize, computeRankSize; 
+	int ioRank, ioSize; 
+	int global_size[NDIM],
+	array_start[NDIM]; 
+	double timer_start, timer_end; 
+	timer_start = 0; 
+	timer_end = 0; 
+
 	ierr = MPI_Comm_rank(globalComm, &globalRank); 
 	mpi_error_check(ierr); 
 	ierr = MPI_Comm_size(globalComm, &globalSize); 
 	mpi_error_check(ierr); 
-	
+
+	ierr = MPI_Comm_rank(ioServeComm, &ioRank); 
+	mpi_error_check(ierr); 
+	ierr = MPI_Comm_size(ioServeComm, &ioSize); 
+	mpi_error_check(ierr); 
+
 	MPI_Status status;
 	MPI_Request request; 
 	MPI_Info info;  
-	
+
 	computeRankSize = globalSize - 1; // Assumption that only one rank in IO server 
 
 	int globalDataSize = 1; 
 	int localDataSize= 1; 
-	
+
 	/*
-	* Initialisation of localsize, global size, localdatasize and globaldatasize
-	*/ 
+	 * Initialisation of localsize, global size, localdatasize and globaldatasize
+	 */ 
 	for (i = 0; i< NDIM; i++)
 	{
 		global_size[i] = local_size[i]; 
 		localDataSize *= local_size[i]; 
 	}
-	
+
 	global_size[0] = local_size[0]*computeRankSize; 
 
 	for (i = 0; i< NDIM; i++)
@@ -83,7 +91,7 @@ void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeCom
 #ifndef NDEBUG
 		printf("Irecv completed \n");
 #endif
-	
+
 		ierr = 	MPI_Waitall(1, &request, &status); // wait for all processes to finish sending and recieving  
 		mpi_error_check(ierr); 
 
@@ -95,11 +103,49 @@ void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeCom
 		}
 		printf("\n"); 
 #endif
-
+		if (ioRank == 0) // timing will be measured by using ioRank = 0 
+		{	
+			timer_start = MPI_Wtime();
+		}
 		bench_init(recv, NDIM, local_size, global_size, array_start, ioServeComm ); 
+		MPI_Barrier(ioServeComm); // Wait for all processes to finish  
+		if (ioRank == 0)
+		{
+			timer_end  = MPI_Wtime();
+		} 
 	} 
 
 	free(recv);
 	recv = NULL; 
+
+	if (ioRank == 0) 
+	{
+		int test; 
+		FILE* out; 
+		double write_time = 0; 
+		write_time = timer_end - timer_start; 
+
+#ifndef NDEBUG
+		printf("remove filename \n");
+#endif
+		test = remove(filename);
+		if (test != 0)
+		{
+#ifndef NDEBUG
+			printf("Cant remove %s \n", filename);
+#endif 
+		}
+		out = fopen(filename, "w+");
+		if (out == NULL)
+		{
+			printf("Error: No output file\n");
+			exit(1);
+		}
+
+    fprintf(out, "Time(s), LocalDataSize(B), GlobalDataSize(B) \n"); //headers for output csv 
+    fprintf(out, "%lf,%ld,%ld \n", write_time, localDataSize*sizeof(double), globalDataSize*sizeof(double)); //headers for output csv 
+	}
+
+
 
 } 

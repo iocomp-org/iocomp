@@ -5,7 +5,7 @@
 #include "mpi.h"
 #include "iocomp.h"
 
-void computeServer(int NDIM, int* local_size, MPI_Comm computeComm, MPI_Comm interComm)
+void computeServer(int NDIM, double* data, int* local_size, MPI_Comm computeComm, MPI_Comm interComm)
 {
 
 	int localDataSize = 1; 
