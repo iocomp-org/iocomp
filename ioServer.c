@@ -51,9 +51,20 @@ void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeCom
 		globalDataSize *= global_size[i]; 
 	}
 
+
+#ifndef NDEBUG
+		printf("globaldatasize %i localdatasize %i \n", globalDataSize, localDataSize); 
+#endif
+
+
 	// initialise recv array 
 	double* recv = NULL; 
 	recv = (double*)malloc(globalDataSize*sizeof(double)); 
+
+
+#ifndef NDEBUG
+		printf("Initialisation of recv array \n"); 
+#endif
 
 	for ( i = 0; i < globalDataSize; i++)
 	{
@@ -66,6 +77,11 @@ void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeCom
 	 */ 
 
 	int computeRank = 0; 
+
+#ifndef NDEBUG
+		printf("For loop for computeRanks recieving starts  \n"); 
+#endif
+
 	for ( computeRank = 0; computeRank < computeRankSize; computeRank ++) 
 	{
 
@@ -73,6 +89,7 @@ void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeCom
 		 * Assign arraystart position for writing of array
 		 * Assuming weak scaling. Outerdimension would have n*totalrank
 		 */ 
+
 
 		for(int i = 0; i < NDIM; i++)
 		{
@@ -107,8 +124,13 @@ void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeCom
 		{	
 			timer_start = MPI_Wtime();
 		}
-		bench_init(recv, NDIM, local_size, global_size, array_start, ioServeComm ); 
+		// bench_init(recv, NDIM, local_size, global_size, array_start, ioServeComm ); 
 		MPI_Barrier(ioServeComm); // Wait for all processes to finish  
+
+#ifndef NDEBUG
+		printf("MPI barrier \n"); 
+#endif
+
 		if (ioRank == 0)
 		{
 			timer_end  = MPI_Wtime();

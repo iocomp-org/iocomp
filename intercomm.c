@@ -248,9 +248,17 @@ void intercomm(MPI_Comm comm, double* data, int IO_SERVER_SIZE)
 				ioServer(NDIM, local_size, interComm, ioServeComm, globalComm);
 			}        
 
-			MPI_Comm_free(&splitComm); 
+/*			MPI_Comm_free(&splitComm); 
 			MPI_Comm_free(&computeComm); 
 			MPI_Comm_free(&interComm); 
 			MPI_Comm_free(&globalComm); 
-			MPI_Comm_free(&ioServeComm); 
+		MPI_Comm_free(&ioServeComm); 
+		*/ 
+
+
+
+
+
+
+
 }
