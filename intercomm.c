@@ -192,6 +192,8 @@ void intercomm(MPI_Comm comm, double* data, int IO_SERVER_SIZE)
 //			mpi_error_check(ierr); 
 
 #ifndef NDEBUG
+			int computeRank; 
+			MPI_Comm_rank(computeComm, &computeRank); 
 			if ( color == compColor )
 			{
 				printf("Hello from computecomm with rank %i and color %i \n", compute_rank, color); 
@@ -210,9 +212,11 @@ void intercomm(MPI_Comm comm, double* data, int IO_SERVER_SIZE)
 //			mpi_error_check(ierr); 
 //
 #ifndef NDEBUG
+			int ioRank; 
+			MPI_Comm_rank(ioServeComm, &ioRank); 
 			if ( color == ioColor )
 			{
-				printf("Hello from ioServeComm with rank %i and color %i \n", io_rank, color); 
+				printf("Hello from ioServeComm with rank %i and color %i \n", ioRank, color); 
 			} 
 #endif
 
@@ -254,11 +258,5 @@ void intercomm(MPI_Comm comm, double* data, int IO_SERVER_SIZE)
 			MPI_Comm_free(&globalComm); 
 		MPI_Comm_free(&ioServeComm); 
 		*/ 
-
-
-
-
-
-
 
 }
