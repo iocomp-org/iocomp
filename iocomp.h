@@ -1,5 +1,16 @@
 #include "mpi.h"
 
+struct iocomp_params
+{
+
+MPI_Comm globalComm; 
+MPI_Comm ioServerComm; 
+MPI_Comm compServerComm; 
+int color; 
+int ioServerRank; 
+int compServerRank;
+}; 
+extern struct iocomp_params iocompParams; 
 
 void mpi_error_check(int ierr);
 void bench_init(double* iodata, int NDIM, int* local_size, int* global_size,int* array_start,  MPI_Comm comm); 
