@@ -6,34 +6,35 @@
 #include "iocomp.h"
 
 #define N 10 
-#define NDIM 3 
+#define NDIM 2
 #define IO_SERVER_SIZE 1 
 int main(int argc, char** argv)
 {
 
 #ifndef NDEBUG
-	printf("before mpi init main program \n"); 
+	printf("Program starts  \n"); 
 #endif
 	int ierr;
 	ierr = MPI_Init(&argc, &argv);  
 	mpi_error_check(ierr); 
 	
+	MPI_Comm comm; 
+	MPI_Comm_dup(MPI_COMM_WORLD,&comm); 
+	
 	/*
 	* Initialise data for intercomm function 
 	*/ 
 	double* data = NULL; 
-	data = init_data(N, NDIM, MPI_COMM_WORLD); 
+	data = init_data(N, NDIM, comm); 
 
 #ifndef NDEBUG
-	printf("After init data \n"); 
+	printf("After init_data \n"); 
 #endif
-
-	intercomm(MPI_COMM_WORLD,data,IO_SERVER_SIZE); 
 	
-#ifndef NDEBUG
-	printf("After intercomm program \n"); 
-#endif
-
+	struct iocomp_params iocompParams; 
+	intercomm_init(&iocompParams, comm); 
+	intercomm(comm,data,&iocompParams); 
+	
 	MPI_Finalize(); 
 
 #ifndef NDEBUG

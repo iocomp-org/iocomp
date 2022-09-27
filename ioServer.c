@@ -5,10 +5,13 @@
 #include "mpi.h"
 #include "iocomp.h"
 #define filename "write_time.csv"
-void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeComm, MPI_Comm globalComm)
+void ioServer(int NDIM, int* local_size, struct iocomp_params *iocompParams)
 {
 
-	int i, ierr, globalRank, globalSize, computeRankSize; 
+#ifndef NDEBUG
+		printf("ioServer started"); 
+#endif
+	int i, ierr, globalRank, globalSize; 
 	int ioRank, ioSize; 
 	int global_size[NDIM],
 	array_start[NDIM]; 
@@ -16,21 +19,19 @@ void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeCom
 	timer_start = 0; 
 	timer_end = 0; 
 
-	ierr = MPI_Comm_rank(globalComm, &globalRank); 
+	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
 	mpi_error_check(ierr); 
-	ierr = MPI_Comm_size(globalComm, &globalSize); 
+	ierr = MPI_Comm_size(iocompParams->globalComm, &globalSize); 
 	mpi_error_check(ierr); 
 
-	ierr = MPI_Comm_rank(ioServeComm, &ioRank); 
+	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 	mpi_error_check(ierr); 
-	ierr = MPI_Comm_size(ioServeComm, &ioSize); 
+	ierr = MPI_Comm_size(iocompParams->ioServerComm, &ioSize); 
 	mpi_error_check(ierr); 
 
 	MPI_Status status;
 	MPI_Request request; 
 	MPI_Info info;  
-
-	computeRankSize = globalSize - 1; // Assumption that only one rank in IO server 
 
 	int globalDataSize = 1; 
 	int localDataSize= 1; 
@@ -44,7 +45,7 @@ void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeCom
 		localDataSize *= local_size[i]; 
 	}
 
-	global_size[0] = local_size[0]*computeRankSize; 
+	global_size[0] = local_size[0]*iocompParams->compServerSize; 
 
 	for (i = 0; i< NDIM; i++)
 	{
@@ -82,14 +83,13 @@ void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeCom
 		printf("For loop for computeRanks recieving starts  \n"); 
 #endif
 
-	for ( computeRank = 0; computeRank < computeRankSize; computeRank ++) 
+	for ( computeRank = 0; computeRank < iocompParams->compServerSize; computeRank ++) 
 	{
 
 		/*
 		 * Assign arraystart position for writing of array
 		 * Assuming weak scaling. Outerdimension would have n*totalrank
 		 */ 
-
 
 		for(int i = 0; i < NDIM; i++)
 		{
@@ -102,7 +102,7 @@ void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeCom
 #endif
 
 		ierr = MPI_Irecv(recv, localDataSize, MPI_DOUBLE, computeRank,
-				computeRank, interComm, &request); 
+				computeRank, iocompParams->interComm, &request); 
 		mpi_error_check(ierr); 
 
 #ifndef NDEBUG
@@ -124,8 +124,8 @@ void ioServer(int NDIM, int* local_size, MPI_Comm interComm, MPI_Comm ioServeCom
 		{	
 			timer_start = MPI_Wtime();
 		}
-		// bench_init(recv, NDIM, local_size, global_size, array_start, ioServeComm ); 
-		MPI_Barrier(ioServeComm); // Wait for all processes to finish  
+		bench_init(recv, NDIM, local_size, global_size, array_start, iocompParams->ioServerComm ); 
+		MPI_Barrier(iocompParams->ioServerComm); // Wait for all processes to finish  
 
 #ifndef NDEBUG
 		printf("MPI barrier \n"); 

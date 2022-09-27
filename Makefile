@@ -21,7 +21,7 @@ DEPS = iocomp.h
 LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm 
 
 # define C source files 
-SRCS = main.c time_stats.c bench_init.c ioServer.c  computeServer.c intercomm.c init_data.c  mpi_write.c # hdf5_write.c adios_write.c mpi_write.c 
+SRCS = main.c time_stats.c bench_init.c ioServer.c  computeServer.c intercomm.c init_data.c  mpi_write.c intercomm_init.c intercomm_create.c comm_split.c  # hdf5_write.c adios_write.c mpi_write.c 
 
 #define executable file  
 MAIN = iocomp

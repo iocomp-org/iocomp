@@ -7,8 +7,8 @@
 
 #define n 10  
 #define NDIM 2
-#define ioColor 0 
-#define compColor 1 
+#define ioColour 0 
+#define compColour 1 
 
 void mpi_error_check(int ierr)
 {
@@ -18,10 +18,10 @@ void mpi_error_check(int ierr)
 	}
 }
 
-//void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm)
+//void compute_comm_create(int colour, MPI_Comm splitComm, MPI_Comm *computeComm)
 //{
 //			int ierr; 
-//			ierr =MPI_Comm_dup(splitComm, computeComm); // compute communicator for compute tasks and color != 0 
+//			ierr =MPI_Comm_dup(splitComm, computeComm); // compute communicator for compute tasks and colour != 0 
 //			mpi_error_check(ierr); 
 //
 //#ifndef NDEBUG
@@ -30,100 +30,14 @@ void mpi_error_check(int ierr)
 //}
 
 
-void comm_split(int color, MPI_Comm globalComm, MPI_Comm *computeComm, MPI_Comm *ioServerComm)
-{
-			int ierr, myrank;
-			MPI_Comm splitComm; 
-			MPI_Comm_rank(globalComm, &myrank); 
-			ierr =	MPI_Comm_split(globalComm, color, myrank,	&splitComm);  // splitcommunicator based on color 
-			mpi_error_check(ierr);
-
-#ifndef NDEBUG
-			printf("MPI comm split \n"); 
-#endif
-			if (color == compColor) 
-			{	
-				ierr = MPI_Comm_dup(splitComm, computeComm); // compute communicator for compute tasks and color != 0 
-				mpi_error_check(ierr); 
-
-#ifndef NDEBUG
-			printf("MPI computeComm \n"); 
-#endif
-			}
-			
-			if (color == ioColor) 
-			{	
-				ierr = MPI_Comm_dup(splitComm, ioServerComm); // compute communicator for compute tasks and color != 0 
-				mpi_error_check(ierr); 
-
-#ifndef NDEBUG
-			printf("MPI ioServerComm \n"); 
-#endif
-			}
-}
-
-void intercomm_create(int color, MPI_Comm globalComm, MPI_Comm computeComm, MPI_Comm ioServeComm, MPI_Comm *interComm)
-{
-			/*
-			 * Intercomm created linking computeComm to globalComm via
-			 * interComm
-			 */ 
-
-			int local_leader, remote_leader, ierr, inter_tag, flag;
-			flag = 0; 
-			if (color == compColor) 
-			{
-				local_leader = 0; 
-				remote_leader = 1 - color; 
-				inter_tag = 0; 
-
-				ierr =MPI_Intercomm_create(computeComm, local_leader,
-						globalComm, remote_leader, inter_tag, interComm);
-				mpi_error_check(ierr); 
-
-				ierr =MPI_Comm_test_inter(*interComm, &flag);  // testing for intercommunicator 
-				mpi_error_check(ierr); 
-
-				if (flag == 0)
-				{
-					printf("intercom test fails %i \n", flag); 
-				}
-			} 
-
-			/*
-			 * Intercomm created linking ioServeComm to globalComm via
-			 * interComm
-			 */ 
-			
-			if (color == ioColor)
-			{
-				local_leader = 0; 
-				remote_leader = 1 - color;  
-
-				ierr =MPI_Intercomm_create(ioServeComm, local_leader,
-						globalComm, remote_leader, inter_tag, interComm);
-				mpi_error_check(ierr); 
-
-				flag = 0;
-
-				ierr = MPI_Comm_test_inter(*interComm, &flag);
-				mpi_error_check(ierr); 
-
-				if (flag == 0)
-				{
-					printf("intercom test fails %i \n", flag); 
-				}   
-			} 
-}
-
-void intercomm(MPI_Comm comm, double* data, int IO_SERVER_SIZE)
+void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams )
 {
 	int ierr;  
 #ifndef NDEBUG
 	printf("after mpi init main program \n"); 
 #endif
 	int myrank, compute_task = 1, io_task = 0, 
-			splitCommRank, io_start = 0, comp_start = 1, color = 1, 
+			splitCommRank, io_start = 0, comp_start = 1, 
 			myrank2, myrank3, myrank4, compute_rank, compute_size, io_rank, flag = 0, i, test_val, mysize, PROCS, dest, tag,
 			inter_tag, local_leader, remote_leader, N1, N2, size, local_array;
 
@@ -137,39 +51,33 @@ void intercomm(MPI_Comm comm, double* data, int IO_SERVER_SIZE)
 			/*
 			 * MPI initialisations 
 			 */ 
-			MPI_Comm globalComm, splitComm, computeComm, ioServeComm, interComm; 
+			// MPI_Comm globalComm, splitComm, computeComm, ioServeComm, interComm; 
 
 #ifndef NDEBUG
 			printf("MPI comms declaration of main program \n"); 
 #endif
 			MPI_Request request; 
-			ierr =MPI_Comm_dup(comm, &globalComm); 
+			ierr =MPI_Comm_dup(comm, &iocompParams->globalComm); 
 			mpi_error_check(ierr); 
-			ierr =MPI_Comm_rank(globalComm, &myrank); 
+			ierr =MPI_Comm_rank(iocompParams->globalComm, &myrank); 
 			mpi_error_check(ierr); 
-			ierr =MPI_Comm_size(globalComm, &mysize); 
+			ierr =MPI_Comm_size(iocompParams->globalComm, &mysize); 
 			mpi_error_check(ierr); 
 
 #ifndef NDEBUG
 			printf("MPI rank and size etc \n"); 
 #endif
 
-			if (mysize < 2) // needs to be at least 2 ranks 
-			{
-				printf("Need at least 2 ranks. Program quitting. \n"); 
-				exit(0); 
-			}
+		//	if (myrank < IO_SERVER_SIZE ) // if rank 0, IO server and colour = 0 otherwise its a compute server and colour = 1 
+		//	{
+		//		iocompParams->colour = ioColour; 
+		//	}
 
-			if (myrank < IO_SERVER_SIZE ) // if rank 0, IO server and color = 0 otherwise its a compute server and color = 1 
-			{
-				color = ioColor; 
-			}
-
-			comm_split(color, globalComm, &computeComm, &ioServeComm); // function to split communicator based on color
-			// compute_comm_create(color, globalComm, &computeComm); // function to create compute communicator 
+			comm_split(iocompParams); // function to split communicator based on colour
+			// compute_comm_create(colour, globalComm, &computeComm); // function to create compute communicator 
 
 			// initialisation of local size array and local data size 
-			int compute_rank_size = mysize - IO_SERVER_SIZE; 
+//			int compute_rank_size = mysize - IO_SERVER_SIZE; 
 			for (i = 0; i < NDIM; i++)
 			{
 				local_size[i] = n; 
@@ -180,7 +88,7 @@ void intercomm(MPI_Comm comm, double* data, int IO_SERVER_SIZE)
 				local_data_size *= local_size[i]; 
 			}
 
-			global_data_size = local_data_size * compute_rank_size; 
+			global_data_size = local_data_size * iocompParams->compServerSize; 
 
 #ifndef NDEBUG
 			printf("local data size and local size initialised \n"); 
@@ -193,10 +101,10 @@ void intercomm(MPI_Comm comm, double* data, int IO_SERVER_SIZE)
 
 #ifndef NDEBUG
 			int computeRank; 
-			MPI_Comm_rank(computeComm, &computeRank); 
-			if ( color == compColor )
+			MPI_Comm_rank(iocompParams->compServerComm, &computeRank); 
+			if ( iocompParams->colour == compColour )
 			{
-				printf("Hello from computecomm with rank %i and color %i \n", compute_rank, color); 
+				printf("Hello from computecomm with rank %i and colour %i \n", compute_rank, iocompParams->colour); 
 			} 
 #endif
 
@@ -205,18 +113,18 @@ void intercomm(MPI_Comm comm, double* data, int IO_SERVER_SIZE)
 			 * interComm
 			 */ 
 
-			intercomm_create(color, globalComm, computeComm, ioServeComm, &interComm); 
-//			ierr = MPI_Comm_dup(splitComm, &ioServeComm); // IO communicator for IO tasks and color == 0
+			intercomm_create(iocompParams); 
+//			ierr = MPI_Comm_dup(splitComm, &ioServeComm); // IO communicator for IO tasks and colour == 0
 //			mpi_error_check(ierr); 
 //			ierr =MPI_Comm_rank(ioServeComm, &io_rank);
 //			mpi_error_check(ierr); 
 //
 #ifndef NDEBUG
 			int ioRank; 
-			MPI_Comm_rank(ioServeComm, &ioRank); 
-			if ( color == ioColor )
+			MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
+			if ( iocompParams->colour == ioColour )
 			{
-				printf("Hello from ioServeComm with rank %i and color %i \n", ioRank, color); 
+				printf("Hello from ioServeComm with rank %i and colour %i \n", ioRank, iocompParams->colour); 
 			} 
 #endif
 
@@ -226,7 +134,7 @@ void intercomm(MPI_Comm comm, double* data, int IO_SERVER_SIZE)
 //			 */ 
 //
 //			local_leader = 0; 
-//			remote_leader = 1 - color;  
+//			remote_leader = 1 - colour;  
 //
 //			ierr =MPI_Intercomm_create(ioServeComm, local_leader,
 //					globalComm, remote_leader, inter_tag, &interComm);
@@ -242,14 +150,14 @@ void intercomm(MPI_Comm comm, double* data, int IO_SERVER_SIZE)
 //				printf("intercom test fails %i \n", flag); 
 //			}   
 //
-			if(color == compColor) // Compute task 
+			if(iocompParams->colour == compColour) // Compute task 
 			{
-				computeServer(NDIM, data, local_size, computeComm, interComm); 
+				computeServer(NDIM, data, local_size, iocompParams) ; 
 			}
 
-			else if (color == ioColor) // IO task 
+			else if (iocompParams->colour == ioColour) // IO task 
 			{
-				ioServer(NDIM, local_size, interComm, ioServeComm, globalComm);
+				ioServer(NDIM, local_size, iocompParams);
 			}        
 
 /*			MPI_Comm_free(&splitComm); 
