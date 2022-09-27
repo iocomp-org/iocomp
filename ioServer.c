@@ -83,13 +83,15 @@ void ioServer(int NDIM, int* local_size, struct iocomp_params *iocompParams)
 		printf("For loop for computeRanks recieving starts  \n"); 
 #endif
 
-	for ( computeRank = 0; computeRank < iocompParams->compServerSize; computeRank ++) 
-	{
+	//for ( computeRank = 0; computeRank < iocompParams->compServerSize; computeRank ++) 
+	//{
 
 		/*
 		 * Assign arraystart position for writing of array
 		 * Assuming weak scaling. Outerdimension would have n*totalrank
-		 */ 
+		 */
+
+		computeRank = iocompParams->compServerRank; 
 
 		for(int i = 0; i < NDIM; i++)
 		{
@@ -135,7 +137,7 @@ void ioServer(int NDIM, int* local_size, struct iocomp_params *iocompParams)
 		{
 			timer_end  = MPI_Wtime();
 		} 
-	} 
+	//} 
 
 	free(recv);
 	recv = NULL; 

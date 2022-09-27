@@ -32,40 +32,50 @@ void intercomm_init(struct iocomp_params *iocompParams, MPI_Comm comm)
 		exit(1); 
 	}
 	
-	// assign params.colour
-	// assume high low ordering of hyperthreads 
+	/*
+	* assume high low ordering of hyperthreads 
+	*/ 
 	if(globalSize < fullNode) // if size is lesser than fullNode of archer2 
 	{	
-		//if (globalRank != 0) // comp server 
-		//{
-		//	iocompParams->colour = compColour;
-		//	iocompParams->compServerRank = globalRank;
-		//	iocompParams->ioServerRank = globalSize/2 + globalRank;  
-		//	iocompParams->compServerSize = globalSize/2; 
-		//} 
-		//else if(globalRank == 0) // io server
-		//{
-		//	iocompParams->colour = ioColour; 
-		//	iocompParams->ioServerRank = globalRank;
-		//	iocompParams->compServerRank = globalRank - globalSize/2; 
-		//	iocompParams->ioServerSize = globalSize/2;
-		//}
-		if (globalRank != 0) // comp server 
+		if (globalRank < globalSize/2) // comp server 
 		{
 			iocompParams->colour					= compColour;
 			iocompParams->compServerRank	= globalRank;
-			iocompParams->ioServerRank		= 0;  
-			iocompParams->compServerSize	= globalSize - 1; 
+			iocompParams->ioServerRank		= globalSize - globalRank - 1;  
+			iocompParams->compServerSize  = globalSize/2; 
+			iocompParams->ioServerSize    = globalSize/2;
 		} 
-		else if(globalRank == 0) // io server
+		
+		else if(globalRank >= globalSize/2) // io server
 		{
 			iocompParams->colour					= ioColour; 
-			iocompParams->ioServerRank		= 0;
-			iocompParams->compServerRank	= globalRank; 
-			iocompParams->ioServerSize		= 1;
-			iocompParams->compServerSize	= globalSize - 1; 
-		}
+			iocompParams->ioServerRank		= globalRank;
+			iocompParams->compServerRank	= globalSize - globalRank - 1;  
+			iocompParams->compServerSize	= globalSize/2; 
+			iocompParams->ioServerSize    = globalSize/2;
+		} 
+
 	}
+
+	/*
+	* Assumes io server rank is always 0
+	*/ 
+	//	if (globalRank != 0) // comp server 
+	//	{
+	//		iocompParams->colour					= compColour;
+	//		iocompParams->compServerRank	= globalRank;
+	//		iocompParams->ioServerRank		= 0;  
+	//		iocompParams->compServerSize	= globalSize - 1; 
+	//	} 
+	//	else if(globalRank == 0) // io server
+	//	{
+	//		iocompParams->colour					= ioColour; 
+	//		iocompParams->ioServerRank		= 0;
+	//		iocompParams->compServerRank	= globalRank; 
+	//		iocompParams->ioServerSize		= 1;
+	//		iocompParams->compServerSize	= globalSize - 1; 
+	//	}
+	
 
 #ifndef NDEBUG
 			printf("global rank  %i colour %i ioServerRank %i compServerRank %i \n",  globalRank,  iocompParams->colour,  iocompParams->ioServerRank,  iocompParams->compServerRank); 
