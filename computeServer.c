@@ -23,6 +23,7 @@ void computeSendData(double* send_ar, int localDataSize, struct iocomp_params *i
 			iocompParams->interComm, &request); // every rank sends its portion of data 
 	mpi_error_check(ierr); 
 
+
 #ifndef NDEBUG
 	printf("Sending data stop \n"); 
 #endif
@@ -45,7 +46,7 @@ void computeServer(int NDIM, double* data, int* local_size,  struct iocomp_param
 	ierr = MPI_Comm_size(iocompParams->compServerComm, &computeSize); 
 	mpi_error_check(ierr); 
 	MPI_Request request; 
-	
+
 #ifndef NDEBUG
 	printf("Sending data starts \n"); 
 #endif

@@ -103,16 +103,16 @@ void ioServer(int NDIM, int* local_size, struct iocomp_params *iocompParams)
 		printf("Recieving data starts \n"); 
 #endif
 
-		ierr = MPI_Irecv(recv, localDataSize, MPI_DOUBLE, computeRank,
+/*		ierr = MPI_Irecv(recv, localDataSize, MPI_DOUBLE, computeRank,
 				computeRank, iocompParams->interComm, &request); 
 		mpi_error_check(ierr); 
-
+*/ 
 #ifndef NDEBUG
 		printf("Irecv completed \n");
 #endif
 
-		ierr = 	MPI_Waitall(1, &request, &status); // wait for all processes to finish sending and recieving  
-		mpi_error_check(ierr); 
+		//ierr = 	MPI_Waitall(1, &request, &status); // wait for all processes to finish sending and recieving  
+		//mpi_error_check(ierr); 
 
 #ifndef NDEBUG
 		printf("Recv data coming from rank %i \n",computeRank); 

@@ -10,10 +10,10 @@
 
 void comm_split(struct iocomp_params *iocompParams)
 {
-			int ierr, myrank;
+			int ierr, globalRank;
 			MPI_Comm splitComm; 
-			MPI_Comm_rank(iocompParams->globalComm, &myrank); 
-			ierr =	MPI_Comm_split(iocompParams->globalComm, iocompParams->colour, myrank,	&splitComm);  // splitcommunicator based on colour 
+			MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
+			ierr =	MPI_Comm_split(iocompParams->globalComm, iocompParams->colour, globalRank,	&splitComm);  // splitcommunicator based on colour 
 			mpi_error_check(ierr);
 
 #ifndef NDEBUG

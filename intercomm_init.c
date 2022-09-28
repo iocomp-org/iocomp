@@ -8,6 +8,8 @@
 #define compColour 1
 #define ioColour 0
 #define fullNode 256 
+#define HIGH_LOW 1
+#define FIXED_IO_RANK 0
 
 /*
 * Initialises the iocomp_params struct 
@@ -22,6 +24,9 @@ void intercomm_init(struct iocomp_params *iocompParams, MPI_Comm comm)
 			printf("Start of intercomm_init\n"); 
 #endif
 
+	int ordering; // defines how IO and compute threads are going to organised 
+	ordering = HIGH_LOW; 
+
 	int globalRank, globalSize; 
 	MPI_Comm_rank(comm, &globalRank);
 	MPI_Comm_size(comm, &globalSize); 
@@ -35,8 +40,8 @@ void intercomm_init(struct iocomp_params *iocompParams, MPI_Comm comm)
 	/*
 	* assume high low ordering of hyperthreads 
 	*/ 
-	if(globalSize < fullNode) // if size is lesser than fullNode of archer2 
-	{	
+	if(ordering == HIGH_LOW) // if size is lesser than fullNode of archer2 
+	{	   
 		if (globalRank < globalSize/2) // comp server 
 		{
 			iocompParams->colour					= compColour;
@@ -53,28 +58,34 @@ void intercomm_init(struct iocomp_params *iocompParams, MPI_Comm comm)
 			iocompParams->compServerRank	= globalSize - globalRank - 1;  
 			iocompParams->compServerSize	= globalSize/2; 
 			iocompParams->ioServerSize    = globalSize/2;
-		} 
+		}
+	} 
 
-	}
 
 	/*
 	* Assumes io server rank is always 0
 	*/ 
-	//	if (globalRank != 0) // comp server 
-	//	{
-	//		iocompParams->colour					= compColour;
-	//		iocompParams->compServerRank	= globalRank;
-	//		iocompParams->ioServerRank		= 0;  
-	//		iocompParams->compServerSize	= globalSize - 1; 
-	//	} 
-	//	else if(globalRank == 0) // io server
-	//	{
-	//		iocompParams->colour					= ioColour; 
-	//		iocompParams->ioServerRank		= 0;
-	//		iocompParams->compServerRank	= globalRank; 
-	//		iocompParams->ioServerSize		= 1;
-	//		iocompParams->compServerSize	= globalSize - 1; 
-	//	}
+	if(ordering == FIXED_IO_RANK)
+	{
+		int fixedIORank; 
+		fixedIORank = 1; 
+		if (globalRank != fixedIORank) // comp server 
+		{
+			iocompParams->colour					= compColour;
+			iocompParams->compServerRank	= globalRank;
+			iocompParams->ioServerRank		= 0;  
+			iocompParams->compServerSize	= globalSize - 1; 
+		} 
+		else if(globalRank == fixedIORank) // io server
+		{
+			iocompParams->colour					= ioColour; 
+			iocompParams->ioServerRank		= 0;
+			iocompParams->compServerRank	= globalRank; 
+			iocompParams->ioServerSize		= 1;
+			iocompParams->compServerSize	= globalSize - 1; 
+		}
+	} 
+ 
 	
 
 #ifndef NDEBUG
