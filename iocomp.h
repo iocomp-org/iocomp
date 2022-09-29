@@ -28,7 +28,6 @@ void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);
 double* init_data(int N, int NDIM, MPI_Comm globalComm);
 void intercomm_create(struct iocomp_params *iocompParams) ; 
 void comm_split(struct iocomp_params *iocompParams);  
-void computeSendData(double* send_ar, int localDataSize, struct iocomp_params *iocompParams);
 
 /*
 * individual files for linking without benchmark_c

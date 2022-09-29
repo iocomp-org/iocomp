@@ -92,19 +92,19 @@ void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams )
 			} 
 #endif
 
-//			/*
-//			 * Send data to ioServer and ComputerServer
-//			 */ 
-//
-//			if(iocompParams->colour == compColour) // Compute task 
-//			{
-//				computeServer(NDIM, data, local_size, iocompParams) ; 
-//			}
-//
-//			else if (iocompParams->colour == ioColour) // IO task 
-//			{
-//				ioServer(NDIM, local_size, iocompParams);
-//			}        
+			/*
+			 * Send data to ioServer and ComputerServer
+			 */ 
+
+			if(iocompParams->colour == compColour) // Compute task 
+			{
+				computeServer(NDIM, data, local_size, iocompParams) ; 
+			}
+
+			else if (iocompParams->colour == ioColour) // IO task 
+			{
+				ioServer(NDIM, local_size, iocompParams);
+			}        
 
 			MPI_Comm_free(&iocompParams->compServerComm); 
 			MPI_Comm_free(&iocompParams->interComm); 

@@ -3,7 +3,7 @@ CC = $(OMPI_DIR)/bin/mpicc
 CFLAGS = -Wall -Wpedantic -Werror -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
-CFLAGS += -fPIC -g -Og -DADIOS2_USE_MPI #-DNDEBUG
+CFLAGS += -fPIC -g -Og -DADIOS2_USE_MPI -DNDEBUG
 ## linking with benchmark_c  
 ##LFLAGS += -I$(BENCH_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
 LFLAGS += -I$(OMPI_DIR)/include 

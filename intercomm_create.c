@@ -89,4 +89,10 @@ void intercomm_create(struct iocomp_params *iocompParams)
 		printf("intercomm created for ioServer  \n"); 
 #endif
 	} 
+
+	// testing for intercomms 
+	int interRank, interSize; 
+	MPI_Comm_rank(iocompParams->interComm, &interRank); 
+	MPI_Comm_size(iocompParams->interComm, &interSize); 
+	printf("this is intercomm rank %i and size %i and colour %i \n", interRank, interSize, iocompParams->colour); 
 }
