@@ -36,6 +36,10 @@ void data_output(struct iocomp_params *iocompParams)
 	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 	MPI_Comm_size(iocompParams->ioServerComm, &ioSize); 
 
-	fprintf(out, "IOSize, WriteTime(s), LocalDataSize(GB), GlobalDataSize(GB), WriteRate(GB/s) \n"); //headers for output csv 
-	fprintf(out, "%i, %lf,%lf,%lf,%lf \n",ioSize, iocompParams->writeTime, localDataSize, globalDataSize, writeRate); 
+	int globalSize, globalRank; 
+	MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
+	MPI_Comm_size(iocompParams->globalComm, &globalSize); 
+
+	fprintf(out, "Global Size, IO Size, WriteTime(s), LocalDataSize(GB), GlobalDataSize(GB), WriteRate(GB/s) \n"); //headers for output csv 
+	fprintf(out, "%i,%i,%lf,%lf,%lf,%lf \n",globalSize, ioSize, iocompParams->writeTime, localDataSize, globalDataSize, writeRate); 
 } 
