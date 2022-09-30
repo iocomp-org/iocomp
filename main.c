@@ -45,21 +45,6 @@ int main(int argc, char** argv)
 #ifndef NDEBUG
 	printf("After init_data \n"); 
 #endif
-	
-	/*
-	* Testing for initData local and globalSize initialisations 
-	*/ 
-//	printf("printing localsize at main \n"); 
-//	for (int i = 0; i < iocompParams.NDIM; i++)
-//	{
-//		printf("%i \n", iocompParams.localSize[i]); 
-//	}
-//	
-//	printf("printing globalsize at main \n"); 
-//	for (int i = 0; i < iocompParams.NDIM; i++)
-//	{
-//		printf("%i \n", iocompParams.globalSize[i]); 
-//	}
 
 	intercomm(comm,data,&iocompParams); 
 
@@ -70,6 +55,14 @@ int main(int argc, char** argv)
 
 	free(data); 
 	data = NULL; 
+
+//	free(iocompParams.arrayStart); 
+//	free(iocompParams.localSize); 
+//	free(iocompParams.globalSize); 
+//
+//	iocompParams.arrayStart = NULL; 
+//	iocompParams.localSize  = NULL; 
+//	iocompParams.globalSize = NULL; 
 	return 0; 
 } 
 

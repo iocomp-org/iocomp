@@ -121,11 +121,8 @@ void ioServer(struct iocomp_params *iocompParams)
 	free(recv);
 	recv = NULL; 
 
-/*	if (ioRank == 0) 
+	if (ioRank == 0) 
 	{
 		data_output(iocompParams); 
 	}
-*/ 
-
-	printf("ioServer exiting \n");
 } 
