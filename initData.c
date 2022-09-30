@@ -18,48 +18,43 @@ double* initData(struct iocomp_params *iocompParams)
 	int i, ierr, globalMPIRank, globalMPISize;
 	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalMPIRank); 
 	mpi_error_check(ierr);
-	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalMPISize); 
+	ierr = MPI_Comm_size(iocompParams->globalComm, &globalMPISize); 
 	mpi_error_check(ierr);
 
 #ifndef NDEBUG
 	printf("MPI ranks and sizes\n"); 
 #endif
+	
 	/*
-	 * Datasize specs initialise
+	 * Array size specs initialise
 	 */ 
-	int localSize_local[NDIM_define];
-	int globalSize_local[NDIM_define]; 
-	iocompParams->localSize = localSize_local;  
-	iocompParams->globalSize = globalSize_local;  
+	iocompParams->localSize = malloc(sizeof(int)*NDIM_define);
+	iocompParams->globalSize = malloc(sizeof(int)*NDIM_define);
 	iocompParams->NDIM = NDIM_define;// number of dimensions  
 
-#ifndef NDEBUG
-	printf("assign localSize, globalSize\n"); 
-#endif
 	for (int i = 0; i < iocompParams->NDIM; i++)
 	{
 		iocompParams->localSize[i] = N; 
 		iocompParams->globalSize[i] = N; 
 	}
-	
 	iocompParams->globalSize[0] = N*globalMPISize; // assumes outermost dimension gets expanded by each rank  
+#ifndef NDEBUG
+	printf("localSize, globalSize, arrayStart initialised\n"); 
+#endif
 
+	/*
+	 * Array local, global sizes initialise 
+	 */ 
+	iocompParams->localDataSize = 1; 
+	iocompParams->globalDataSize = 1; 
+	for (i = 0; i < iocompParams->NDIM; i++)
+	{
+		iocompParams->localDataSize *= iocompParams->localSize[i]; 
+		iocompParams->globalDataSize *= iocompParams->globalSize[i]; 
+	} 
 #ifndef NDEBUG
 	printf("size definitions\n"); 
 #endif
-
-	iocompParams->localDataSize = 1; 
-	iocompParams->globalDataSize = 1; 
-	
-	for (int i = 0; i < iocompParams->NDIM; i++)
-	{
-		iocompParams->localDataSize *= iocompParams->localSize[i]; 
-	} 
-
-	for (int i = 0; i < iocompParams->NDIM; i++)
-	{
-		iocompParams->globalDataSize *= iocompParams->globalSize[i]; 
-	} 
 
 	double* data = NULL; 
 	data = (double*)malloc(iocompParams->localDataSize*sizeof(double)); //send array is divided by numnber of compute ranks 
@@ -68,5 +63,24 @@ double* initData(struct iocomp_params *iocompParams)
 	{
 		data[i] =iocompParams->localDataSize * globalMPIRank + i; 
 	}
+
+#ifndef NDEBUG
+	/*
+	* Testing * by printing 
+	*/ 
+	printf("MPI Size %i  and Rank  %i \n", globalMPISize, globalMPIRank); 
+	printf("printing localsize and globalsize \n"); 
+	for (int i = 0; i < iocompParams->NDIM; i++)
+	{
+		printf("%i %i \n", iocompParams->localSize[i], iocompParams->globalSize[i]); 
+	}
+	printf("printing localdatasize %i and globaldatasize %i \n", iocompParams->localDataSize, iocompParams->globalDataSize  ); 
+	for(i = 0; i < iocompParams->localDataSize; i++)
+	{
+		printf("%lf ",data[i]); 
+	}
+	printf("\n"); 
+#endif
+
 	return data; 
 } 

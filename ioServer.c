@@ -18,6 +18,20 @@ void ioServer(struct iocomp_params *iocompParams)
 	timerStart = 0; 
 	timerEnd = 0; 
 
+	/*
+	printf("printing localsize at ioServer \n"); 
+	for (int i = 0; i < iocompParams->NDIM; i++)
+	{
+		printf("%i \n", iocompParams->localSize[i]); 
+	}
+	
+	printf("printing globalsize \n"); 
+	for (int i = 0; i < iocompParams->NDIM; i++)
+	{
+		printf("%i \n", iocompParams->globalSize[i]); 
+	}
+	*/ 
+
 	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 	mpi_error_check(ierr); 
 	ierr = MPI_Comm_size(iocompParams->ioServerComm, &ioSize); 
@@ -27,46 +41,17 @@ void ioServer(struct iocomp_params *iocompParams)
 	MPI_Request request; 
 	MPI_Info info;  
 
-	printf("MPI stuff \n"); 
-	/*
-	 * Initialisation of localsize, global size, localdatasize and globaldatasize
-	 */ 
-	/*
-	for (i = 0; i< iocompParams->NDIM; i++)
-	{
-		iocompParams->globalSize[i] = iocompParams->localSize[i]; 
-		iocompParams->localDataSize *= iocompParams->localSize[i]; 
-	}
-
-	iocompParams->globalSize[0] = iocompParams->localSize[0]*iocompParams->compServerSize; 
-
-	for (i = 0; i< iocompParams->NDIM; i++)
-	{
-		iocompParams->globalDataSize *= iocompParams->globalSize[i]; 
-	}
-*/ 
-
-
-	printf("globaldatasize %i localdatasize %i \n", iocompParams->globalDataSize, iocompParams->localDataSize); 
-#ifndef NDEBUG
-	printf("globaldatasize %i localdatasize %i \n", iocompParams->globalDataSize, iocompParams->localDataSize); 
-#endif
-
 	// initialise recv array 
 	double* recv = NULL; 
 	recv = (double*)malloc(iocompParams->globalDataSize*sizeof(double)); // one rank only sends to one rank
-
-	printf("Declaration of recv array \n"); 
-#ifndef NDEBUG
-	printf("Initialisation of recv array \n"); 
-#endif
-
 	for ( i = 0; i < iocompParams->globalDataSize; i++)
 	{
 		recv[i] = 0; // initialise recv array 
 	}
-
+#ifndef NDEBUG
 	printf("Initialisation of recv array \n"); 
+#endif
+
 	/*
 	 * Go to each compute rank and get data from it 
 	 * Assuming compute ranks are total ranks - 1 
@@ -78,15 +63,6 @@ void ioServer(struct iocomp_params *iocompParams)
 	 * Assign arraystart position for writing of array
 	 * Assuming weak scaling. Outerdimension would have n*totalrank
 	 */
-
-	int arrayStart_local[iocompParams->NDIM]; 	
-	iocompParams->arrayStart = arrayStart_local; 
-	
-	for(int i = 0; i < iocompParams->NDIM; i++)
-	{
-		iocompParams->arrayStart[i] = 0; 
-	}
-	iocompParams->arrayStart[0] = ioRank * iocompParams->localSize[0]; // assuming ar_size has uniform dimensions. 
 
 #ifndef NDEBUG
 	printf("Recieving data starts \n"); 
@@ -102,8 +78,8 @@ void ioServer(struct iocomp_params *iocompParams)
 	source = ioRank; 
 	tag = ioRank; 
 	printf("Recieving data starts \n"); 
-	//ierr = MPI_Irecv(recv, iocompParams->localDataSize, MPI_DOUBLE, source, tag,
-	//		iocompParams->interComm, &request); 
+	ierr = MPI_Irecv(recv, iocompParams->localDataSize, MPI_DOUBLE, source, tag,
+			iocompParams->interComm, &request); 
 	mpi_error_check(ierr); 
 	printf("Irecv completed \n");
 
@@ -124,15 +100,13 @@ void ioServer(struct iocomp_params *iocompParams)
 	{	
 		timerStart = MPI_Wtime();
 	}
-
-	printf("timer start\n"); 
 	/*
 	 * Writing data using different IO libraries commences using io_libraries function
 	 * Parameters passed using iocompParams  
 	 */ 
 
-	//ioLibraries(recv, iocompParams); 
-	//MPI_Barrier(iocompParams->ioServerComm); // Wait for all processes to finish  
+	ioLibraries(recv, iocompParams); 
+	MPI_Barrier(iocompParams->ioServerComm); // Wait for all processes to finish  
 
 #ifndef NDEBUG
 	printf("MPI barrier \n"); 

@@ -45,19 +45,31 @@ int main(int argc, char** argv)
 #ifndef NDEBUG
 	printf("After init_data \n"); 
 #endif
+	
+	/*
+	* Testing for initData local and globalSize initialisations 
+	*/ 
+//	printf("printing localsize at main \n"); 
+//	for (int i = 0; i < iocompParams.NDIM; i++)
+//	{
+//		printf("%i \n", iocompParams.localSize[i]); 
+//	}
+//	
+//	printf("printing globalsize at main \n"); 
+//	for (int i = 0; i < iocompParams.NDIM; i++)
+//	{
+//		printf("%i \n", iocompParams.globalSize[i]); 
+//	}
 
 	intercomm(comm,data,&iocompParams); 
-	printf("after intercomm function\n"); 
 
 	MPI_Finalize(); 
-	printf("MPI finalize\n"); 
 #ifndef NDEBUG
 	printf("MPI finalize\n"); 
 #endif
 
 	free(data); 
 	data = NULL; 
-
 	return 0; 
 } 
 

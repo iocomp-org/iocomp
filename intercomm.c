@@ -31,16 +31,12 @@ void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams )
 	int size_ar[iocompParams->NDIM];
 	int local_size[iocompParams->NDIM], 
 			global_size[iocompParams->NDIM],
-			arraystart[iocompParams->NDIM],
-			local_data_size = 1, 
-			global_data_size = 1; 
+			arraystart[iocompParams->NDIM]; 
 
 #ifndef NDEBUG
 			printf("MPI comms declaration of main program \n"); 
 #endif
 			MPI_Request request; 
-			ierr =MPI_Comm_dup(comm, &iocompParams->globalComm); 
-			mpi_error_check(ierr); 
 			ierr =MPI_Comm_rank(iocompParams->globalComm, &myrank); 
 			mpi_error_check(ierr); 
 			ierr =MPI_Comm_size(iocompParams->globalComm, &mysize); 
@@ -52,29 +48,13 @@ void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams )
 
 			comm_split(iocompParams); // function to split communicator based on colour assigned in intercomm_init. 
 			
-			for (i = 0; i < iocompParams->NDIM; i++)
-			{
-				iocompParams->localSize[i] = n; 
-			} 
-
-			for (i = 0; i < iocompParams->NDIM; i++)
-			{
-				local_data_size *= local_size[i]; 
-			}
-
-			global_data_size = local_data_size * iocompParams->compServerSize; 
-
-#ifndef NDEBUG
-			printf("local data size and local size initialised \n"); 
-#endif
-
 			/*
 			 * Intercomm created linking computeComm to globalComm via
 			 * interComm
 			 */ 
 
 			intercomm_create(iocompParams); 
-
+/*
 #ifndef NDEBUG
 			int ioRank; 
 			MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
@@ -90,13 +70,14 @@ void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams )
 				printf("Hello from computecomm with rank %i and colour %i \n", compute_rank, iocompParams->colour); 
 			} 
 #endif
+*/ 
 
 			/*
 			 * Send data to ioServer and ComputerServer
 			 */ 
 			if(iocompParams->colour == compColour) // Compute task 
 			{
-				printf("before computeServer \n"); 
+				printf("before computeServer %i \n", iocompParams->colour); 
 				computeServer(data, iocompParams); 
 #ifndef NDEBUG
 			printf("After computeServer\n"); 
@@ -106,11 +87,11 @@ void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams )
  
 			else if (iocompParams->colour == ioColour) // IO task 
 			{
-							ioServer(iocompParams);
+				ioServer(iocompParams);
 #ifndef NDEBUG
-			printf("After ioServer\n"); 
+				printf("After ioServer\n"); 
 #endif
-		  MPI_Comm_free(&iocompParams->ioServerComm); 
+				MPI_Comm_free(&iocompParams->ioServerComm); 
 			}        
 
  			MPI_Comm_free(&iocompParams->interComm); 

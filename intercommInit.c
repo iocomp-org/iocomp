@@ -26,10 +26,11 @@ void intercommInit(struct iocomp_params *iocompParams, MPI_Comm comm)
 	int ordering; // defines how IO and compute threads are going to organised 
 	ordering = HIGH_LOW; 
 
-	int globalRank, globalSize; 
+	int globalRank, globalSize, ierr; 
 	MPI_Comm_rank(comm, &globalRank);
 	MPI_Comm_size(comm, &globalSize); 
-	iocompParams->globalComm = comm;
+	ierr =MPI_Comm_dup(comm, &iocompParams->globalComm); 
+	mpi_error_check(ierr); 
 	
 	/*
 	 * assume high low ordering of hyperthreads 

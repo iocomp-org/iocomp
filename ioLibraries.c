@@ -5,34 +5,33 @@
 #include <math.h>
 #include <sys/time.h>
 #include "iocomp.h"
-#define n 10
 
-//void io_libraries(double *iodata, int NDIM, int *local_size, int *global_size, int *array_start, MPI_Comm comm)
 void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 {
 #ifndef NDEBUG
 	printf("Started ioLibraries\n");
 #endif
 	int reorder = 0,
-		size, rank,
+		ioSize, ioRank,
 		total_size,
 		coords[iocompParams->NDIM],
 		periods[iocompParams->NDIM],
 		dims_mpi[iocompParams->NDIM];
 
-	MPI_Comm_size(iocompParams->ioServerComm, &size);
-	MPI_Comm_rank(iocompParams->ioServerComm, &rank);
-
-	double start, end; // timer variables
-
-	double global_data_size;
-
-	global_data_size = 1;
-
+	MPI_Comm_size(iocompParams->ioServerComm, &ioSize);
+	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
+	
+	/*
+	* Define and initialise arrayStart
+	*/ 
+	iocompParams->arrayStart = malloc(sizeof(int)*iocompParams->NDIM);
 	for (int i = 0; i < iocompParams->NDIM; i++)
 	{
-		global_data_size *= iocompParams->globalSize[i];
+		iocompParams->arrayStart[i] = 0; 
 	}
+	iocompParams->arrayStart[0] = ioRank * iocompParams->localSize[0]; // assuming ar_size has uniform dimensions. 
+
+	double start, end; // timer variables
 
 	for (int j = 0; j < iocompParams->NDIM; j++)
 	{
@@ -43,9 +42,23 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	char *filename = "mpiio.dat";
 
 #ifndef NDEBUG
-	printf("size dimensions size of dataset %i %i \n", iocompParams->localSize[0], iocompParams->localSize[1]);
-	printf("global dimensions size of dataset %i %i \n", iocompParams->globalSize[0], iocompParams->globalSize[1]);
-	printf("array start dimensions size of dataset %i %i\n", iocompParams->arrayStart[0],iocompParams->arrayStart[1]);
+	printf("printing localsize \n"); 
+	for (int i = 0; i < iocompParams->NDIM; i++)
+	{
+		printf("%i ", iocompParams->localSize[i]); 
+	}
+	printf("\n"); 
+	printf("printing globalSize \n"); 
+	for (int i = 0; i < iocompParams->NDIM; i++)
+	{
+		printf("%i ", iocompParams->globalSize[i]); 
+	}
+	printf("\n"); 
+	printf("printing arrayStart \n"); 
+	for (int i = 0; i < iocompParams->NDIM; i++)
+	{
+		printf("%i ", iocompParams->arrayStart[i]); 
+	}
 #endif
 
 	/* new communicator to which topology information is added */
@@ -54,7 +67,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	printf("MPI new cartcomm \n");
 #endif
 
-	MPI_Dims_create(size, iocompParams->NDIM, dims_mpi);
+	MPI_Dims_create(ioSize, iocompParams->NDIM, dims_mpi);
 #ifndef NDEBUG
 	printf("MPI dims create \n");
 #endif
@@ -64,7 +77,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	printf("MPI cart create  \n");
 #endif
 
-	MPI_Cart_coords(cartcomm, rank, iocompParams->NDIM, coords);
+	MPI_Cart_coords(cartcomm, ioRank, iocompParams->NDIM, coords);
 #ifndef NDEBUG
 	printf("MPI cart coords \n");
 #endif
