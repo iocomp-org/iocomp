@@ -8,9 +8,6 @@
 int main(int argc, char** argv)
 {
 
-#ifndef NDEBUG
-	printf("Program starts  \n"); 
-#endif
 	int ierr;
 	ierr = MPI_Init(&argc, &argv);  
 	mpi_error_check(ierr); 
@@ -25,10 +22,16 @@ int main(int argc, char** argv)
 	/*
 	 * Check if there are evenly matched IO Servers and Comp Servers 
 	 */ 
+
 	if (globalSize %2 != 0 || globalSize < 2)  
 	{
 		printf("Invalid globalSize. It needs to be an even number and greater than 1 \n"); 
 		exit(1); 
+	} 
+
+	if(globalRank == 0)
+	{
+		printf("Program starts with size %i \n",  globalSize); 
 	} 
 
 	struct iocomp_params iocompParams; 
@@ -40,6 +43,7 @@ int main(int argc, char** argv)
 	/*
 	 * Initialise data for intercomm function 
 	 */ 
+
 	double* data = NULL; 
 	data = initData(&iocompParams); 
 #ifndef NDEBUG
@@ -56,13 +60,6 @@ int main(int argc, char** argv)
 	free(data); 
 	data = NULL; 
 
-//	free(iocompParams.arrayStart); 
-//	free(iocompParams.localSize); 
-//	free(iocompParams.globalSize); 
-//
-//	iocompParams.arrayStart = NULL; 
-//	iocompParams.localSize  = NULL; 
-//	iocompParams.globalSize = NULL; 
 	return 0; 
 } 
 

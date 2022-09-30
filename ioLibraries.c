@@ -11,19 +11,16 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 	printf("Started ioLibraries\n");
 #endif
-	int reorder = 0,
-		ioSize, ioRank,
-		total_size,
-		coords[iocompParams->NDIM],
-		periods[iocompParams->NDIM],
-		dims_mpi[iocompParams->NDIM];
+	int reorder = 0; 
+	int ioSize, ioRank; 
+	int coords[iocompParams->NDIM], periods[iocompParams->NDIM],dims_mpi[iocompParams->NDIM];
 
 	MPI_Comm_size(iocompParams->ioServerComm, &ioSize);
 	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
-	
+
 	/*
-	* Define and initialise arrayStart
-	*/ 
+	 * Define and initialise arrayStart
+	 */ 
 	iocompParams->arrayStart = malloc(sizeof(int)*iocompParams->NDIM);
 	for (int i = 0; i < iocompParams->NDIM; i++)
 	{
@@ -40,26 +37,6 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 		coords[j] = 0;
 	}
 	char *filename = "mpiio.dat";
-
-#ifndef NDEBUG
-	printf("printing localsize \n"); 
-	for (int i = 0; i < iocompParams->NDIM; i++)
-	{
-		printf("%i ", iocompParams->localSize[i]); 
-	}
-	printf("\n"); 
-	printf("printing globalSize \n"); 
-	for (int i = 0; i < iocompParams->NDIM; i++)
-	{
-		printf("%i ", iocompParams->globalSize[i]); 
-	}
-	printf("\n"); 
-	printf("printing arrayStart \n"); 
-	for (int i = 0; i < iocompParams->NDIM; i++)
-	{
-		printf("%i ", iocompParams->arrayStart[i]); 
-	}
-#endif
 
 	/* new communicator to which topology information is added */
 	MPI_Comm cartcomm;
@@ -82,19 +59,19 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	printf("MPI cart coords \n");
 #endif
 
-	// MPI_Barrier(ioServeComm);
-						 // phdf5write(iodata, local_size, iocompParams->globalSize, arraystart, iocompParams->NDIM, cartcomm, "hdf5.h5");
-						 // adioswrite(iodata, local_size, iocompParams->globalSize, arraystart, iocompParams->NDIM, cartcomm, "BP4", "output.bp4");
+	MPI_Barrier(iocompParams->ioServerComm);
 	mpiiowrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, filename);
+	phdf5write(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "hdf5.h5");
+	//adioswrite(iodata, local_size, iocompParams->globalSize, arraystart, iocompParams->NDIM, cartcomm, "BP4", "output.bp4");
 
 #ifndef NDEBUG
 	printf("Writing timing ended \n");
 #endif
 
-//	int irep = 1;
-//	int MAXLOOP_AVGIO = 1;
-//	timer(iocompParams); 
-//	timing_int(end - start, global_data_size, irep, MAXLOOP_AVGIO, iocompParams->localSize[0], filename, cartcomm);
+	//	int irep = 1;
+	//	int MAXLOOP_AVGIO = 1;
+	//	timer(iocompParams); 
+	//	timing_int(end - start, global_data_size, irep, MAXLOOP_AVGIO, iocompParams->localSize[0], filename, cartcomm);
 
 #ifndef NDEBUG
 	printf("Timing function ended  \n");

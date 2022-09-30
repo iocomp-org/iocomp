@@ -31,7 +31,6 @@ void computeServer(double* data, struct iocomp_params *iocompParams)
 			iocompParams->interComm, &request); // every rank sends its portion of data 
 	mpi_error_check(ierr); 
 
-	printf("Sending data stop \n"); 
 #ifndef NDEBUG
 	printf("Sending data stop \n"); 
 #endif

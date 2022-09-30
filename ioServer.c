@@ -8,29 +8,13 @@
 void ioServer(struct iocomp_params *iocompParams)
 {
 
-	printf("ioServer started\n"); 
 #ifndef NDEBUG
 	printf("ioServer started\n"); 
 #endif
 	int i, ierr, globalRank, globalSize; 
 	int ioRank, ioSize; 
 	double timerStart, timerEnd; 
-	timerStart = 0; 
-	timerEnd = 0; 
-
-	/*
-	printf("printing localsize at ioServer \n"); 
-	for (int i = 0; i < iocompParams->NDIM; i++)
-	{
-		printf("%i \n", iocompParams->localSize[i]); 
-	}
-	
-	printf("printing globalsize \n"); 
-	for (int i = 0; i < iocompParams->NDIM; i++)
-	{
-		printf("%i \n", iocompParams->globalSize[i]); 
-	}
-	*/ 
+	timerStart = timerEnd = 0.0; 
 
 	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 	mpi_error_check(ierr); 
@@ -53,13 +37,6 @@ void ioServer(struct iocomp_params *iocompParams)
 #endif
 
 	/*
-	 * Go to each compute rank and get data from it 
-	 * Assuming compute ranks are total ranks - 1 
-	 */ 
-
-	int computeRank = 0; 
-
-	/*
 	 * Assign arraystart position for writing of array
 	 * Assuming weak scaling. Outerdimension would have n*totalrank
 	 */
@@ -77,18 +54,16 @@ void ioServer(struct iocomp_params *iocompParams)
 	int source, tag; 
 	source = ioRank; 
 	tag = ioRank; 
-	printf("Recieving data starts \n"); 
 	ierr = MPI_Irecv(recv, iocompParams->localDataSize, MPI_DOUBLE, source, tag,
 			iocompParams->interComm, &request); 
 	mpi_error_check(ierr); 
-	printf("Irecv completed \n");
 
 	ierr = 	MPI_Waitall(1, &request, &status); // wait for all processes to finish sending and recieving  
 	mpi_error_check(ierr); 
 
-#ifndef NDEBUG
 	// print out recieved data 
-	printf("Recv data coming from rank %i \n",computeRank); 
+#ifndef NDEBUG
+	printf("Recv data coming from rank %i \n",source ); 
 	for(i = 0; i < iocompParams->localDataSize; i++)
 	{
 		printf("%lf ",recv[i]); // init size in each dimension to be n. For ex. NDIM = 2 will reslt in n x n 
@@ -100,6 +75,7 @@ void ioServer(struct iocomp_params *iocompParams)
 	{	
 		timerStart = MPI_Wtime();
 	}
+
 	/*
 	 * Writing data using different IO libraries commences using io_libraries function
 	 * Parameters passed using iocompParams  

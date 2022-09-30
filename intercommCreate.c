@@ -63,7 +63,6 @@ void intercomm_create(struct iocomp_params *iocompParams)
 		printf("before creating ioServerComm\n");
 #endif
 		local_leader = 0; 
-		//remote_leader = 1 - iocompParams->colour; // 1  
 		remote_leader = 0; // remote leader of compute servers in global Comm  
 		inter_tag = 1;   
 
@@ -90,5 +89,8 @@ void intercomm_create(struct iocomp_params *iocompParams)
 	int interRank, interSize; 
 	MPI_Comm_rank(iocompParams->interComm, &interRank); 
 	MPI_Comm_size(iocompParams->interComm, &interSize); 
-	printf("this is intercomm rank %i and size %i and colour %i \n", interRank, interSize, iocompParams->colour); 
+	if(interRank == 0)
+	{
+		printf("Intercomms declared, colour %i has size %i \n",iocompParams->colour, interSize ); 
+	}
 }
