@@ -6,7 +6,6 @@
 #include "iocomp.h"
 
 #define n 10  
-#define NDIM 2
 #define ioColour 0 
 #define compColour 1 
 
@@ -29,10 +28,10 @@ void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams )
 			myrank2, myrank3, myrank4, compute_rank, compute_size, io_rank, flag = 0, i, test_val, mysize, PROCS, dest, tag,
 			inter_tag, local_leader, remote_leader, N1, N2, size, local_array;
 
-	int size_ar[NDIM];
-	int local_size[NDIM], 
-			global_size[NDIM],
-			arraystart[NDIM],
+	int size_ar[iocompParams->NDIM];
+	int local_size[iocompParams->NDIM], 
+			global_size[iocompParams->NDIM],
+			arraystart[iocompParams->NDIM],
 			local_data_size = 1, 
 			global_data_size = 1; 
 
@@ -53,12 +52,12 @@ void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams )
 
 			comm_split(iocompParams); // function to split communicator based on colour assigned in intercomm_init. 
 			
-			for (i = 0; i < NDIM; i++)
+			for (i = 0; i < iocompParams->NDIM; i++)
 			{
-				local_size[i] = n; 
+				iocompParams->localSize[i] = n; 
 			} 
 
-			for (i = 0; i < NDIM; i++)
+			for (i = 0; i < iocompParams->NDIM; i++)
 			{
 				local_data_size *= local_size[i]; 
 			}
@@ -95,20 +94,27 @@ void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams )
 			/*
 			 * Send data to ioServer and ComputerServer
 			 */ 
-
 			if(iocompParams->colour == compColour) // Compute task 
 			{
-				computeServer(NDIM, data, local_size, iocompParams) ; 
+				printf("before computeServer \n"); 
+				computeServer(data, iocompParams); 
+#ifndef NDEBUG
+			printf("After computeServer\n"); 
+#endif
+				MPI_Comm_free(&iocompParams->compServerComm); 
 			}
-
+ 
 			else if (iocompParams->colour == ioColour) // IO task 
 			{
-				ioServer(NDIM, local_size, iocompParams);
+							ioServer(iocompParams);
+#ifndef NDEBUG
+			printf("After ioServer\n"); 
+#endif
+		  MPI_Comm_free(&iocompParams->ioServerComm); 
 			}        
 
-			MPI_Comm_free(&iocompParams->compServerComm); 
-			MPI_Comm_free(&iocompParams->interComm); 
+ 			MPI_Comm_free(&iocompParams->interComm); 
 			MPI_Comm_free(&iocompParams->globalComm); 
-		  MPI_Comm_free(&iocompParams->ioServerComm); 
+			printf("after mpi comm frees \n"); 
 
 }
