@@ -27,11 +27,15 @@ void data_output(struct iocomp_params *iocompParams)
 		printf("Error: No output file\n");
 		exit(1);
 	}
-
+	
 	double writeRate = iocompParams->globalDataSize*sizeof(double)/( pow(10,9) * iocompParams->writeTime); 
 	double localDataSize = iocompParams->localDataSize*sizeof(double)/pow(10,9); 
 	double globalDataSize = iocompParams->globalDataSize*sizeof(double)/pow(10,9); 
 
-	fprintf(out, "WriteTime(s), LocalDataSize(GB), GlobalDataSize(GB), WriteRate(GB/s) \n"); //headers for output csv 
-	fprintf(out, "%lf,%lf,%lf,%lf \n", iocompParams->writeTime, localDataSize, globalDataSize, writeRate); 
+	int ioSize, ioRank; 
+	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
+	MPI_Comm_size(iocompParams->ioServerComm, &ioSize); 
+
+	fprintf(out, "IOSize, WriteTime(s), LocalDataSize(GB), GlobalDataSize(GB), WriteRate(GB/s) \n"); //headers for output csv 
+	fprintf(out, "%i, %lf,%lf,%lf,%lf \n",ioSize, iocompParams->writeTime, localDataSize, globalDataSize, writeRate); 
 } 
