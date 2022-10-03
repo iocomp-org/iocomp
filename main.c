@@ -34,8 +34,13 @@ int main(int argc, char** argv)
 		printf("Program starts with size %i \n",  globalSize); 
 	} 
 
+	// data parameters definitions 
+
+	int NDIM = 2; 
+	int localArraySize[2] = {10,10}; 
+
 	struct iocomp_params iocompParams; 
-	intercommInit(&iocompParams, comm); 
+	intercommInit(&iocompParams, comm,  NDIM, localArraySize); 
 #ifndef NDEBUG
 	printf("After intercommInit\n"); 
 #endif

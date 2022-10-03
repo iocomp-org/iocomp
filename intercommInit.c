@@ -16,7 +16,7 @@
  * Divides the particular rank into comp server and io server 
  */
 
-void intercommInit(struct iocomp_params *iocompParams, MPI_Comm comm)
+void intercommInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize)
 {
 
 #ifndef NDEBUG
@@ -26,12 +26,45 @@ void intercommInit(struct iocomp_params *iocompParams, MPI_Comm comm)
 	int ordering; // defines how IO and compute threads are going to organised 
 	ordering = HIGH_LOW; 
 
-	int globalRank, globalSize, ierr; 
+	int globalRank, globalSize, ierr, i;
 	MPI_Comm_rank(comm, &globalRank);
 	MPI_Comm_size(comm, &globalSize); 
 	ierr =MPI_Comm_dup(comm, &iocompParams->globalComm); 
 	mpi_error_check(ierr); 
-	
+
+	/*
+	 * Array size specs initialise
+	 */ 
+
+	iocompParams->localSize = malloc(sizeof(int)*NDIM);
+	iocompParams->globalSize = malloc(sizeof(int)*NDIM);
+	iocompParams->NDIM = NDIM;// number of dimensions  
+
+	for (i = 0; i < iocompParams->NDIM; i++)
+	{
+		iocompParams->localSize[i] = localArraySize[i]; // initialise based on passed argument  
+		iocompParams->globalSize[i] = localArraySize[i]; 
+	}
+	iocompParams->globalSize[0]*= globalSize; // assumes outermost dimension gets expanded by each rank  
+#ifndef NDEBUG
+	printf("localSize, globalSize, arrayStart initialised\n"); 
+#endif
+
+	/*
+	 * Array local, global data sizes initialise 
+	 */ 
+
+	iocompParams->localDataSize = 1; 
+	iocompParams->globalDataSize = 1; 
+	for (i = 0; i < iocompParams->NDIM; i++)
+	{
+		iocompParams->localDataSize *= iocompParams->localSize[i]; 
+		iocompParams->globalDataSize *= iocompParams->globalSize[i]; 
+	} 
+#ifndef NDEBUG
+	printf("size definitions\n"); 
+#endif
+
 	/*
 	 * assume high low ordering of hyperthreads 
 	 * Comp server ranks are lower ranked, IO server ranks are higher ranked 

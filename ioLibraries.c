@@ -61,7 +61,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 
 	MPI_Barrier(iocompParams->ioServerComm);
 	mpiiowrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, filename);
-	phdf5write(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "hdf5.h5");
+	//phdf5write(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "hdf5.h5");
 	//adioswrite(iodata, local_size, iocompParams->globalSize, arraystart, iocompParams->NDIM, cartcomm, "BP4", "output.bp4");
 
 #ifndef NDEBUG

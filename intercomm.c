@@ -39,7 +39,7 @@ void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams )
 	if ( iocompParams->colour == ioColour )
 		printf("Hello from ioServeComm with rank %i and colour %i \n", ioRank, iocompParams->colour); 
 	else if ( iocompParams->colour == compColour )
-		printf("Hello from computecomm with rank %i and colour %i \n", compute_rank, iocompParams->colour); 
+		printf("Hello from computecomm with rank %i and colour %i \n", computeRank, iocompParams->colour); 
 #endif
 
 	/*

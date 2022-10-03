@@ -25,37 +25,37 @@ double* initData(struct iocomp_params *iocompParams)
 	printf("MPI ranks and sizes\n"); 
 #endif
 	
-	/*
-	 * Array size specs initialise
-	 */ 
-	iocompParams->localSize = malloc(sizeof(int)*NDIM_define);
-	iocompParams->globalSize = malloc(sizeof(int)*NDIM_define);
-	iocompParams->NDIM = NDIM_define;// number of dimensions  
-
-	for (int i = 0; i < iocompParams->NDIM; i++)
-	{
-		iocompParams->localSize[i] = N; 
-		iocompParams->globalSize[i] = N; 
-	}
-	iocompParams->globalSize[0] = N*globalMPISize; // assumes outermost dimension gets expanded by each rank  
-#ifndef NDEBUG
-	printf("localSize, globalSize, arrayStart initialised\n"); 
-#endif
-
-	/*
-	 * Array local, global sizes initialise 
-	 */ 
-	iocompParams->localDataSize = 1; 
-	iocompParams->globalDataSize = 1; 
-	for (i = 0; i < iocompParams->NDIM; i++)
-	{
-		iocompParams->localDataSize *= iocompParams->localSize[i]; 
-		iocompParams->globalDataSize *= iocompParams->globalSize[i]; 
-	} 
-#ifndef NDEBUG
-	printf("size definitions\n"); 
-#endif
-
+//	/*
+//	 * Array size specs initialise
+//	 */ 
+//	iocompParams->localSize = malloc(sizeof(int)*NDIM);
+//	iocompParams->globalSize = malloc(sizeof(int)*NDIM);
+//	iocompParams->NDIM = NDIM;// number of dimensions  
+//
+//	for (int i = 0; i < iocompParams->NDIM; i++)
+//	{
+//		iocompParams->localSize[i] = localArraySize[i]; 
+//		iocompParams->globalSize[i] = localArraySize[i]; 
+//	}
+//	iocompParams->globalSize[0] = N*globalMPISize; // assumes outermost dimension gets expanded by each rank  
+//#ifndef NDEBUG
+//	printf("localSize, globalSize, arrayStart initialised\n"); 
+//#endif
+//
+//	/*
+//	 * Array local, global sizes initialise 
+//	 */ 
+//	iocompParams->localDataSize = 1; 
+//	iocompParams->globalDataSize = 1; 
+//	for (i = 0; i < iocompParams->NDIM; i++)
+//	{
+//		iocompParams->localDataSize *= iocompParams->localSize[i]; 
+//		iocompParams->globalDataSize *= iocompParams->globalSize[i]; 
+//	} 
+//#ifndef NDEBUG
+//	printf("size definitions\n"); 
+//#endif
+//
 	double* data = NULL; 
 	data = (double*)malloc(iocompParams->localDataSize*sizeof(double)); //send array is divided by numnber of compute ranks 
 

@@ -27,7 +27,8 @@ int localDataSize;
 }; 
 extern struct iocomp_params iocompParams; 
 
-void intercommInit(struct iocomp_params *iocompParams, MPI_Comm comm);  
+//void intercommInit(struct iocomp_params *iocompParams, MPI_Comm comm);  
+void intercommInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize);
 void mpi_error_check(int ierr);
 //void io_libraries(double* iodata, int NDIM, int* local_size, int* global_size,int* array_start,  MPI_Comm comm); 
 void ioLibraries(double* iodata, struct iocomp_params *iocompParams); 
