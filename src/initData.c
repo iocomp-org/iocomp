@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "iocomp.h"
+#include "../include/iocomp.h"
 #define N 10 
 #define NDIM_define 2 // change this parameter to change dimensions of data set  
 

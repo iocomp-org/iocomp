@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "iocomp.h"
+#include "../include/iocomp.h"
 
 #define ioColour 0 
 #define compColour 1 
@@ -16,7 +16,7 @@ void mpi_error_check(int ierr)
 	}
 }
 
-void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams )
+void intercomm( struct iocomp_params *iocompParams )
 {
 	int ierr;  
 	/*

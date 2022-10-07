@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "iocomp.h"
+#include "../include/iocomp.h"
 
 #define compColour 1
 #define ioColour 0

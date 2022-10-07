@@ -12,7 +12,7 @@ LFLAGS += -I$(OMPI_DIR)/include #-I$(HDF5_DIR)/include
 ODIR = Object_files
 
 # define headerfiles
-DEPS = iocomp.h
+DEPS = ../include/iocomp.h
 
 # define library paths 
 LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm # -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 # -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi  -lm 
@@ -34,7 +34,7 @@ $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) ${LFLAGS} -c $< -o $@
 
 $(MAIN): $(OBJS) 
-	$(CC) $(CFLAGS) ${LFLAGS} -o $(MAIN) $(OBJS) $(LIBS)
+	$(CC) -shared -o ../lib/libiocomp.so Object_files/*.o
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of
@@ -46,6 +46,7 @@ LIB: $(OBJS)
 	mkdir $(DIR)/bin
 	mkdir $(DIR)/lib 
 	gcc -shared -o $(DIR)/lib/libiocomp.so Object_files/*.o
+	#$(CC) $(CFLAGS) ${LFLAGS} -o $(MAIN) $(OBJS) $(LIBS)
 	cp iocomp.h $(DIR)/include/ 
 	cp iocomp $(DIR)/bin/ 
 

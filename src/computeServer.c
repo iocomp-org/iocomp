@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "iocomp.h"
+#include "../include/iocomp.h"
 
 void computeServer(double* data, struct iocomp_params *iocompParams)
 {

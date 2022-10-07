@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
 	if(iocompParams.colour == ioColour)
 	{
-		intercomm(comm,data,&iocompParams); 
+		intercomm(&iocompParams); 
 		MPI_Finalize(); 
 		return(0); 
 	} 

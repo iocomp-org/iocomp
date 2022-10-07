@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "iocomp.h"
+#include "../include/iocomp.h"
 #define filename "write_time.csv"
 void ioServer(struct iocomp_params *iocompParams)
 {

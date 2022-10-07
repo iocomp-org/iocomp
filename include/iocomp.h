@@ -37,7 +37,7 @@ void timing_int(double time_diff, double global_data_size, int irep, int MAXLOOP
 void computeServer(double* data, struct iocomp_params *iocompParams); 
 void ioServer(struct iocomp_params *iocompParams); 
 double* initData(struct iocomp_params *iocompParams); 
-void intercomm(MPI_Comm comm, double* data, struct iocomp_params *iocompParams); 
+void intercomm(struct iocomp_params *iocompParams); 
 //double* init_data(int N, int NDIM, MPI_Comm globalComm); 
 //void comm_split(int color, MPI_Comm globalComm, MPI_Comm *splitComm);
 void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);

@@ -4,7 +4,7 @@
 #include <sys/time.h>
 #include <math.h>
 #include <sys/time.h>
-#include "iocomp.h"
+#include "../include/iocomp.h"
 
 void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 {
