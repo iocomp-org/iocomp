@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "mpi.h"
 #include "iocomp.h"
+#include "test.h"
 
 #define iter 10 
 
