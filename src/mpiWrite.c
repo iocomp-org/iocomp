@@ -24,7 +24,7 @@
 //     }
 // }
 
-void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraystart, int NDIM, MPI_Comm cartcomm, char* FILENAME)
+void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraystart, int NDIM, MPI_Comm cartcomm, char* FILENAME, MPI_Datatype dataType)
 {   
     int             i, j, k, initialized, finalized,ierr, size, comm, rank, argc, nprocs, myrank, nints, 
                     count[NDIM],
@@ -65,7 +65,7 @@ void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraysta
     printf("MPI arraystart and arraygsize completed\n"); 
 #endif 
     ierr = MPI_Type_create_subarray(NDIM, arraygsize, arraysubsize, arraystart,
-                                    MPI_ORDER_C, MPI_DOUBLE, &filetype); 
+                                    MPI_ORDER_C, dataType, &filetype); 
     // check_mpi_error(ierr, cartcomm); 
 
 #ifndef NDEBUG   
@@ -84,7 +84,7 @@ void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraysta
     printf("MPI file open \n"); 
 #endif       
     // Set view for this process using datatype 
-    ierr = MPI_File_set_view(fh, 0, MPI_DOUBLE, filetype, "native",  
+    ierr = MPI_File_set_view(fh, 0, dataType, filetype, "native",  
                          MPI_INFO_NULL); 
     // check_mpi_error(ierr, cartcomm); 
 #ifndef NDEBUG   
@@ -96,7 +96,7 @@ void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraysta
     {
         total_data *= arraysubsize[i]; 
     }
-    ierr = MPI_File_write_all(fh, iodata, total_data, MPI_DOUBLE, &status);   
+    ierr = MPI_File_write_all(fh, iodata, total_data, dataType, &status);   
     // check_mpi_error(ierr, cartcomm); 
 #ifndef NDEBUG   
     printf("MPI file write all \n"); 

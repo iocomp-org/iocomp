@@ -25,9 +25,10 @@ void computeServer(double* data, struct iocomp_params *iocompParams)
 	 *	which is paired with the same rank of IO server 
 	 */
 	int dest, tag; 
-	tag = dest = iocompParams->compServerRank;
+	tag = dest = computeRank;
 
-	ierr = MPI_Isend(data, iocompParams->localDataSize , MPI_DOUBLE, dest, tag,
+	printf("sending data from %i \n", computeRank); 
+	ierr = MPI_Isend(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
 			iocompParams->interComm, &request); // every rank sends its portion of data 
 	mpi_error_check(ierr); 
 

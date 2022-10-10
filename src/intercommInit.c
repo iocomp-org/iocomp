@@ -13,35 +13,19 @@
 
 /*
  * Initialises the iocomp_params struct 
- * Divides the particular rank into comp server and io server 
  */
-
-void intercommInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize)
+void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize)
 {
 
 #ifndef NDEBUG
 	printf("Start of intercomm_init\n"); 
 #endif
 
-	int ordering; // defines how IO and compute threads are going to organised 
-	ordering = HIGH_LOW; 
 
 	int globalRank, globalSize, ierr, i;
 	MPI_Comm_rank(comm, &globalRank);
 	MPI_Comm_size(comm, &globalSize); 
-	ierr =MPI_Comm_dup(comm, &iocompParams->globalComm); 
-	mpi_error_check(ierr); 
-
-	/*
-	 * Check if there are evenly matched IO Servers and Comp Servers 
-	 */ 
-
-	if (globalSize %2 != 0 || globalSize < 2)  
-	{
-		printf("Invalid globalSize. It needs to be an even number and greater than 1 \n"); 
-		exit(1); 
-	} 
-
+	
 	if(globalRank == 0)
 	{
 		printf("Program starts with size %i \n",  globalSize); 
@@ -50,10 +34,11 @@ void intercommInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, 
 	/*
 	 * Array size specs initialise
 	 */ 
-
 	iocompParams->localSize = malloc(sizeof(int)*NDIM);
 	iocompParams->globalSize = malloc(sizeof(int)*NDIM);
 	iocompParams->NDIM = NDIM;// number of dimensions  
+	//iocompParams->dataType = MPI_INT; // data type of sent and recvd data 
+	iocompParams->dataType = MPI_DOUBLE; // data type of sent and recvd data 
 
 	for (i = 0; i < iocompParams->NDIM; i++)
 	{
@@ -77,41 +62,8 @@ void intercommInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, 
 		iocompParams->globalDataSize *= iocompParams->globalSize[i]; 
 	} 
 #ifndef NDEBUG
-	printf("size definitions\n"); 
+	printf("size definitions, localDataSize %i, globalDataSize %i\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
 #endif
-
-	/*
-	 * assume high low ordering of hyperthreads 
-	 * Comp server ranks are lower ranked, IO server ranks are higher ranked 
-	 */ 
-
-	if(ordering == HIGH_LOW) // if size is lesser than fullNode of archer2 
-	{	   
-		if (globalRank < globalSize/2) // comp server 
-		{
-			iocompParams->colour					= compColour;
-			iocompParams->compServerRank	= globalRank;
-			iocompParams->ioServerRank		= globalSize - globalRank - 1;  
-			iocompParams->compServerSize  = globalSize/2; 
-			iocompParams->ioServerSize    = globalSize/2;
-		} 
-
-		else if(globalRank >= globalSize/2) // io server
-		{
-			iocompParams->colour					= ioColour; 
-			iocompParams->ioServerRank		= globalRank;
-			iocompParams->compServerRank	= globalSize - globalRank - 1;  
-			iocompParams->compServerSize	= globalSize/2; 
-			iocompParams->ioServerSize    = globalSize/2;
-		}
-	} 
-
-
-	/*
-	 * split communicators based on colour assigned in intercommInit 
-	 */ 
-
-	comm_split(iocompParams);  
 
 	/*
 	 * Intercomm created linking computeComm to globalComm via

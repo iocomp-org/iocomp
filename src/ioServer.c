@@ -54,7 +54,8 @@ void ioServer(struct iocomp_params *iocompParams)
 	int source, tag; 
 	source = ioRank; 
 	tag = ioRank; 
-	ierr = MPI_Irecv(recv, iocompParams->localDataSize, MPI_DOUBLE, source, tag,
+	printf("receving from %i \n", ioRank); 
+	ierr = MPI_Irecv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
 			iocompParams->interComm, &request); 
 	mpi_error_check(ierr); 
 

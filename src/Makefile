@@ -3,7 +3,7 @@ CC = $(OMPI_DIR)/bin/mpicc
 CFLAGS = -Wall -Wpedantic -Werror -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
-CFLAGS += -fPIC -g -c -Og -DADIOS2_USE_MPI -DNDEBUG
+CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared -DNDEBUG
 
 # linker flags
 LFLAGS += -I$(OMPI_DIR)/include #-I$(HDF5_DIR)/include 
@@ -19,7 +19,7 @@ LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm # -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 # -L$(
 
 # define C source files 
 #SRCS =  computeStep.c main.c  ioServer.c  computeServer.c intercomm.c initData.c  mpiWrite.c intercommInit.c intercommCreate.c commSplit.c dataOutput.c ioLibraries.c  #hdf5Write.c# hdf5_write.c adios_write.c mpi_write.c 
-SRCS =   ioServer.c  computeServer.c intercomm.c initData.c  mpiWrite.c intercommInit.c intercommCreate.c commSplit.c dataOutput.c ioLibraries.c  #hdf5Write.c# hdf5_write.c adios_write.c mpi_write.c 
+SRCS =   ioServer.c  computeServer.c intercomm.c  mpiWrite.c intercommInit.c intercommCreate.c commSplit.c dataOutput.c ioLibraries.c  #hdf5Write.c# hdf5_write.c adios_write.c mpi_write.c 
 
 # define executable file  
 MAIN = iocomp
@@ -34,7 +34,7 @@ $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) ${LFLAGS} -c $< -o $@
 
 $(MAIN): $(OBJS) 
-	$(CC) -shared -o ../lib/libiocomp.so Object_files/*.o
+	$(CC) $(CFLAGS) ${LFLAGS} -o ../lib/libiocomp.so Object_files/*.o
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of

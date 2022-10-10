@@ -62,10 +62,15 @@ void intercomm( struct iocomp_params *iocompParams )
 //#endif
 //	} 
 //
-		ioServer(iocompParams);
+		if (iocompParams->colour == ioColour) // IO task 
+		
+		{
+			ioServer(iocompParams);
+		 
 #ifndef NDEBUG
 		printf("After ioServer\n"); 
 #endif
+		} 
 	/*
 	 * Free communicators 
 	 */ 

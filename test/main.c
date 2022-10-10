@@ -23,7 +23,9 @@ int main(int argc, char** argv)
 
 	struct iocomp_params iocompParams; 
 
-	intercommInit(&iocompParams, comm,  NDIM, localArraySize); 
+	comm_split(&iocompParams, comm); 
+
+	arrayParamsInit(&iocompParams, comm,  NDIM, localArraySize); 
 #ifndef NDEBUG
 	printf("After intercommInit\n"); 
 #endif
@@ -64,7 +66,7 @@ double* initData(struct iocomp_params *iocompParams)
 	double* data = NULL; 
 	data = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 	int i, globalMPIRank, ierr;   
-	
+
 	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalMPIRank); 
 	mpi_error_check(ierr); 
 	for(i = 0; i < iocompParams->localDataSize; i++)
