@@ -37,15 +37,6 @@ void ioServer(struct iocomp_params *iocompParams)
 #endif
 
 	/*
-	 * Assign arraystart position for writing of array
-	 * Assuming weak scaling. Outerdimension would have n*totalrank
-	 */
-
-#ifndef NDEBUG
-	printf("Recieving data starts \n"); 
-#endif
-
-	/*
 	 * Recieving data starts using interComm
 	 * source is ioRank in interComm, as that is the 
 	 * rank of the paired ComputeProcess in computeComm 
@@ -54,7 +45,10 @@ void ioServer(struct iocomp_params *iocompParams)
 	int source, tag; 
 	source = ioRank; 
 	tag = ioRank; 
-	printf("receving from %i \n", ioRank); 
+#ifndef NDEBUG
+	printf("Recieving data starts from source rank %i \n", ioRank); 
+#endif
+
 	ierr = MPI_Irecv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
 			iocompParams->interComm, &request); 
 	mpi_error_check(ierr); 

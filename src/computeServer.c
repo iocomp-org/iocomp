@@ -17,8 +17,7 @@ void computeServer(double* data, struct iocomp_params *iocompParams)
 	MPI_Request request;
 
 #ifndef NDEBUG
-	printf("Sending data starts from computeRank %i to ioRank %i  \n", computeRank, 
-			iocompParams->ioServerRank); 
+	printf("Sending data starts from computeRank %i to ioRank %i  \n", computeRank, computeRank); 
 #endif
 	/*
 	 *	Send data using MPI_Isend to computeRank in interComm  
@@ -27,7 +26,6 @@ void computeServer(double* data, struct iocomp_params *iocompParams)
 	int dest, tag; 
 	tag = dest = computeRank;
 
-	printf("sending data from %i \n", computeRank); 
 	ierr = MPI_Isend(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
 			iocompParams->interComm, &request); // every rank sends its portion of data 
 	mpi_error_check(ierr); 
