@@ -32,7 +32,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	 * interComm
 	 */ 
 
-	if(iocompParams->hyperthreadFlag == true) // check if flag is true? 
+	if(iocompParams->hyperthreadFlag) // check if flag is true? 
 	{
 		intercomm_create(iocompParams); 
 	} 

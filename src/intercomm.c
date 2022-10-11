@@ -18,7 +18,7 @@ void mpi_error_check(int ierr)
 
 void intercomm( struct iocomp_params *iocompParams )
 {
-	if(iocompParams->hyperthreadFlag == true)
+	if(iocompParams->hyperthreadFlag)
 	{
 		if(iocompParams->colour == ioColour)
 		{
@@ -32,4 +32,8 @@ void intercomm( struct iocomp_params *iocompParams )
 			exit(0); 
 		} 
 	} 
+	else
+	{
+		printf("intercomm not created \n"); 
+	}
 }

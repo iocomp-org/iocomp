@@ -15,15 +15,16 @@
 
 void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 {
+
+	int ierr = MPI_Comm_dup(comm, &iocompParams->globalComm); // comm is assigned to globalComm
+	mpi_error_check(ierr); 
 	iocompParams->hyperthreadFlag = false; // set hyperthread flag 
 
 	if(iocompParams->hyperthreadFlag) // check if flag is true? 
 	{
 		int ordering; // defines how IO and compute threads are going to organised 
 		ordering = HIGH_LOW; 
-		int globalRank, globalSize, ierr, i;
-		ierr = MPI_Comm_dup(comm, &iocompParams->globalComm); // comm is assigned to globalComm
-		mpi_error_check(ierr); 
+		int globalRank, globalSize, i;
 		MPI_Comm splitComm; 
 		ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
 		mpi_error_check(ierr); 
@@ -34,7 +35,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		/*
 		 * Check if there are evenly matched IO Servers and Comp Servers 
 		 */ 
-		
+
 		if (globalSize %2 != 0 || globalSize < 2)  
 		{
 			printf("Invalid globalSize. It needs to be an even number and greater than 1 \n"); 

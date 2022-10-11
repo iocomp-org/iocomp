@@ -40,8 +40,17 @@ int main(int argc, char** argv)
 #endif
 
 	intercomm(&iocompParams); // do io otherwise do nothing  
+#ifndef NDEBUG
+	printf("test- after intercomm \n"); 
+#endif
 	computeStep(data,&iocompParams); // do compute 
+#ifndef NDEBUG
+	printf("test- after computeStep \n"); 
+#endif
 	computeServer(data,&iocompParams); // send data off using computeServer
+#ifndef NDEBUG
+	printf("test- after computeServer \n"); 
+#endif
 
 	MPI_Finalize(); 
 #ifndef NDEBUG
