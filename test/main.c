@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 
 	comm_split(&iocompParams, comm); 
 
-	arrayParamsInit(&iocompParams, comm,  NDIM, localArraySize); 
+	iocompInit(&iocompParams, comm,  NDIM, localArraySize); 
 #ifndef NDEBUG
 	printf("After intercommInit\n"); 
 #endif
@@ -39,15 +39,8 @@ int main(int argc, char** argv)
 	printf("After init_data \n"); 
 #endif
 
-	if(iocompParams.colour == ioColour)
-	{
-		intercomm(&iocompParams); 
-		MPI_Finalize(); 
-		return(0); 
-	} 
-
+	intercomm(&iocompParams); // do io otherwise do nothing  
 	computeStep(data,&iocompParams); // do compute 
-
 	computeServer(data,&iocompParams); // send data off using computeServer
 
 	MPI_Finalize(); 
