@@ -15,8 +15,18 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	int ioSize, ioRank; 
 	int coords[iocompParams->NDIM], periods[iocompParams->NDIM],dims_mpi[iocompParams->NDIM];
 
-	MPI_Comm_size(iocompParams->ioServerComm, &ioSize);
-	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
+	MPI_Comm comm; 
+	if(iocompParams->hyperthreadFlag)
+	{
+		comm = iocompParams->ioServerComm; 
+	}
+	else
+	{
+		comm = iocompParams->globalComm; 
+	}
+
+	MPI_Comm_size(comm, &ioSize);
+	MPI_Comm_rank(comm, &ioRank);
 
 	/*
 	 * Define and initialise arrayStart
@@ -49,7 +59,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	printf("MPI dims create \n");
 #endif
 
-	MPI_Cart_create(iocompParams->ioServerComm, iocompParams->NDIM, dims_mpi, periods, reorder, &cartcomm); // comm;
+	MPI_Cart_create(comm, iocompParams->NDIM, dims_mpi, periods, reorder, &cartcomm); // comm;
 #ifndef NDEBUG
 	printf("MPI cart create  \n");
 #endif
@@ -59,7 +69,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	printf("MPI cart coords \n");
 #endif
 
-	MPI_Barrier(iocompParams->ioServerComm);
+	MPI_Barrier(comm);
 	mpiiowrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, filename, iocompParams->dataType);
 	//phdf5write(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "hdf5.h5");
 	//adioswrite(iodata, local_size, iocompParams->globalSize, arraystart, iocompParams->NDIM, cartcomm, "BP4", "output.bp4");

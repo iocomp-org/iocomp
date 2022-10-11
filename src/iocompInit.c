@@ -5,11 +5,7 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
-#define compColour 1
-#define ioColour 0
 #define fullNode 256 
-#define HIGH_LOW 1
-#define FIXED_IO_RANK 0
 
 /*
  * Initialises the library 
@@ -21,10 +17,14 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	printf("Start of intercomm_init\n"); 
 #endif
 
+	/*
+	 * arrayParamsInit initialises all the array datasize variables 
+	 */ 
+	
 	arrayParamsInit(iocompParams, comm, NDIM, localArraySize); 
 
 #ifndef NDEBUG
-		printf("Array variables initialised\n"); 
+	printf("Array variables initialised\n"); 
 #endif
 
 	/*
@@ -32,7 +32,10 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	 * interComm
 	 */ 
 
-	intercomm_create(iocompParams); 
+	if(iocompParams->hyperthreadFlag == true) // check if flag is true? 
+	{
+		intercomm_create(iocompParams); 
+	} 
 
 #ifndef NDEBUG
 	printf("End of iocomp_init\n"); 

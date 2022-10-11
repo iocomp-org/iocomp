@@ -1,4 +1,5 @@
 #include "mpi.h"
+#include <stdbool.h>
 #define ioColour 0
 #define compColour 1 
 /*
@@ -11,8 +12,8 @@ MPI_Comm globalComm;
 MPI_Comm ioServerComm; 
 MPI_Comm compServerComm; 
 MPI_Comm interComm; 
-// sizes and ranks, 
-int hyperthreadFlag; 
+// sizes and ranks
+bool hyperthreadFlag;  
 int colour; 
 int ioServerRank; 
 int compServerRank;

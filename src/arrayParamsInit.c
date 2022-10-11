@@ -23,14 +23,10 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM
 	MPI_Comm_rank(comm, &globalRank);
 	MPI_Comm_size(comm, &globalSize); 
 	
-	if(globalRank == 0)
-	{
-		printf("Program starts with size %i \n",  globalSize); 
-	} 
-
 	/*
 	 * Array size specs initialise
 	 */ 
+	
 	iocompParams->localSize = malloc(sizeof(int)*NDIM);
 	iocompParams->globalSize = malloc(sizeof(int)*NDIM);
 	iocompParams->NDIM = NDIM;// number of dimensions  
@@ -53,6 +49,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM
 
 	iocompParams->localDataSize = 1; 
 	iocompParams->globalDataSize = 1; 
+	
 	for (i = 0; i < iocompParams->NDIM; i++)
 	{
 		iocompParams->localDataSize *= iocompParams->localSize[i]; 
@@ -61,31 +58,6 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM
 #ifndef NDEBUG
 	printf("size definitions, localDataSize %i, globalDataSize %i\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
 #endif
-
-	/*
-	 * Assumes io server rank is always 0
-	 * Not yet implemented 
-	 */ 
-	//	if(ordering == FIXED_IO_RANK)
-	//	{
-	//		int fixedIORank; 
-	//		fixedIORank = 1; 
-	//		if (globalRank != fixedIORank) // comp server 
-	//		{
-	//			iocompParams->colour					= compColour;
-	//			iocompParams->compServerRank	= globalRank;
-	//			iocompParams->ioServerRank		= 0;  
-	//			iocompParams->compServerSize	= globalSize - 1; 
-	//		} 
-	//		else if(globalRank == fixedIORank) // io server
-	//		{
-	//			iocompParams->colour					= ioColour; 
-	//			iocompParams->ioServerRank		= 0;
-	//			iocompParams->compServerRank	= globalRank; 
-	//			iocompParams->ioServerSize		= 1;
-	//			iocompParams->compServerSize	= globalSize - 1; 
-	//		}
-	//	} 
 
 
 #ifndef NDEBUG
