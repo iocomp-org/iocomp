@@ -10,19 +10,27 @@
 
 void stream(double* iodata, struct iocomp_params *iocompParams)
 {
+#ifndef NDEBUG
+	printf("stream starts\n"); 
+#endif
 	int i, ierr,k; 
 	int constant = 5; 
 	double c[iocompParams->localDataSize]; 
 	double b[iocompParams->localDataSize]; 
 	double a[iocompParams->localDataSize]; 
-	int computeRank; 
-	ierr = MPI_Comm_rank(iocompParams->compServerComm, &computeRank); 
+	int computeRank;
+	MPI_Comm comm; 
+	comm = iocompParams->globalComm; 
+	ierr = MPI_Comm_rank(comm, &computeRank); 
 	mpi_error_check(ierr); 
 	double timerStart, timerEnd, timer[4][iter]; 
 	timerStart = timerEnd = 0.0; 
 	for(k = 0; k< iter; k++) // averaging 
 	{
 
+#ifndef NDEBUG
+		printf("After inits\n"); 
+#endif
 		// copy
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -38,6 +46,9 @@ void stream(double* iodata, struct iocomp_params *iocompParams)
 			timer[0][k] = timerEnd - timerStart; 
 		}
 
+#ifndef NDEBUG
+		printf("After copy\n"); 
+#endif
 
 		// scale 
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
@@ -54,6 +65,9 @@ void stream(double* iodata, struct iocomp_params *iocompParams)
 			timer[1][k] = timerEnd - timerStart; 
 		}
 
+#ifndef NDEBUG
+		printf("After scale\n"); 
+#endif
 
 		// add 
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
@@ -70,6 +84,9 @@ void stream(double* iodata, struct iocomp_params *iocompParams)
 			timer[2][k] = timerEnd - timerStart; 
 		}
 
+#ifndef NDEBUG
+		printf("After add\n"); 
+#endif
 
 		//triad 
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
@@ -85,7 +102,10 @@ void stream(double* iodata, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			timer[3][k] = timerEnd - timerStart; 
 		}
-	}
+#ifndef NDEBUG
+		printf("After triad\n"); 
+#endif
+	} 
 
 	if(computeRank == 0)
 	{
@@ -128,9 +148,13 @@ void stream(double* iodata, struct iocomp_params *iocompParams)
 //}
 void computeStep(double* iodata, struct iocomp_params *iocompParams)
 {
-	iodata = initData(iocompParams); 
-	double timer[4][iter]; 
 	stream(iodata,iocompParams); 
+#ifndef NDEBUG
+	printf("After stream\n"); 
+#endif
 	computeServer(iodata,iocompParams); // send data off to computeServer 
+#ifndef NDEBUG
+	printf("After computeServer\n"); 
+#endif
 } 
 
