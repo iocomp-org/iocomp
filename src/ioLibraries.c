@@ -14,7 +14,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	int reorder = 0; 
 	int ioSize, ioRank; 
 	int coords[iocompParams->NDIM], periods[iocompParams->NDIM],dims_mpi[iocompParams->NDIM];
-
+	
 	MPI_Comm comm; 
 	if(iocompParams->hyperthreadFlag)
 	{
@@ -68,16 +68,34 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 	printf("MPI cart coords \n");
 #endif
+	for(int k = 0; k < writeLoops; k++)
+	{
+		MPI_Barrier(comm);
+		double timerStart; 
+		if (!ioRank) {timerStart = MPI_Wtime();} 
+		mpiiowrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, filename, iocompParams->dataType);
+		MPI_Barrier(comm);
+		if (!ioRank) {iocompParams->writeTime[0][k] = MPI_Wtime() - timerStart;} 
 
-	MPI_Barrier(comm);
-	mpiiowrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, filename, iocompParams->dataType);
-	//phdf5write(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "hdf5.h5");
-	//adioswrite(iodata, local_size, iocompParams->globalSize, arraystart, iocompParams->NDIM, cartcomm, "BP4", "output.bp4");
+		//if (!rank) {timerStart = MPI_Wtime();} 
+		//phdf5write(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "hdf5.h5");
+		//MPI_Barrier(comm);
+		//if (!rank) {iocompParams->timer[1][k] = MPI_Wtime() - timerStart;} 
+		//
+		//if (!rank) {timerStart = MPI_Wtime();} 
+		////adioswrite(iodata, local_size, iocompParams->globalSize, arraystart, iocompParams->NDIM, cartcomm, "BP4", "output.bp4");
+		//MPI_Barrier(comm);
+		//if (!rank) {iocompParams->timer[2][k] = MPI_Wtime() - timerStart;} 
+	} 
 
 #ifndef NDEBUG
 	printf("Writing timing ended \n");
 #endif
 
+		if (!ioRank) 
+		{
+			data_output(iocompParams); 
+		} 
 	//	int irep = 1;
 	//	int MAXLOOP_AVGIO = 1;
 	//	timer(iocompParams); 

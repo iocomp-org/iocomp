@@ -86,14 +86,14 @@ void ioServer(struct iocomp_params *iocompParams)
 	if (ioRank == 0)
 	{
 		timerEnd  = MPI_Wtime();
-		iocompParams->writeTime = timerEnd - timerStart; 
+		//iocompParams->writeTime = timerEnd - timerStart; 
 	} 
 
 	free(recv);
 	recv = NULL; 
 
-	if (ioRank == 0) 
-	{
-		data_output(iocompParams); 
-	}
+	//if (ioRank == 0) 
+	//{
+	//	data_output(iocompParams); 
+	//}
 } 

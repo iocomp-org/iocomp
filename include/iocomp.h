@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #define ioColour 0
 #define compColour 1 
+#define writeLoops 10 
+#define ioLibCount 1 
 /*
 * structure passes around to most functions in program 
 */ 
@@ -20,7 +22,8 @@ int compServerRank;
 int ioServerSize; 
 int compServerSize;
 // for data_output function 
-double writeTime; 
+double writeTime[ioLibCount][writeLoops]; 
+char ioLibs[ioLibCount][100]; 
 // for io_libraries function 
 int NDIM; 
 int* localSize; 
