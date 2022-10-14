@@ -23,33 +23,21 @@ int main(int argc, char** argv)
 
 	struct iocomp_params iocompParams; 
 
-	comm_split(&iocompParams, comm); 
-
 	iocompInit(&iocompParams, comm,  NDIM, localArraySize); 
 #ifndef NDEBUG
 	printf("After intercommInit\n"); 
 #endif
-
-	/*
-	 * Initialise data for intercomm function 
-	 */ 
-	double* data = NULL; 
-	data = initData(&iocompParams); 
-#ifndef NDEBUG
-	printf("After init_data \n"); 
-#endif
-
-	intercomm(&iocompParams); // do io otherwise do nothing  
-#ifndef NDEBUG
-	printf("test- after intercomm \n"); 
-#endif
+	
+	double* data = NULL; // initialise data pointer  
+	data = (double*)malloc(iocompParams.localDataSize*sizeof(double)); // one rank only sends to one rank
 	computeStep(data,&iocompParams); // do compute 
 #ifndef NDEBUG
-	printf("test- after computeStep \n"); 
+	printf("after computeStep \n"); 
 #endif
+
 	computeServer(data,&iocompParams); // send data off using computeServer
 #ifndef NDEBUG
-	printf("test- after computeServer \n"); 
+	printf("after computeServer \n"); 
 #endif
 
 	MPI_Finalize(); 
@@ -61,20 +49,5 @@ int main(int argc, char** argv)
 	data = NULL; 
 
 	return 0; 
-} 
-
-double* initData(struct iocomp_params *iocompParams)
-{
-	double* data = NULL; 
-	data = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
-	int i, globalMPIRank, ierr;   
-
-	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalMPIRank); 
-	mpi_error_check(ierr); 
-	for(i = 0; i < iocompParams->localDataSize; i++)
-	{
-		data[i] =iocompParams->localDataSize * globalMPIRank + i; 
-	}
-	return data; 
 } 
 

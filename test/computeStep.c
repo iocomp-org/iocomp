@@ -8,11 +8,16 @@
 
 #define iter 10 
 
-void stream(double* iodata, struct iocomp_params *iocompParams)
+void stream(double* data, struct iocomp_params *iocompParams)
 {
 #ifndef NDEBUG
 	printf("stream starts\n"); 
 #endif
+	if (data == NULL)
+	{
+		printf("data is null \n"); 
+		return; 
+	}
 	int i, ierr,k; 
 	int constant = 5; 
 	double c[iocompParams->localDataSize]; 
@@ -38,7 +43,7 @@ void stream(double* iodata, struct iocomp_params *iocompParams)
 		}
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
-			c[i] = iodata[i]; 
+			c[i] = data[i]; 
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -76,7 +81,7 @@ void stream(double* iodata, struct iocomp_params *iocompParams)
 		}
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
-			c[i] = iodata[i] + b[i]; 
+			c[i] = data[i] + b[i]; 
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -95,7 +100,7 @@ void stream(double* iodata, struct iocomp_params *iocompParams)
 		}
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
-			a[i] = b[i] + iodata[i] * constant;  
+			a[i] = b[i] + data[i] * constant;  
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -127,34 +132,22 @@ void stream(double* iodata, struct iocomp_params *iocompParams)
 
 }
 
-//void avgTime(double* timer) 
-//{
-//	int i, k; 
-//	double avgSum[4], sum; 
-//	for (i = 0; i<4; i++)
-//	{
-//		sum = 0;
-//		for (k = 0; k < iter; k++)
-//		{
-//			sum += avgTime[i][k]; 
-//		}
-//		avgSum[i] = sum/iter;
-//	}
-//	
-//	// printing
-//	printf("Copy  Scalar  Add  Triad  \n"); 
-//	printf("%lf  %lf  %lf  %lf \n", avgSum[0], avgSum[1], avgSum[2], avgSum[3]); 
-//
-//}
-void computeStep(double* iodata, struct iocomp_params *iocompParams)
+void computeStep(double* data, struct iocomp_params *iocompParams)
 {
-	stream(iodata,iocompParams); 
+	data = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
+	int i, globalMPIRank, ierr;   
+
+	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalMPIRank); 
+	mpi_error_check(ierr); 
+	for(i = 0; i < iocompParams->localDataSize; i++)
+	{
+		data[i] =iocompParams->localDataSize * globalMPIRank + i; 
+	}
+	stream(data,iocompParams); 
 #ifndef NDEBUG
 	printf("After stream\n"); 
 #endif
-	computeServer(iodata,iocompParams); // send data off to computeServer 
-#ifndef NDEBUG
-	printf("After computeServer\n"); 
-#endif
 } 
+
+
 
