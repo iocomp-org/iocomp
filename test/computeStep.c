@@ -1,3 +1,6 @@
+/* Inspired from the STREAM benchmark */ 
+/* github url https://github.com/jeffhammond/STREAM.git */ 
+
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
@@ -126,15 +129,16 @@ void stream(double* data, struct iocomp_params *iocompParams)
 		}
 
 		// printing
-		printf("Copy  Scalar  Add  Triad  \n"); 
-		printf("%lf  %lf  %lf  %lf \n", avgSum[0], avgSum[1], avgSum[2], avgSum[3]); 
+		// printf("Copy  Scalar  Add  Triad  \n"); 
+		// printf("%lf  %lf  %lf  %lf \n", avgSum[0], avgSum[1], avgSum[2], avgSum[3]); 
+		dataOutput(avgSum); // write to csv file for compute write 
 	} 
 
 }
 
 void computeStep(double* data, struct iocomp_params *iocompParams)
 {
-	data = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
+	//data = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 	int i, globalMPIRank, ierr;   
 
 	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalMPIRank); 
