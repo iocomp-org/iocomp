@@ -20,11 +20,19 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	/*
 	 * arrayParamsInit initialises all the array datasize variables 
 	 */ 
-	
-	arrayParamsInit(iocompParams, comm, NDIM, localArraySize); 
 
+	arrayParamsInit(iocompParams, comm, NDIM, localArraySize); 
 #ifndef NDEBUG
 	printf("Array variables initialised\n"); 
+#endif
+
+	/*
+	 * comm split splits communicators in 2, assigns colour to ranks 
+	 */ 
+
+	comm_split(iocompParams, comm); 
+#ifndef NDEBUG
+	printf("communicator split up and colour assigned \n"); 
 #endif
 
 	/*
@@ -36,6 +44,19 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	{
 		intercomm_create(iocompParams); 
 	} 
+#ifndef NDEBUG
+	printf("End of intercomm_create\n"); 
+#endif
+
+	/*
+	 * Intercomm function that sends data to ioServer if flag is true
+	 * if not then its a dead send 
+	 */ 
+
+	intercomm(iocompParams); 
+#ifndef NDEBUG
+	printf("End of intercomm\n"); 
+#endif
 
 #ifndef NDEBUG
 	printf("End of iocomp_init\n"); 

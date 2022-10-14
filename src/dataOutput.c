@@ -49,7 +49,7 @@ void data_output(struct iocomp_params *iocompParams)
 	strcpy(iocompParams->ioLibs[0],"MPI"); 
 	
 	double writeRate, localDataSize, globalDataSize; 	
-	fprintf(out, "Global Size, IO Size, WriteTime(s), LocalDataSize(GB), GlobalDataSize(GB), WriteRate(GB/s) \n"); //headers for output csv 
+	fprintf(out, "IO library, Global Size, IO Size, WriteTime(s), LocalDataSize(GB), GlobalDataSize(GB), WriteRate(GB/s) \n"); //headers for output csv 
 
 	/*
 	* avg the writetime 
