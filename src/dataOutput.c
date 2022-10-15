@@ -49,7 +49,7 @@ void data_output(struct iocomp_params *iocompParams)
 	strcpy(iocompParams->ioLibs[0],"MPI"); 
 	
 	double writeRate, localDataSize, globalDataSize; 	
-	fprintf(out, "IO library, Global Size, IO Size, WriteTime(s), LocalDataSize(GB), GlobalDataSize(GB), WriteRate(GB/s) \n"); //headers for output csv 
+	fprintf(out, "IO library, Global Processors, IO Processors, LocalDataSize(GB), GlobalDataSize(GB),  WriteTime(s), WriteRate(GB/s) \n"); //headers for output csv 
 
 	/*
 	* avg the writetime 
@@ -65,6 +65,6 @@ void data_output(struct iocomp_params *iocompParams)
 		writeRate = iocompParams->globalDataSize*sizeof(double)/( pow(10,9) * avgWriteTime); 
 		localDataSize = iocompParams->localDataSize*sizeof(double)/pow(10,9); 
 		globalDataSize = iocompParams->globalDataSize*sizeof(double)/pow(10,9); 
-		fprintf(out, "%s, %i,%i,%lf,%lf,%lf,%lf \n",iocompParams->ioLibs[k], globalSize, ioSize, avgWriteTime, localDataSize, globalDataSize, writeRate); 
+		fprintf(out, "%s, %i,%i,%lf,%lf,%lf,%lf \n",iocompParams->ioLibs[k], globalSize, ioSize, localDataSize, globalDataSize, avgWriteTime, writeRate); 
 	} 
 } 
