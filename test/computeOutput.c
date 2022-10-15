@@ -27,7 +27,7 @@ void dataOutput(double avgSum[4])
 		exit(1);
 	}
 		// printing
-		fprintf(out, "Copy  Scalar  Add  Triad  \n"); 
+		fprintf(out, "Copy(s)  Scalar(s)  Add(s)  Triad(s) \n"); 
 		fprintf(out, "%lf  %lf  %lf  %lf \n", avgSum[0], avgSum[1], avgSum[2], avgSum[3]); 
 } 
 	

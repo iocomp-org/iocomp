@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	// data parameters definitions 
 
 	int NDIM = 2; 
-	int localArraySize[2] = {100,100}; 
+	int localArraySize[2] = {20000,20000}; 
 
 	struct iocomp_params iocompParams; 
 
