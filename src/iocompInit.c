@@ -7,6 +7,14 @@
 
 #define fullNode 256 
 
+void mpi_error_check(int ierr)
+{
+	if (ierr != MPI_SUCCESS)
+	{
+		printf("MPI call fails \n"); 
+	}
+}
+
 /*
  * Initialises the library 
  */
@@ -54,7 +62,22 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	 * if not then its a dead send 
 	 */ 
 
-	intercomm(iocompParams); 
+	if(iocompParams->hyperthreadFlag)
+	{
+		if(iocompParams->colour == ioColour)
+		{
+			ioServer(iocompParams);
+#ifndef NDEBUG
+			printf("After ioServer\n"); 
+#endif
+			MPI_Finalize(); 
+			exit(0); 
+		} 
+	} 
+	else
+	{
+		printf("intercomm not created \n"); 
+	}
 #ifndef NDEBUG
 	printf("End of intercomm\n"); 
 #endif
