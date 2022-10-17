@@ -6,6 +6,7 @@
 #include "../include/iocomp.h"
 
 #define fullNode 256 
+#define FLAG true
 
 void mpi_error_check(int ierr)
 {
@@ -25,6 +26,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	printf("Start of intercomm_init\n"); 
 #endif
 
+	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
 	/*
 	 * arrayParamsInit initialises all the array datasize variables 
 	 */ 

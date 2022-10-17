@@ -18,7 +18,6 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 
 	int ierr = MPI_Comm_dup(comm, &iocompParams->globalComm); // comm is assigned to globalComm
 	mpi_error_check(ierr); 
-	iocompParams->hyperthreadFlag = false; // set hyperthread flag 
 
 	if(iocompParams->hyperthreadFlag) // check if flag is true? 
 	{
