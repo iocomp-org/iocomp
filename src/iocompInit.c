@@ -27,7 +27,8 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 #endif
 
 	/*
-	 * comm split splits communicators in 2, assigns colour to ranks 
+	 * comm split splits communicators in 2, assigns colour to ranks
+	 * assigns communicators in struct for both cases  
 	 */ 
 
 	comm_split(iocompParams, comm); 

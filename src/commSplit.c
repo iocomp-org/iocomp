@@ -95,5 +95,20 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 			printf("Hello from computecomm with rank %i and colour %i \n", computeRank, iocompParams->colour); 
 #endif
 	}
+
+	
+	else // if flag is false 
+	{
+		
+		ierr = MPI_Comm_dup(iocompParams->globalComm, &iocompParams->compServerComm); // compute communicator for compute tasks and colour != 0 
+		mpi_error_check(ierr); 
+		ierr = MPI_Comm_dup(iocompParams->globalComm, &iocompParams->ioServerComm); // compute communicator for compute tasks and colour != 0 
+		mpi_error_check(ierr); 
+
+#ifndef NDEBUG
+		printf("MPI ioServerComm and compServerComm set to globalComm for hyperthreads switched off\n"); 
+#endif
+
+	}
 }
 
