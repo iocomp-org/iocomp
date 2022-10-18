@@ -47,8 +47,8 @@ void resultsOutput(double timer[4][iter], double totalTimer[4][iter])
 	}
 
 	// printing
-	fprintf(out, "Timer					Copy(s) Scalar(s)	Add(s) Triad(s) \n"); 
-	fprintf(out, "Compute Time	%lf %lf	%lf %lf \n", avgSum[0], avgSum[1], avgSum[2], avgSum[3]); 
-	fprintf(out, "Total Time		%lf %lf	%lf %lf \n", avgTotalSum[0], avgTotalSum[1], avgTotalSum[2], avgTotalSum[3]); 
+	fprintf(out, "Timer,\tCopy(s),\tScalar(s),\tAdd(s),\tTriad(s) \n"); 
+	fprintf(out, "Compute,\t%lf,\t%lf,\t%lf,\t%lf \n", avgSum[0], avgSum[1], avgSum[2], avgSum[3]); 
+	fprintf(out, "Total,\t%lf,\t%lf,\t%lf,\t%lf \n", avgTotalSum[0], avgTotalSum[1], avgTotalSum[2], avgTotalSum[3]); 
 } 
 
