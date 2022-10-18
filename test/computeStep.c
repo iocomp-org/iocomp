@@ -6,10 +6,7 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "iocomp.h"
 #include "test.h"
-
-#define iter 10 
 
 void stream(double* data, struct iocomp_params *iocompParams)
 {
@@ -153,7 +150,7 @@ void stream(double* data, struct iocomp_params *iocompParams)
 	
 	if(computeRank == 0)
 	{
-		dataOutput(timer, totalTimer); // write to csv file for compute write 
+		resultsOutput(timer, totalTimer); // write to csv file for compute write 
 	} 
 
 }

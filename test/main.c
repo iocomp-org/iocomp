@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "iocomp.h"
 #include "test.h"
 
 
