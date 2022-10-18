@@ -6,8 +6,18 @@
 #include "mpi.h"
 #define filename "compute_write_time.csv"
 
-void dataOutput(double avgSum[4])
+void dataOutput(double avgSum[4], double avgTotalSum[4])
 {
+		double avgSum[4], sum; 
+		for (i = 0; i<4; i++)
+		{
+			sum = 0;
+			for (k = 0; k < iter; k++)
+			{
+				sum += timer[i][k]; 
+			}
+			avgSum[i] = sum/iter;
+		}
 	int test; 
 	FILE* out; 
 #ifndef NDEBUG

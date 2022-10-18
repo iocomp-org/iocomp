@@ -31,14 +31,15 @@ void stream(double* data, struct iocomp_params *iocompParams)
 	comm = iocompParams->globalComm; 
 	ierr = MPI_Comm_rank(comm, &computeRank); 
 	mpi_error_check(ierr); 
-	double timerStart, timerEnd, timer[4][iter]; 
+	double timerStart, timerEnd, timer[4][iter], totalTimer[4][iter]; 
 	timerStart = timerEnd = 0.0; 
-	for(k = 0; k< iter; k++) // averaging 
-	{
 
 #ifndef NDEBUG
 		printf("After inits\n"); 
 #endif
+
+	for(k = 0; k< iter; k++) // averaging 
+	{
 		// copy
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -53,11 +54,20 @@ void stream(double* data, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			timer[0][k] = timerEnd - timerStart; 
 		}
+		computeServer(data,iocompParams); // send data off using computeServer
+		if (computeRank == 0) // timing will be measured by using ioRank = 0 
+		{	
+			timerEnd = MPI_Wtime();
+			totalTimer[0][k] = timerEnd - timerStart; 
+		}
+	} 
 
 #ifndef NDEBUG
 		printf("After copy\n"); 
 #endif
 
+	for(k = 0; k< iter; k++) // averaging 
+	{
 		// scale 
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -73,10 +83,19 @@ void stream(double* data, struct iocomp_params *iocompParams)
 			timer[1][k] = timerEnd - timerStart; 
 		}
 
+		computeServer(data,iocompParams); // send data off using computeServer
+		if (computeRank == 0) // timing will be measured by using ioRank = 0 
+		{	
+			timerEnd = MPI_Wtime();
+			totalTimer[1][k] = timerEnd - timerStart; 
+		}
+	} 
 #ifndef NDEBUG
 		printf("After scale\n"); 
 #endif
 
+	for(k = 0; k< iter; k++) // averaging 
+	{
 		// add 
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -91,11 +110,21 @@ void stream(double* data, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			timer[2][k] = timerEnd - timerStart; 
 		}
+		
+		computeServer(data,iocompParams); // send data off using computeServer
+		if (computeRank == 0) // timing will be measured by using ioRank = 0 
+		{	
+			timerEnd = MPI_Wtime();
+			totalTimer[2][k] = timerEnd - timerStart; 
+		}
+	} 
 
 #ifndef NDEBUG
 		printf("After add\n"); 
 #endif
 
+	for(k = 0; k< iter; k++) // averaging 
+	{
 		//triad 
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -110,28 +139,21 @@ void stream(double* data, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			timer[3][k] = timerEnd - timerStart; 
 		}
+		
+		computeServer(data,iocompParams); // send data off using computeServer
+		if (computeRank == 0) // timing will be measured by using ioRank = 0 
+		{	
+			timerEnd = MPI_Wtime();
+			totalTimer[3][k] = timerEnd - timerStart; 
+		}
+	} 
 #ifndef NDEBUG
 		printf("After triad\n"); 
 #endif
-	} 
-
+	
 	if(computeRank == 0)
 	{
-		double avgSum[4], sum; 
-		for (i = 0; i<4; i++)
-		{
-			sum = 0;
-			for (k = 0; k < iter; k++)
-			{
-				sum += timer[i][k]; 
-			}
-			avgSum[i] = sum/iter;
-		}
-
-		// printing
-		// printf("Copy  Scalar  Add  Triad  \n"); 
-		// printf("%lf  %lf  %lf  %lf \n", avgSum[0], avgSum[1], avgSum[2], avgSum[3]); 
-		dataOutput(avgSum); // write to csv file for compute write 
+		dataOutput(timer, totalTimer); // write to csv file for compute write 
 	} 
 
 }

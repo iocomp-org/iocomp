@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	// data parameters definitions 
 
 	int NDIM = 2; 
-	int localArraySize[2] = {20000,20000}; 
+	int localArraySize[2] = {4,4}; 
 
 	struct iocomp_params iocompParams; 
 
@@ -35,7 +35,6 @@ int main(int argc, char** argv)
 	printf("after computeStep \n"); 
 #endif
 
-	computeServer(data,&iocompParams); // send data off using computeServer
 #ifndef NDEBUG
 	printf("after computeServer \n"); 
 #endif
