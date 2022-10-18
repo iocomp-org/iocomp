@@ -6,18 +6,25 @@
 #include "mpi.h"
 #define filename "compute_write_time.csv"
 
-void dataOutput(double avgSum[4], double avgTotalSum[4])
+void dataOutput(double timer[4][iter], totalTimer[4][iter])
 {
-		double avgSum[4], sum; 
-		for (i = 0; i<4; i++)
+	double avgSum[4], sum, avgTotalSum[4], totalSum; 
+
+	// calculate the averages from the total time 
+	for (i = 0; i<4; i++)
+	{
+		sum = 0.0;
+		totalSum = 0.0; 
+		for (k = 0; k < iter; k++)
 		{
-			sum = 0;
-			for (k = 0; k < iter; k++)
-			{
-				sum += timer[i][k]; 
-			}
-			avgSum[i] = sum/iter;
+			sum += timer[i][k]; 
+			totalSum += totalTimer[i][k];  
 		}
+		avgSum[i] = sum/iter;
+		avgTotalSum[i] = totalSum/iter; 
+	}
+
+	// initialise the file variables 
 	int test; 
 	FILE* out; 
 #ifndef NDEBUG
@@ -36,8 +43,10 @@ void dataOutput(double avgSum[4], double avgTotalSum[4])
 		printf("Error: No output file\n");
 		exit(1);
 	}
-		// printing
-		fprintf(out, "Copy(s)  Scalar(s)  Add(s)  Triad(s) \n"); 
-		fprintf(out, "%lf  %lf  %lf  %lf \n", avgSum[0], avgSum[1], avgSum[2], avgSum[3]); 
+
+	// printing
+	fprintf(out, "Timer					Copy(s)		Scalar(s)		Add(s)  Triad(s) \n"); 
+	fprintf(out, "Compute Time	%lf				%lf					%lf			%lf \n", avgSum[0], avgSum[1], avgSum[2], avgSum[3]); 
+	fprintf(out, "Total Time		%lf				%lf					%lf  		%lf \n", avgTotalSum[0], avgTotalSum[1], avgTotalSum[2], avgTotalSum[3]); 
 } 
-	
+
