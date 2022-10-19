@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-
 def barplot(filename):
     """
     Read data
@@ -20,8 +19,11 @@ def barplot(filename):
     Bar plot
     """
     X_axis = np.arange(len(xAxis))
-    plt.bar(X_axis - 0.2, computeTime, 0.4)
-    plt.bar(X_axis + 0.2, totalTime, 0.4)
+    width = 0.4
+    plt.bar(X_axis, computeTime, 0.4, label = "computeTime")
+    plt.bar(X_axis + width, totalTime, 0.4, label = "totalTime")
+    plt.xticks(X_axis + width/2, xAxis)
+    plt.legend()
     plt.title("iocomp comparison")
     plt.xlabel("STREAM benchmark category")
     plt.ylabel("Times(s)")

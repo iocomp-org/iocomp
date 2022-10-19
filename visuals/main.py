@@ -1,5 +1,3 @@
 from utils import *
-
-filename = "/home/shrey/Coding/iocomp/test/run_dir/compute_write_time.csv"
-
+filename = "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/1_2/compute_write_time.csv"
 barplot(filename)
