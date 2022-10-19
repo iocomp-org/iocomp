@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-def barplot(filename):
+def barplot(filename, flag):
     """
     Read data
     """
@@ -27,4 +27,8 @@ def barplot(filename):
     plt.title("iocomp comparison")
     plt.xlabel("STREAM benchmark category")
     plt.ylabel("Times(s)")
-    plt.show()
+
+    if(flag):
+        plt.show()
+    else:
+        plt.savefig(f"{filename}fig.pdf")
