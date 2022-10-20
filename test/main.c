@@ -12,6 +12,7 @@ int main(int argc, char** argv)
 	int ierr;
 	ierr = MPI_Init(&argc, &argv);  
 	mpi_error_check(ierr); 
+	int FLAG = false;
 
 	MPI_Comm comm; 
 	MPI_Comm_dup(MPI_COMM_WORLD,&comm); 
@@ -22,7 +23,7 @@ int main(int argc, char** argv)
 
 	struct iocomp_params iocompParams; 
 
-	iocompInit(&iocompParams, comm,  NDIM, localArraySize); 
+	iocompInit(&iocompParams, comm,  NDIM, localArraySize, FLAG); 
 #ifndef NDEBUG
 	printf("After intercommInit\n"); 
 #endif
