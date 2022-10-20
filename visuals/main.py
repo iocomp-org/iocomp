@@ -1,15 +1,5 @@
-from utils import *
-import argparse
+from utils import* 
 
-"""
-command line arguments 
-"""
-parser = argparse.ArgumentParser(description='Plotting script for benchmark')
-parser.add_argument('path', action='store',type=str,help='filename')
-parser.add_argument('--flag',action=argparse.BooleanOptionalAction,help='filename')
-args = parser.parse_args()
-
-"""
-function calls
-"""
-barplot(args.path, args.flag)
+# barplot(filename)
+dirs = [  "/home/shrey/Coding/iocomp/test/run_dir/ARCHER2_runs/1_1",  "/home/shrey/Coding/iocomp/test/run_dir/ARCHER2_runs/1_2"] 
+onePlot(dirs)
