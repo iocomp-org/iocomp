@@ -51,7 +51,7 @@ void intercomm_create(struct iocomp_params *iocompParams) ;
 void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm); 
 void data_output(struct iocomp_params *iocompParams);  
 void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize); 
-void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize); // initialises the library 
+void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize, bool flag); // initialises the library 
 
 /*
 * IO libraries headers 
