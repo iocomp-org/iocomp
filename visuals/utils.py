@@ -57,9 +57,11 @@ def onePlot(directory):
        label_ = path.name 
        colour_ = next(colour)
        print(list(data["computeTime"]))
-       plt.plot( list(data["xAxis"]), list(data["computeTime"]), label = f"{label_}/computeTime", color = colour_)
-       plt.plot( list(data["xAxis"]), list(data["totalTime"]), label = f"{label_}/totalTime", color = colour_, linestyle = "--")
+       plt.plot( list(data["xAxis"]), list(data["computeTime"]), color = colour_, linestyle = "--")
+    #    plt.plot( list(data["xAxis"]), list(data["totalTime"]), color = colour_, linestyle = "-", label = label_ )
 
+    plt.plot(0,0, label = "computeTime",color="k", linestyle = "--")
+    plt.plot(0,0, label = "totalTime", color="k", linestyle = "-")
     plt.title("iocomp comparison")
     plt.xlabel("STREAM benchmark category")
     plt.ylabel("Times(s)")
