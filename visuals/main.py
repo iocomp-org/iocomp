@@ -1,9 +1,11 @@
 from utils import* 
 
 # barplot(filename)
-dirs = [  "/home/shrey/Coding/iocomp/test/run_dir/ARCHER2_runs/Cons",  
-        "/home/shrey/Coding/iocomp/test/run_dir/ARCHER2_runs/HT",
-        "/home/shrey/Coding/iocomp/test/run_dir/ARCHER2_runs/OC",
-        "/home/shrey/Coding/iocomp/test/run_dir/ARCHER2_runs/Serial",
-    ] 
-onePlot(dirs)
+dirs = [  
+    "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/Consecutive",
+    "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/Hyperthread", 
+    "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/Overcommit", 
+    "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/Serial", 
+]
+flag = False
+onePlot(dirs,flag)

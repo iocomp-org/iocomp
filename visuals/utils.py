@@ -45,12 +45,18 @@ def barplot(filename, flag):
     else:
         plt.savefig(f"{filename}fig.pdf")
 
-def onePlot(directory):
+def onePlot(directory,flag):
+   
     """
     Line plot for multi directories 
     """
     data = {}
+    plt.figure(figsize=(10,8)) # set figure size 
     colour = iter(cm.rainbow(np.linspace(0, 1, len(directory))))
+   
+    """
+    iterate over directories 
+    """ 
     for dir in directory:
        data = readData(f"{dir}/compute_write_time.csv") 
        path = pathlib.PurePath(dir) 
@@ -58,7 +64,7 @@ def onePlot(directory):
        colour_ = next(colour)
        print(list(data["computeTime"]))
        plt.plot( list(data["xAxis"]), list(data["computeTime"]), color = colour_, linestyle = "--")
-    #    plt.plot( list(data["xAxis"]), list(data["totalTime"]), color = colour_, linestyle = "-", label = label_ )
+       plt.plot( list(data["xAxis"]), list(data["totalTime"]), color = colour_, linestyle = "-", label = label_ )
 
     plt.plot(0,0, label = "computeTime",color="k", linestyle = "--")
     plt.plot(0,0, label = "totalTime", color="k", linestyle = "-")
@@ -69,6 +75,9 @@ def onePlot(directory):
     plt.grid() 
     plt.legend() 
     plt.yscale('log')
-    plt.show()
     
+    if(flag):
+        plt.show()
+    else:
+        plt.savefig(f"{dir}.pdf")
 
