@@ -3,6 +3,8 @@ from matplotlib.pyplot import cm
 import pandas as pd
 import numpy as np
 import pathlib 
+import os 
+from glob import glob 
 
 def readData(filename): 
     """
@@ -45,8 +47,63 @@ def barplot(filename, flag):
     else:
         plt.savefig(f"{filename}fig.pdf")
 
-def onePlot(directory,flag):
+def avgJobRuns(dir):
+
+    """
+    Iterate over directories such as 1,2,3,4 etc to average out the times 
+    and get the min and max total and compute time 
+    """
+    maxloop = 10
+    totalTime = np.empty((10, 10)) 
+    computeTime = np.empty((10, 10)) 
+    avgComputeTime = np.empty((4))
+    avgTotalTime = np.empty((4))
+    stdComputeTime = np.empty((4))
+    stdTotalTime = np.empty((4))
+
+    for x in range(maxloop):
+
+        data = readData(f"{dir}/{x+1}/compute_write_time.csv") # x+1 as the runs are numbered from 1 to 10 
+        print(dir)
+        """
+        iterate over the stream benchmark code types
+        """ 
+        for i in range(4): 
+            avgComputeTime[i] += data["computeTime"][i]
+            avgTotalTime[i] += data["totalTime"][i]
+            computeTime[i][x] = data["computeTime"][i]
+            totalTime[i][x] = data["totalTime"][i]
+    """
+    find average 
+    """    
+    for i in range(4): 
+        avgComputeTime[i] = avgComputeTime[i]/maxloop 
+        avgTotalTime[i] = avgTotalTime[i]/maxloop 
+        stdComputeTime[i] = np.std(computeTime[i]) 
+        stdTotalTime[i] = np.std(totalTime[i]) 
+
+    """
+    Insert data into dictionary 
+    """ 
+    avgData = {
+        "avgComputeTime": avgComputeTime, 
+        "avgTotalTime": avgTotalTime, 
+        "xAxis": data["xAxis"], 
+        "stdTotalTime" : stdTotalTime,
+        "stdComputeTime" : stdComputeTime
+    } 
+
+    return(avgData)
+
+def onePlot(parentDir,flag):
    
+    # directory = glob(f"{parentDir}/*", recursive = True) # gather names of all sub directories 
+    directory = {
+        f"{parentDir}/Consecutive",
+        f"{parentDir}/Hyperthread",
+        f"{parentDir}/Overcommit", 
+        f"{parentDir}/Serial"
+    }
     """
     Line plot for multi directories 
     """
@@ -55,18 +112,23 @@ def onePlot(directory,flag):
     colour = iter(cm.rainbow(np.linspace(0, 1, len(directory))))
    
     """
-    iterate over directories 
+    iterate over directories, example Consecutive, Hyperthread etc. 
     """ 
     for dir in directory:
-       data = readData(f"{dir}/compute_write_time.csv") 
+       """
+       Average out the many runs and output max/min 
+       """
+       data = avgJobRuns(dir) 
        path = pathlib.PurePath(dir) 
        label_ = path.name 
        colour_ = next(colour)
-       print(list(data["computeTime"]))
-       plt.plot( list(data["xAxis"]), list(data["computeTime"]), color = colour_, linestyle = "--")
-       plt.plot( list(data["xAxis"]), list(data["totalTime"]), color = colour_, linestyle = "-", label = label_ )
+       plt.plot( list(data["xAxis"]), list(data["avgComputeTime"]), color = colour_, linestyle = "--")
+       plt.errorbar( list(data["xAxis"]), list(data["avgComputeTime"]), yerr=list(data["stdComputeTime"]), fmt = 'o') #, color = colour_, linestyle = "--", fmt = 'o')
+       plt.plot( list(data["xAxis"]), list(data["avgTotalTime"]), color = colour_, linestyle = "-", label = label_ )
+       plt.errorbar( list(data["xAxis"]), list(data["avgTotalTime"]), yerr=list(data["stdTotalTime"]), fmt='o') # , color = colour_, linestyle = "-", fmt = 'o')
 
-    plt.plot(0,0, label = "computeTime",color="k", linestyle = "--")
+
+    plt.plot(0,0, label = "computeTime",color="k", linestyle = "--") # dummy plots to label compute and total time
     plt.plot(0,0, label = "totalTime", color="k", linestyle = "-")
     plt.title("iocomp comparison")
     plt.xlabel("STREAM benchmark category")
@@ -75,9 +137,9 @@ def onePlot(directory,flag):
     plt.grid() 
     plt.legend() 
     plt.yscale('log')
-    
-    if(flag):
-        plt.show()
-    else:
-        plt.savefig(f"{dir}.pdf")
+    plt.show()  
+    # if(flag):
+    #     plt.show()
+    # else:
+    #     plt.savefig(f"{dir}.pdf")
 
