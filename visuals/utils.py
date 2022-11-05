@@ -51,7 +51,6 @@ def avgJobRuns(dir):
 
     """
     Iterate over directories such as 1,2,3,4 etc to average out the times 
-    and get the min and max total and compute time 
     """
     maxloop = 10
     totalTime = np.empty((10, 10)) 
@@ -64,7 +63,7 @@ def avgJobRuns(dir):
     for x in range(maxloop):
 
         data = readData(f"{dir}/{x+1}/compute_write_time.csv") # x+1 as the runs are numbered from 1 to 10 
-        print(dir)
+
         """
         iterate over the stream benchmark code types
         """ 
@@ -130,16 +129,15 @@ def onePlot(parentDir,flag):
 
     plt.plot(0,0, label = "computeTime",color="k", linestyle = "--") # dummy plots to label compute and total time
     plt.plot(0,0, label = "totalTime", color="k", linestyle = "-")
-    plt.title("iocomp comparison")
+    plt.title("iocomp comparison - 0.016GB")
     plt.xlabel("STREAM benchmark category")
     plt.ylabel("Times(s)")
     plt.xticks
     plt.grid() 
     plt.legend() 
     plt.yscale('log')
-    plt.show()  
-    # if(flag):
-    #     plt.show()
-    # else:
-    #     plt.savefig(f"{dir}.pdf")
+    if(flag):
+        plt.show()
+    else:
+        plt.savefig(f"small.pdf")
 
