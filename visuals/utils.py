@@ -123,9 +123,9 @@ def onePlot(parentDir,flag):
        label_ = path.name 
        colour_ = next(colour)
        plt.plot( list(data["xAxis"]), list(data["avgComputeTime"]), color = colour_, linestyle = "--")
-       plt.errorbar( list(data["xAxis"]), list(data["avgComputeTime"]), yerr=list(data["stdComputeTime"]), fmt = 'o') #, color = colour_, linestyle = "--", fmt = 'o')
+       plt.errorbar( list(data["xAxis"]), list(data["avgComputeTime"]), yerr=list(data["stdComputeTime"]),color=colour_, fmt = 'o') #, color = colour_, linestyle = "--", fmt = 'o')
        plt.plot( list(data["xAxis"]), list(data["avgTotalTime"]), color = colour_, linestyle = "-", label = label_ )
-       plt.errorbar( list(data["xAxis"]), list(data["avgTotalTime"]), yerr=list(data["stdTotalTime"]), fmt='o') # , color = colour_, linestyle = "-", fmt = 'o')
+       plt.errorbar( list(data["xAxis"]), list(data["avgTotalTime"]), yerr=list(data["stdTotalTime"]),color=colour_, fmt='o') # , color = colour_, linestyle = "-", fmt = 'o')
 
 
     plt.plot(0,0, label = "computeTime",color="k", linestyle = "--") # dummy plots to label compute and total time
