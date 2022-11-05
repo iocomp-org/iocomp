@@ -52,6 +52,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm);
 void data_output(struct iocomp_params *iocompParams);  
 void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize); 
 void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize, bool flag); // initialises the library 
+void testData(struct iocomp_params *iocompParams, int testFlag); // test data structures with flag to switch on/off  
 
 /*
 * IO libraries headers 

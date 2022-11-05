@@ -72,6 +72,8 @@ int main(int argc, char** argv)
 
 			MPI_Comm comm; 
 			MPI_Comm_dup(MPI_COMM_WORLD,&comm); 
+			int rank; 
+			MPI_Comm_rank(comm, &rank); 
 			// data parameters definitions 
 
 			int NDIM = 2; 
@@ -90,9 +92,13 @@ int main(int argc, char** argv)
 #ifndef NDEBUG
 			printf("after computeStep \n"); 
 #endif
-
+			if(rank == 0)
+			{
+				int testFlag = 1; 
+				testData(&iocompParams, testFlag); // test data 
+			} 
 #ifndef NDEBUG
-			printf("after computeServer \n"); 
+			printf("after test\n"); 
 #endif
 
 		MPI_Finalize(); 
