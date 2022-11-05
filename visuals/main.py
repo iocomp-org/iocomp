@@ -8,5 +8,5 @@ dirs = [
     "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/3Nov/Serial", 
 ]
 flag = False
-parentDir = '/home/shrey/Coding/iocomp/visuals/ARCHER2_runs/3Nov'
+parentDir = '/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/3Nov' 
 onePlot(parentDir,flag)
