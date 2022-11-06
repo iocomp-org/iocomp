@@ -5,6 +5,7 @@ import numpy as np
 import pathlib 
 import os 
 from glob import glob 
+from datetime import datetime 
 
 def readData(filename): 
     """
@@ -94,6 +95,16 @@ def avgJobRuns(dir):
 
     return(avgData)
 
+def saveDatatoPD(data, label, saveData):
+    """
+    save information of dictionary data into csv files 
+    """
+    saveData.insert(1,f"{label}_avgComputeTime",list(data["avgComputeTime"]))
+    saveData.insert(1,f"{label}_stdComputeTime",list(data["stdComputeTime"]))
+    saveData.insert(1,f"{label}_avgTotalTime",list(data["avgTotalTime"]))
+    saveData.insert(1,f"{label}_stdTotalTime",list(data["stdTotalTime"]))
+
+
 def onePlot(parentDir,flag):
    
     # directory = glob(f"{parentDir}/*", recursive = True) # gather names of all sub directories 
@@ -103,6 +114,11 @@ def onePlot(parentDir,flag):
         f"{parentDir}/Overcommit", 
         f"{parentDir}/Serial"
     }
+
+    saveData = pd.DataFrame() 
+    saveData_T = pd.DataFrame() # transposed 
+    saveData.insert(0,"stream",["Copy", "Scalar", "Add", "Triad"])
+
     """
     Line plot for multi directories 
     """
@@ -120,6 +136,7 @@ def onePlot(parentDir,flag):
        data = avgJobRuns(dir) 
        path = pathlib.PurePath(dir) 
        label_ = path.name 
+       saveDatatoPD(data,label_, saveData)
        colour_ = next(colour)
        plt.plot( list(data["xAxis"]), list(data["avgComputeTime"]), color = colour_, linestyle = "--")
        plt.errorbar( list(data["xAxis"]), list(data["avgComputeTime"]), yerr=list(data["stdComputeTime"]),color=colour_, fmt = 'o') #, color = colour_, linestyle = "--", fmt = 'o')
@@ -136,8 +153,14 @@ def onePlot(parentDir,flag):
     plt.grid() 
     plt.legend() 
     plt.yscale('log')
+
+    now = datetime.now()
+    date_time = now.strftime("%m:%d:%Y:%H:%M:%S")
+    saveName = f"{date_time}_small"
+    saveData_t = saveData.T 
+    saveData_t.to_csv(f"CSV_files/{saveName}.csv") 
     if(flag):
         plt.show()
     else:
-        plt.savefig(f"small.pdf")
+        plt.savefig(f"Saved_fig/{saveName}.pdf")
 
