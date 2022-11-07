@@ -29,8 +29,11 @@ void computeServer(double* data, struct iocomp_params *iocompParams)
 		int dest, tag; 
 		tag = dest = computeRank;
 
-		ierr = MPI_Isend(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
-				iocompParams->interComm, &request); // every rank sends its portion of data 
+		ierr = MPI_Send(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
+				iocompParams->interComm); // every rank sends its portion of data 
+		
+		//ierr = MPI_Isend(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
+		//			iocompParams->interComm, &request); // every rank sends its portion of data 
 		mpi_error_check(ierr); 
 
 #ifndef NDEBUG

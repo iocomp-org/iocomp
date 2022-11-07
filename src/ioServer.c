@@ -49,8 +49,10 @@ void ioServer(struct iocomp_params *iocompParams)
 	printf("Recieving data starts from source rank %i \n", ioRank); 
 #endif
 
-	ierr = MPI_Irecv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
-			iocompParams->interComm, &request); 
+	ierr = MPI_Recv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
+			iocompParams->interComm,&status); 
+	// ierr = MPI_Irecv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
+	// 		iocompParams->interComm, &request); 
 	mpi_error_check(ierr); 
 
 	ierr = 	MPI_Waitall(1, &request, &status); // wait for all processes to finish sending and recieving  
