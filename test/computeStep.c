@@ -51,7 +51,7 @@ void stream(double* data, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			timer[0][k] = timerEnd - timerStart; 
 		}
-		computeServer(data,iocompParams); // send data off using computeServer
+		dataSend(data,iocompParams); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -80,7 +80,7 @@ void stream(double* data, struct iocomp_params *iocompParams)
 			timer[1][k] = timerEnd - timerStart; 
 		}
 
-		computeServer(data,iocompParams); // send data off using computeServer
+		dataSend(data,iocompParams); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -108,7 +108,7 @@ void stream(double* data, struct iocomp_params *iocompParams)
 			timer[2][k] = timerEnd - timerStart; 
 		}
 		
-		computeServer(data,iocompParams); // send data off using computeServer
+		dataSend(data,iocompParams); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -137,7 +137,7 @@ void stream(double* data, struct iocomp_params *iocompParams)
 			timer[3][k] = timerEnd - timerStart; 
 		}
 		
-		computeServer(data,iocompParams); // send data off using computeServer
+		dataSend(data,iocompParams); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
