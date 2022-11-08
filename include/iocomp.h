@@ -41,7 +41,7 @@ void mpi_error_check(int ierr);
 //void io_libraries(double* iodata, int NDIM, int* local_size, int* global_size,int* array_start,  MPI_Comm comm); 
 void ioLibraries(double* iodata, struct iocomp_params *iocompParams); 
 void timing_int(double time_diff, double global_data_size, int irep, int MAXLOOP_AVGIO, int local_n, char* filename, MPI_Comm comm);
-void computeServer(double* data, struct iocomp_params *iocompParams); 
+void dataSend(double* data, struct iocomp_params *iocompParams); 
 void ioServer(struct iocomp_params *iocompParams); 
 void intercomm(struct iocomp_params *iocompParams); 
 //double* init_data(int N, int NDIM, MPI_Comm globalComm); 
