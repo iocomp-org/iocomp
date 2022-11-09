@@ -7,13 +7,13 @@
 
 #define fullNode 256 
 
-void mpi_error_check(int ierr)
-{
-	if (ierr != MPI_SUCCESS)
-	{
-		printf("MPI call fails \n"); 
-	}
-}
+//void mpi_error_check(int ierr)
+//{
+//	if (ierr != MPI_SUCCESS)
+//	{
+//		printf("MPI call fails \n"); 
+//	}
+//}
 
 /*
  * Initialises the library 
@@ -50,10 +50,6 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	 * interComm
 	 */ 
 
-	if(iocompParams->hyperthreadFlag) // check if flag is true? 
-	{
-		intercomm_create(iocompParams); 
-	} 
 #ifndef NDEBUG
 	printf("End of intercomm_create\n"); 
 #endif

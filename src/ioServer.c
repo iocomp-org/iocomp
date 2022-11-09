@@ -11,7 +11,7 @@ void ioServer(struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 	printf("ioServer started\n"); 
 #endif
-	int i, ierr, globalRank, globalSize; 
+	int i, ierr; 
 	int ioRank; 
 	double timerStart, timerEnd; 
 	timerStart = timerEnd = 0.0; 
@@ -78,8 +78,8 @@ void ioServer(struct iocomp_params *iocompParams)
 	 * Parameters passed using iocompParams  
 	 */ 
 
-	//ioLibraries(recv, iocompParams); 
-	//MPI_Barrier(iocompParams->ioServerComm); // Wait for all processes to finish  
+	ioLibraries(recv, iocompParams); 
+	MPI_Barrier(iocompParams->ioServerComm); // Wait for all processes to finish  
 
 #ifndef NDEBUG
 	printf("MPI barrier \n"); 
@@ -88,14 +88,10 @@ void ioServer(struct iocomp_params *iocompParams)
 	if (ioRank == 0)
 	{
 		timerEnd  = MPI_Wtime();
-		//iocompParams->writeTime = timerEnd - timerStart; 
+		iocompParams->writeTime[0][0] = timerEnd - timerStart; 
 	} 
 
 	free(recv);
 	recv = NULL; 
 
-	//if (ioRank == 0) 
-	//{
-	//	data_output(iocompParams); 
-	//}
 } 

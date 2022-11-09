@@ -69,45 +69,52 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 #ifndef NDEBUG
 		printf("MPI comm split \n"); 
 #endif
-
-		ierr = MPI_Comm_dup(splitComm, &iocompParams->compServerComm); // compute communicator for compute tasks and colour != 0 
-		mpi_error_check(ierr); 
+		
+		if(iocompParams->colour == compColour)
+		{
+			ierr = MPI_Comm_dup(splitComm, &iocompParams->compServerComm); // compute communicator for compute tasks and colour != 0 
+			mpi_error_check(ierr); 
 
 #ifndef NDEBUG
 		printf("MPI compServerComm initialised \n"); 
 #endif
+		} 
 
-		ierr = MPI_Comm_dup(splitComm, &iocompParams->ioServerComm); // compute communicator for compute tasks and colour != 0 
-		mpi_error_check(ierr); 
-
+		else
+		{
+			ierr = MPI_Comm_dup(splitComm, &iocompParams->ioServerComm); // compute communicator for compute tasks and colour != 0 
+			mpi_error_check(ierr); 
 #ifndef NDEBUG
 		printf("MPI ioServerComm initialised \n"); 
 #endif
+		} 
+	
 
 #ifndef NDEBUG
 		int ioRank, computeRank; 
-		MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
-		MPI_Comm_rank(iocompParams->compServerComm, &computeRank); 
 		if ( iocompParams->colour == ioColour )
+		{
+			MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 			printf("Hello from ioServeComm with rank %i and colour %i \n", ioRank, iocompParams->colour); 
+		} 
 		else if ( iocompParams->colour == compColour )
+		{
+			MPI_Comm_rank(iocompParams->compServerComm, &computeRank); 
 			printf("Hello from computecomm with rank %i and colour %i \n", computeRank, iocompParams->colour); 
+		} 
 #endif
 	}
 
 	
 	else // if flag is false 
 	{
-		
 		ierr = MPI_Comm_dup(iocompParams->globalComm, &iocompParams->compServerComm); // compute communicator for compute tasks and colour != 0 
 		mpi_error_check(ierr); 
 		ierr = MPI_Comm_dup(iocompParams->globalComm, &iocompParams->ioServerComm); // compute communicator for compute tasks and colour != 0 
 		mpi_error_check(ierr); 
-
 #ifndef NDEBUG
 		printf("MPI ioServerComm and compServerComm set to globalComm for hyperthreads switched off\n"); 
 #endif
-
 	}
 }
 

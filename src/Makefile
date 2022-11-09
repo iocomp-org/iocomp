@@ -1,6 +1,6 @@
 # define c compiler 
 CC = $(OMPI_DIR)/bin/mpicc 
-CFLAGS = -Wall -Wpedantic -Werror -Wno-unused-variable -Wno-unused-but-set-variable
+CFLAGS = -Wall -Wpedantic -Werror -Wextra -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
 CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared #-DNDEBUG
@@ -19,7 +19,7 @@ LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm # -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 # -L$(
 
 # define C source files 
 #SRCS =  computeStep.c main.c  ioServer.c  computeServer.c intercomm.c initData.c  mpiWrite.c intercommInit.c intercommCreate.c commSplit.c dataOutput.c ioLibraries.c  #hdf5Write.c# hdf5_write.c adios_write.c mpi_write.c 
-SRCS =   arrayParamsInit.c ioServer.c  dataSend.c mpiWrite.c iocompInit.c intercommCreate.c commSplit.c dataOutput.c ioLibraries.c  #hdf5Write.c# hdf5_write.c adios_write.c mpi_write.c 
+SRCS =   arrayParamsInit.c ioServer.c checks.c getPair.c dataSend.c mpiWrite.c iocompInit.c intercommCreate.c commSplit.c dataOutput.c ioLibraries.c  #hdf5Write.c# hdf5_write.c adios_write.c mpi_write.c 
 
 # define executable file  
 MAIN = iocomp

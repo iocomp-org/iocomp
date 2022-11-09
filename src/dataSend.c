@@ -8,29 +8,28 @@
 void dataSend(double* data, struct iocomp_params *iocompParams)
 {
 
-	int i, ierr, computeRank, computeSize;
-
+	int i, ierr; 
 	if(iocompParams->hyperthreadFlag) // check if flag is true? 
 	{
-		ierr = MPI_Comm_rank(iocompParams->compServerComm, &computeRank); 
-		mpi_error_check(ierr); 
-		ierr = MPI_Comm_size(iocompParams->compServerComm, &computeSize); 
+		int globalRank; 
+		ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank);
 		mpi_error_check(ierr); 
 		MPI_Request request;
-
-#ifndef NDEBUG
-		printf("Sending data starts from computeRank %i to ioRank %i  \n", computeRank, computeRank); 
-#endif
 
 		/*
 		 *	Send data using MPI_Isend to computeRank in interComm  
 		 *	which is paired with the same rank of IO server 
 		 */
-		int dest, tag; 
-		tag = dest = computeRank;
 
+		int dest, tag; 
+		dest = getPair(iocompParams); // destination for sending data. 
+		tag = globalRank; // tag should be rank of computeServer
+
+#ifndef NDEBUG
+		printf("Sending data starts from compProcessor with globalRank %i to ioProcessor with globalRank  %i  \n", globalRank, dest); 
+#endif
 		ierr = MPI_Send(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
-				iocompParams->interComm); // every rank sends its portion of data 
+				iocompParams->globalComm); // every rank sends its portion of data 
 		
 		//ierr = MPI_Isend(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
 		//			iocompParams->interComm, &request); // every rank sends its portion of data 
