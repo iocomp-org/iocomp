@@ -12,13 +12,11 @@ void ioServer(struct iocomp_params *iocompParams)
 	printf("ioServer started\n"); 
 #endif
 	int i, ierr, globalRank, globalSize; 
-	int ioRank, ioSize; 
+	int ioRank; 
 	double timerStart, timerEnd; 
 	timerStart = timerEnd = 0.0; 
 
 	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
-	mpi_error_check(ierr); 
-	ierr = MPI_Comm_size(iocompParams->ioServerComm, &ioSize); 
 	mpi_error_check(ierr); 
 
 	MPI_Status status;
@@ -27,8 +25,10 @@ void ioServer(struct iocomp_params *iocompParams)
 
 	// initialise recv array 
 	double* recv = NULL; 
-	recv = (double*)malloc(iocompParams->globalDataSize*sizeof(double)); // one rank only sends to one rank
-	for ( i = 0; i < iocompParams->globalDataSize; i++)
+	recv = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
+	malloc_check(recv); 
+
+	for ( i = 0; i < iocompParams->localDataSize; i++)
 	{
 		recv[i] = 0; // initialise recv array 
 	}
@@ -43,22 +43,22 @@ void ioServer(struct iocomp_params *iocompParams)
 	 */ 
 
 	int source, tag; 
-	source = ioRank; 
-	tag = ioRank; 
-#ifndef NDEBUG
-	printf("Recieving data starts from source rank %i \n", ioRank); 
-#endif
+
+	source = getPair(iocompParams); 
+	tag = source; 
 
 	ierr = MPI_Recv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
-			iocompParams->interComm,&status); 
+			iocompParams->globalComm,&status); 
 	// ierr = MPI_Irecv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
 	// 		iocompParams->interComm, &request); 
 	mpi_error_check(ierr); 
 
+#ifndef NDEBUG
+	printf("Recieving data starts from source rank %i \n", source); 
+#endif
 	//ierr = 	MPI_Waitall(1, &request, &status); // wait for all processes to finish sending and recieving  
 	//mpi_error_check(ierr); 
 
-	// print out recieved data 
 #ifndef NDEBUG
 	printf("Recv data coming from rank %i \n",source ); 
 	for(i = 0; i < iocompParams->localDataSize; i++)
@@ -78,8 +78,8 @@ void ioServer(struct iocomp_params *iocompParams)
 	 * Parameters passed using iocompParams  
 	 */ 
 
-	ioLibraries(recv, iocompParams); 
-	MPI_Barrier(iocompParams->ioServerComm); // Wait for all processes to finish  
+	//ioLibraries(recv, iocompParams); 
+	//MPI_Barrier(iocompParams->ioServerComm); // Wait for all processes to finish  
 
 #ifndef NDEBUG
 	printf("MPI barrier \n"); 
