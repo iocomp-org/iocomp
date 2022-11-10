@@ -6,6 +6,8 @@ import pathlib
 import os
 from glob import glob
 from datetime import datetime
+import statistics
+import re 
 
 
 def readData(filename):
@@ -63,12 +65,16 @@ def avgJobRuns(dir):
     avgTotalTime = np.empty((4), dtype=float)
     stdComputeTime = np.empty((4), dtype=float)
     stdTotalTime = np.empty((4), dtype=float)
+    medTotalTime = np.empty((4), dtype=float)
+    medComputeTime = np.empty((4), dtype=float)
 
     for l in range(4):
         avgComputeTime[l] = 0
         avgTotalTime[l] = 0
         stdComputeTime[l] = 0
         stdTotalTime[l] = 0
+        medComputeTime[l] = 0
+        medTotalTime[l] = 0
 
     for x in range(maxloop):
 
@@ -84,12 +90,16 @@ def avgJobRuns(dir):
             avgTotalTime[i] += data["totalTime"][i]/maxloop
             computeTime[i][x] = data["computeTime"][i]
             totalTime[i][x] = data["totalTime"][i]
+
     """
     find std deviation
     """
     for i in range(4):
+
         stdComputeTime[i] = np.std(computeTime[i])
         stdTotalTime[i] = np.std(totalTime[i])
+        medComputeTime[i] = statistics.median(computeTime[i])
+        medTotalTime[i] = statistics.median(totalTime[i])
 
     """
     Insert data into dictionary
@@ -178,4 +188,15 @@ def onePlot(parentDir, flag):
         plt.show()
     else:
         plt.savefig(f"Saved_fig/{saveName}.pdf")
-
+def readDataWriteTime():
+    filename = '/home/shrey/Coding/iocomp/test/run_dir/test.out'
+    with open(filename) as f:
+        contents = f.read()
+        # writeTime = re.findall(r"time=(\d+(\.\d*)?)|(\.\d+)",contents) 
+        # fileSize = re.findall(r"*\(B\)=(\d+)/",contents) 
+        data_retrieve = re.findall(r"(\*\* I\/O write time=(\d+.\d+) filesize\(B\)=(\d+) )",contents) 
+        # print(writeTime,fileSize)
+        for x in data_retrieve:
+            fileSize = x[2] 
+            writeTime = x[1]
+            print(fileSize, writeTime)

@@ -9,4 +9,5 @@ dirs = [
 ]
 flag = False
 parentDir = f'{os.getcwd()}/ARCHER2_runs/5Nov_small' 
-onePlot(parentDir,flag)
+# onePlot(parentDir,flag)
+readDataWriteTime() 
