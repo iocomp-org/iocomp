@@ -11,7 +11,6 @@ int getPair(struct iocomp_params *iocompParams)
 	/*
 	 * ioServer is pairing up with the lower half.
 	 * if total size is 8, and ioRank is 4 in globalComm, its pairing with 0 rank of globalComm. 
-	 *
 	 */ 
 	int ierr; 
 	int globalRank, globalSize; 
@@ -30,7 +29,7 @@ int getPair(struct iocomp_params *iocompParams)
 	}
 
 	/*
-	 * compServer is pairing up with the lower half.
+	 * compServer is pairing up with the upper half of ranks. 
 	 * if total size is 8, and compRank is 0 in globalComm, its pairing with 4th rank of globalComm. 
 	 */ 
 	else if(iocompParams->colour == compColour) 
@@ -42,7 +41,7 @@ int getPair(struct iocomp_params *iocompParams)
 
 	else
 	{
-		printf("Invalid division of ranks. Exiting \n"); 
+		printf("Invalid assignment of colours for ranks. Exiting \n"); 
 		exit(0); 
 	}
 

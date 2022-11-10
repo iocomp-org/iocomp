@@ -1,3 +1,4 @@
+
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
@@ -5,7 +6,7 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
-void dataSend(double* data, struct iocomp_params *iocompParams)
+void stopSend(struct iocomp_params *iocompParams)
 {
 
 	int i, ierr; 
@@ -26,10 +27,12 @@ void dataSend(double* data, struct iocomp_params *iocompParams)
 		dest = getPair(iocompParams); // destination for sending data. 
 		tag = globalRank; // tag should be rank of computeServer
 
+		double ghost = 0.0; 
+
 #ifndef NDEBUG
 		printf("Sending data starts from compProcessor with globalRank %i to ioProcessor with globalRank  %i  \n", globalRank, dest); 
 #endif
-		ierr = MPI_Send(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
+		ierr = MPI_Send(&ghost, 0 , MPI_DOUBLE, dest, tag,
 				iocompParams->globalComm); // every rank sends its portion of data 
 		
 		//ierr = MPI_Isend(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
@@ -39,10 +42,6 @@ void dataSend(double* data, struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 		printf("Sending data stop \n"); 
 #endif
-	}
-	else
-	{
-		ioLibraries(data,iocompParams); // otherwise go straight to writing 
 	}
 
 } 

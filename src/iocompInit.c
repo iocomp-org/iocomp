@@ -46,16 +46,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 #endif
 
 	/*
-	 * Intercomm created linking computeComm and ioComm to globalComm via
-	 * interComm
-	 */ 
-
-#ifndef NDEBUG
-	printf("End of intercomm_create\n"); 
-#endif
-
-	/*
-	 * Intercomm function that sends data to ioServer if flag is true
+	 * iocomp function that sends data to ioServer if flag is true
 	 * if not then its a dead send 
 	 */ 
 
@@ -68,13 +59,17 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 			printf("After ioServer\n"); 
 #endif
 			MPI_Finalize(); 
+
+#ifndef NDEBUG
+			printf("After finalize\n"); 
+#endif
 			exit(0); 
+#ifndef NDEBUG
+			printf("After exit\n"); 
+#endif
 		} 
 	} 
-	else
-	{
-		printf("intercomm not created \n"); 
-	}
+
 #ifndef NDEBUG
 	printf("End of intercomm\n"); 
 #endif
