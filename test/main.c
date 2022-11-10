@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 			// data parameters definitions 
 
 			int NDIM = 2; 
-			int localArraySize[2] = {4,4}; 
+			int localArraySize[2] = {10,10}; 
 
 			struct iocomp_params iocompParams; 
 
@@ -95,13 +95,13 @@ int main(int argc, char** argv)
 			if(rank == 0)
 			{
 				int testFlag = 1; 
-				testData(&iocompParams, testFlag); // test data 
+//				testData(&iocompParams, testFlag); // test data 
 			} 
 #ifndef NDEBUG
 			printf("after test\n"); 
 #endif
-
-		MPI_Finalize(); 
+			
+			MPI_Finalize(); 
 #ifndef NDEBUG
 			printf("MPI finalize\n"); 
 #endif

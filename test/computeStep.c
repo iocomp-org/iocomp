@@ -148,6 +148,11 @@ void stream(double* data, struct iocomp_params *iocompParams)
 		printf("After triad\n"); 
 #endif
 	
+	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
+#ifndef NDEBUG
+		printf("After stopSend function\n"); 
+#endif
+
 	if(computeRank == 0)
 	{
 		resultsOutput(timer, totalTimer); // write to csv file for compute write 
@@ -157,7 +162,6 @@ void stream(double* data, struct iocomp_params *iocompParams)
 
 void computeStep(double* data, struct iocomp_params *iocompParams)
 {
-	//data = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 	int i, globalMPIRank, ierr;   
 
 	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalMPIRank); 
