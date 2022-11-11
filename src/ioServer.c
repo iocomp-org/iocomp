@@ -61,11 +61,11 @@ void ioServer(struct iocomp_params *iocompParams)
 		MPI_Probe(source, tag, iocompParams->globalComm, &status); // Probe for additional messages. 
 		MPI_Get_count(&status, MPI_DOUBLE, &test_count); // get count 
 
-		printf("value of mpi count %i \n",test_count); 
-		
 		if(!test_count)
 		{
+#ifndef NDEBUG
 			printf("ghost messaged recieved \n"); 	
+#endif
 			break; 
 		}
 
@@ -76,10 +76,11 @@ void ioServer(struct iocomp_params *iocompParams)
 		}
 		ierr = MPI_Recv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
 				iocompParams->globalComm,&status);
+		mpi_error_check(ierr); 
 
 		// ierr = MPI_Irecv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
 		// 		iocompParams->interComm, &request); 
-		mpi_error_check(ierr); 
+		// mpi_error_check(ierr); 
 
 		// ierr = 	MPI_Waitall(1, &request, &status); // wait for all processes to finish sending and recieving  
 		// mpi_error_check(ierr); 

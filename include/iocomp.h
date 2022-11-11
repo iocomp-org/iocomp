@@ -40,11 +40,8 @@ void timing_int(double time_diff, double global_data_size, int irep, int MAXLOOP
 void dataSend(double* data, struct iocomp_params *iocompParams); 
 void ioServer(struct iocomp_params *iocompParams); 
 int getPair(struct iocomp_params *iocompParams); 
-//double* init_data(int N, int NDIM, MPI_Comm globalComm); 
-//void comm_split(int color, MPI_Comm globalComm, MPI_Comm *splitComm);
 void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);
 void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm); 
-void data_output(struct iocomp_params *iocompParams);  
 void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize); 
 void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize, bool flag); // initialises the library 
 void testData(struct iocomp_params *iocompParams, int testFlag); // test data structures with flag to switch on/off  

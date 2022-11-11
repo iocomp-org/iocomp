@@ -88,15 +88,10 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	printf("Writing timing ended \n");
 #endif
 		
-		printf("** write time for library is %lf \n", iocompParams->writeTime[0][0]); 
 		if (!ioRank) 
 		{
-			data_output(iocompParams); 
+			printf("** I/O write time=%lf filesize(B)=%li \n", iocompParams->writeTime[0][0], *iocompParams->globalSize*sizeof(double)) ; 
 		} 
-	//	int irep = 1;
-	//	int MAXLOOP_AVGIO = 1;
-	//	timer(iocompParams); 
-	//	timing_int(end - start, global_data_size, irep, MAXLOOP_AVGIO, iocompParams->localSize[0], filename, cartcomm);
 
 #ifndef NDEBUG
 	printf("Timing function ended  \n");
