@@ -90,7 +90,8 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 		
 		if (!ioRank) 
 		{
-			printf("** I/O write time=%lf filesize(B)=%li \n", iocompParams->writeTime[0][0], *iocompParams->globalSize*sizeof(double)) ; 
+		  double fileSize = iocompParams->globalDataSize*sizeof(double)/(pow(10,9)); 
+			printf("** I/O write time=%lf filesize(GB)=%lf\n", iocompParams->writeTime[0][0],fileSize) ; 
 		} 
 
 #ifndef NDEBUG
