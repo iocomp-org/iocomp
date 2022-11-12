@@ -131,7 +131,7 @@ def onePlot(parentDir, flag):
     directory = {
         f"{parentDir}/Consecutive": "b",
         f"{parentDir}/Hyperthread": "k",
-        f"{parentDir}/Overcommit": "r",
+        # f"{parentDir}/Overcommit": "r",
         f"{parentDir}/Serial": "c"
     }
 
@@ -188,15 +188,56 @@ def onePlot(parentDir, flag):
         plt.show()
     else:
         plt.savefig(f"Saved_fig/{saveName}.pdf")
-def readDataWriteTime():
-    filename = '/home/shrey/Coding/iocomp/test/run_dir/test.out'
-    with open(filename) as f:
-        contents = f.read()
-        # writeTime = re.findall(r"time=(\d+(\.\d*)?)|(\.\d+)",contents) 
-        # fileSize = re.findall(r"*\(B\)=(\d+)/",contents) 
-        data_retrieve = re.findall(r"(\*\* I\/O write time=(\d+.\d+) filesize\(B\)=(\d+) )",contents) 
-        # print(writeTime,fileSize)
-        for x in data_retrieve:
-            fileSize = x[2] 
-            writeTime = x[1]
-            print(fileSize, writeTime)
+
+
+def readDataWriteTime(parentDir):
+
+    directory = {
+        f"{parentDir}/Consecutive": "b",
+        f"{parentDir}/Hyperthread": "k",
+        # f"{parentDir}/Overcommit": "r",
+        f"{parentDir}/Serial": "c"
+    }
+
+    # initialise plot 
+    plt.figure(figsize=(10, 8))  # set figure size
+
+
+    for key,value in directory.items(): # go through consecutive, hyperthread, serial etc. 
+        dir = key 
+        colour_ = value
+        maxloop = 10
+        fileSize = 0.8
+
+        path = pathlib.PurePath(dir) 
+        label_ = path.name 
+
+        avgWriteTime = 0.0 
+        for iter in range(maxloop): # go through 1,2,3,etc 
+
+            filename = f'{dir}/{iter+1}/test.out'
+            indWriteTime = 0.0 
+            with open(filename) as f: # read individual test.out for printed values of io write times
+                contents = f.read()
+                data_retrieve = re.findall(r"(\*\* I\/O write time=(\d+.\d+) filesize\(B\)=(\d+) )",contents) 
+
+                for x in data_retrieve:
+                    # fileSize = x[2] 
+                    writeTime = x[1]
+                    indWriteTime += writeTime
+        
+            avgWriteTime+=indWriteTime/maxloop
+
+        # put values in a graph as the maxloop ends. 
+        ioBandwidth = fileSize/avgWriteTime 
+        plt.plot(ioBandwidth, color = colour_, label = label_)
+
+    plt.title("I/O bandwidth from stream benchmark")
+    plt.xlabel("STREAM benchmark category")
+    plt.ylabel("Times(s)")
+    plt.xticks
+    plt.grid() 
+    plt.legend() 
+    plt.yscale('log')
+    plt.show() 
+

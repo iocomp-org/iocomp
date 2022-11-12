@@ -7,7 +7,10 @@ dirs = [
     "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/3Nov/Overcommit", 
     "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/3Nov/Serial", 
 ]
-flag = False
-parentDir = f'{os.getcwd()}/ARCHER2_runs/5Nov_small' 
+flag = True
+# parentDir = f'{os.getcwd()}/ARCHER2_runs/5Nov_small' 
 # onePlot(parentDir,flag)
-readDataWriteTime() 
+
+dir = '/home/shrey/Coding/iocomp/visuals/ARCHER2_runs/11Nov/0.8'
+# onePlot(dir,flag)
+readDataWriteTime(dir) 
