@@ -9,6 +9,6 @@ dirs = [
 ]
 flag = True
 
-dir = f'{os.getcwd()}/ARCHER2_runs/11Nov' 
+dir = f'{os.getcwd()}/ARCHER2_runs/11Nov/0.8' 
 # onePlot(dir,flag)
 readDataWriteTime(dir) 

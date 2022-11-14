@@ -202,49 +202,54 @@ def readDataWriteTime(parentDir):
     # initialise plot 
     plt.figure(figsize=(10, 8))  # set figure size
 
-    avgWriteTime = [0,0,0]
-    label_ref = [0,0,0]
+    maxloop = 10
+    avgWriteTime_avg = [0 for i in range(len(directory))]
+    ioBandwidth_avg = [0 for i in range(len(directory))]
+    label_ref = [] 
 
     type = 0 
 
     for key,value in directory.items(): # go through consecutive, hyperthread, serial etc. 
         dir = key 
         colour_ = value
-        maxloop = 10
-        fileSize = 0.8
 
         path = pathlib.PurePath(dir) 
         label_ = path.name 
 
-        label_ref[type] = label_
+        label_ref.append(label_)
 
-        for iter in range(maxloop): # go through 1,2,3,etc 
+        ioBandwidth = [0 for i in range(maxloop)] 
+        
+        for jobruns in range(maxloop): # go through 1,2,3,etc 
 
-            filename = f'{dir}/{iter+1}/test.out'
+            filename = f'{dir}/{jobruns+1}/test.out'
 
-            indWriteTime = 0.0 
-
+            writeTime = [] 
+            fileSize = [] 
+            
             with open(filename) as f: # read individual test.out for printed values of io write times
                 contents = f.read()
                 data_retrieve = re.findall(r"\*\* I\/O write time=(\d+.\d+) filesize\(GB\)=(\d+.\d+)",contents) 
-                for x in data_retrieve:
-                    writeTime = x[0]
-                    fileSize = x[1] 
-                    indWriteTime += float(writeTime)
+
+                for x in data_retrieve: # add all individual file write times in output file to writeTime and fileSize
+                    writeTime.append(float(x[0]))
+                    fileSize.append(float(x[1]))
+
+            ioBandwidth[jobruns] = sum(fileSize)/sum(writeTime) # ioBandwidth will be total size of file written/ total time taken
         
-        avgWriteTime[type]=indWriteTime/maxloop
+        ioBandwidth_avg[type]=statistics.harmonic_mean(ioBandwidth) # avg ioBandwith is harmonic mean of ioBandwidths across job runs 
         type += 1 
 
-        # put values in a graph as the maxloop ends. 
-        # ioBandwidth = float(fileSize)/avgWriteTime 
-        plt.plot(avgWriteTime, label_ref  , color = colour_)
+    X_axis = np.arange(len(ioBandwidth_avg))
+    width = 0.4
 
+    plt.bar(X_axis,ioBandwidth_avg,width)
+    plt.xticks(X_axis,label_ref)
     plt.title("I/O bandwidth from stream benchmark")
     plt.xlabel("STREAM benchmark category")
-    plt.ylabel("Times(s)")
+    plt.ylabel("I/O bandwidth (GB/s)")
     plt.xticks
-    plt.grid() 
     # plt.legend() 
-    plt.yscale('log')
+    # plt.yscale('log')
     plt.show() 
 
