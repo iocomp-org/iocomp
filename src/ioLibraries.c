@@ -90,7 +90,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 		
 		if (!ioRank) 
 		{
-		  double fileSize = iocompParams->globalDataSize*sizeof(double)/(pow(10,9)); 
+			double fileSize = iocompParams->globalDataSize*sizeof(double)/(pow(10,9)); 
 			printf("** I/O write time=%lf filesize(GB)=%lf\n", iocompParams->writeTime[0][0],fileSize) ; 
 		} 
 

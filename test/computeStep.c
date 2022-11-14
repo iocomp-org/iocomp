@@ -8,12 +8,12 @@
 #include "mpi.h"
 #include "test.h"
 
-void stream(double* data, struct iocomp_params *iocompParams)
+void stream(double* a, struct iocomp_params *iocompParams)
 {
 #ifndef NDEBUG
 	printf("stream starts\n"); 
 #endif
-	if (data == NULL)
+	if (a == NULL)
 	{
 		printf("data is null \n"); 
 		return; 
@@ -22,7 +22,6 @@ void stream(double* data, struct iocomp_params *iocompParams)
 	int constant = 5; 
 	double c[iocompParams->localDataSize]; 
 	double b[iocompParams->localDataSize]; 
-	double a[iocompParams->localDataSize]; 
 	int computeRank;
 	MPI_Comm comm; 
 	comm = iocompParams->globalComm; 
@@ -44,14 +43,14 @@ void stream(double* data, struct iocomp_params *iocompParams)
 		}
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
-			c[i] = data[i]; 
+			c[i] = a[i]; 
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
 			timer[0][k] = timerEnd - timerStart; 
 		}
-		dataSend(data,iocompParams); // send data off using dataSend
+		dataSend(c,iocompParams); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -80,7 +79,7 @@ void stream(double* data, struct iocomp_params *iocompParams)
 			timer[1][k] = timerEnd - timerStart; 
 		}
 
-		dataSend(data,iocompParams); // send data off using dataSend
+		dataSend(b,iocompParams); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -100,7 +99,7 @@ void stream(double* data, struct iocomp_params *iocompParams)
 		}
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
-			c[i] = data[i] + b[i]; 
+			c[i] = a[i] + b[i]; 
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -108,7 +107,7 @@ void stream(double* data, struct iocomp_params *iocompParams)
 			timer[2][k] = timerEnd - timerStart; 
 		}
 		
-		dataSend(data,iocompParams); // send data off using dataSend
+		dataSend(c,iocompParams); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -129,7 +128,7 @@ void stream(double* data, struct iocomp_params *iocompParams)
 		}
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
-			a[i] = b[i] + data[i] * constant;  
+			a[i] = b[i] + c[i] * constant;  
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -137,7 +136,7 @@ void stream(double* data, struct iocomp_params *iocompParams)
 			timer[3][k] = timerEnd - timerStart; 
 		}
 		
-		dataSend(data,iocompParams); // send data off using dataSend
+		dataSend(a,iocompParams); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();

@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 			// data parameters definitions 
 
 			int NDIM = 2; 
-			int localArraySize[2] = {10,10}; 
+			int localArraySize[2] = {100,100}; 
 
 			struct iocomp_params iocompParams; 
 
