@@ -8,9 +8,7 @@ dirs = [
     "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/3Nov/Serial", 
 ]
 flag = True
-# parentDir = f'{os.getcwd()}/ARCHER2_runs/5Nov_small' 
-# onePlot(parentDir,flag)
 
-dir = '/home/shrey/Coding/iocomp/visuals/ARCHER2_runs/11Nov/0.8'
+dir = f'{os.getcwd()}/ARCHER2_runs/11Nov' 
 # onePlot(dir,flag)
 readDataWriteTime(dir) 

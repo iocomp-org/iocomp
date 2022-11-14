@@ -202,6 +202,10 @@ def readDataWriteTime(parentDir):
     # initialise plot 
     plt.figure(figsize=(10, 8))  # set figure size
 
+    avgWriteTime = [0,0,0]
+    label_ref = [0,0,0]
+
+    type = 0 
 
     for key,value in directory.items(): # go through consecutive, hyperthread, serial etc. 
         dir = key 
@@ -212,32 +216,35 @@ def readDataWriteTime(parentDir):
         path = pathlib.PurePath(dir) 
         label_ = path.name 
 
-        avgWriteTime = 0.0 
+        label_ref[type] = label_
+
         for iter in range(maxloop): # go through 1,2,3,etc 
 
             filename = f'{dir}/{iter+1}/test.out'
+
             indWriteTime = 0.0 
+
             with open(filename) as f: # read individual test.out for printed values of io write times
                 contents = f.read()
-                data_retrieve = re.findall(r"(\*\* I\/O write time=(\d+.\d+) filesize\(B\)=(\d+) )",contents) 
-
+                data_retrieve = re.findall(r"\*\* I\/O write time=(\d+.\d+) filesize\(GB\)=(\d+.\d+)",contents) 
                 for x in data_retrieve:
-                    # fileSize = x[2] 
-                    writeTime = x[1]
-                    indWriteTime += writeTime
+                    writeTime = x[0]
+                    fileSize = x[1] 
+                    indWriteTime += float(writeTime)
         
-            avgWriteTime+=indWriteTime/maxloop
+        avgWriteTime[type]=indWriteTime/maxloop
+        type += 1 
 
         # put values in a graph as the maxloop ends. 
-        ioBandwidth = fileSize/avgWriteTime 
-        plt.plot(ioBandwidth, color = colour_, label = label_)
+        # ioBandwidth = float(fileSize)/avgWriteTime 
+        plt.plot(avgWriteTime, label_ref  , color = colour_)
 
     plt.title("I/O bandwidth from stream benchmark")
     plt.xlabel("STREAM benchmark category")
     plt.ylabel("Times(s)")
     plt.xticks
     plt.grid() 
-    plt.legend() 
+    # plt.legend() 
     plt.yscale('log')
     plt.show() 
 
