@@ -8,6 +8,8 @@ from glob import glob
 from datetime import datetime
 import statistics
 import re 
+import seaborn as sns
+import seaborn.objects as so
 
 
 def readData(filename):
@@ -205,6 +207,7 @@ def readDataWriteTime(parentDir):
     maxloop = 10
     avgWriteTime_avg = [0 for i in range(len(directory))]
     ioBandwidth_avg = [0 for i in range(len(directory))]
+    ioBandwidth_std = [0 for i in range(len(directory))]
     label_ref = [] 
 
     type = 0 
@@ -238,12 +241,13 @@ def readDataWriteTime(parentDir):
             ioBandwidth[jobruns] = sum(fileSize)/sum(writeTime) # ioBandwidth will be total size of file written/ total time taken
         
         ioBandwidth_avg[type]=statistics.harmonic_mean(ioBandwidth) # avg ioBandwith is harmonic mean of ioBandwidths across job runs 
+        ioBandwidth_std[type]=statistics.stdev(ioBandwidth) # avg ioBandwith is harmonic mean of ioBandwidths across job runs 
         type += 1 
 
     X_axis = np.arange(len(ioBandwidth_avg))
     width = 0.4
 
-    plt.bar(X_axis,ioBandwidth_avg,width)
+    plt.bar(X_axis,ioBandwidth_avg,width, yerr=ioBandwidth_std,alpha=0.5, ecolor='black', capsize=10)
     plt.xticks(X_axis,label_ref)
     plt.title("I/O bandwidth from stream benchmark")
     plt.xlabel("STREAM benchmark category")
@@ -253,3 +257,18 @@ def readDataWriteTime(parentDir):
     # plt.yscale('log')
     plt.show() 
 
+
+    """
+    seaborn plot -> to be explored later 
+    """
+    # sns.barplot(
+        # x=label_ref, y=ioBandwidth_avg,
+        # errorbar=((ioBandwidth_std),2), capsize=.4, errcolor=".5"
+    # )
+    # plt.show() 
+
+    # (
+    #     so.Plot(ioBandwidth, x=label_ref )
+    #     .add(so.Bar(alpha=.5), so.Agg(), so.Dodge())
+    #     .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
+    # )
