@@ -31,7 +31,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 	timerStart = timerEnd = 0.0; 
 
 #ifndef NDEBUG
-		printf("After inits\n"); 
+	printf("After inits\n"); 
 #endif
 
 	for(k = 0; k< iter; k++) // averaging 
@@ -56,14 +56,10 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			totalTimer[0][k] = timerEnd - timerStart; 
 		}
-	} 
-
 #ifndef NDEBUG
 		printf("After copy\n"); 
 #endif
 
-	for(k = 0; k< iter; k++) // averaging 
-	{
 		// scale 
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -85,13 +81,10 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			totalTimer[1][k] = timerEnd - timerStart; 
 		}
-	} 
 #ifndef NDEBUG
 		printf("After scale\n"); 
 #endif
 
-	for(k = 0; k< iter; k++) // averaging 
-	{
 		// add 
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -106,21 +99,17 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			timer[2][k] = timerEnd - timerStart; 
 		}
-		
+
 		dataSend(c,iocompParams); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
 			totalTimer[2][k] = timerEnd - timerStart; 
 		}
-	} 
-
 #ifndef NDEBUG
 		printf("After add\n"); 
 #endif
 
-	for(k = 0; k< iter; k++) // averaging 
-	{
 		//triad 
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -135,21 +124,22 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			timer[3][k] = timerEnd - timerStart; 
 		}
-		
+
 		dataSend(a,iocompParams); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
 			totalTimer[3][k] = timerEnd - timerStart; 
 		}
-	} 
 #ifndef NDEBUG
 		printf("After triad\n"); 
 #endif
-	
+
+	} // end avg loop  
+
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
 #ifndef NDEBUG
-		printf("After stopSend function\n"); 
+	printf("After stopSend function\n"); 
 #endif
 
 	if(computeRank == 0)
