@@ -1,8 +1,7 @@
 #!/bin/bash --login
 #SBATCH --job-name=xthi
 #SBATCH --nodes=1
-#SBATCH --tasks-per-node=2
-#SBATCH --cpus-per-task=1
+#SBATCH --tasks-per-node=128
 #SBATCH --time=0:10:00
 #SBATCH --account=e609
 #SBATCH --partition=standard 
@@ -13,22 +12,40 @@ module load xthi
 
 # Setup environment
 export OMP_NUM_THREADS=1
+#export HALF_CORES=$((${SLURM_NTASKS_PER_NODE}/3)) 
+#export FULL_CORES=${SLURM_NTASKS_PER_NODE}
+
+export FULL_CORES=8
+export HALF_CORES=$((${FULL_CORES}/2)) 
 
 # Serial case
-echo "Serial"
-srun --hint=nomultithread --distribution=block:block --ntasks=1 xthi
+echo "** Serial"
+end=$((${HALF_CORES}-1))
+vals=($(seq 0 1 $(eval echo ${end})))
+bar=$(IFS=, ; echo "${vals[*]}")
+srun --hint=nomultithread  --cpu-bind=verbose --distribution=block:block --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]} xthi 
 
 # Overcommit case 
-echo "Commit"
-srun --overcommit --ntasks-per-node=2  xthi
+echo "** Overcommit"
+end=$((${HALF_CORES}-1))
+vals=($(seq 0 1 $(eval echo ${end})))
+bar=$(IFS=, ; echo "${vals[*]}")
+#srun --overcommit --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntasks=${FULL_CORES} --sockets-per-node=1 --cores-per-socket=${HALF_CORES}  --threads-per-core=2  xthi
+#srun  --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntasks=${FULL_CORES} --ntasks-per-core=2 --overcommit  xthi
+#srun  --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntasks=${FULL_CORES} --cpu-bind=map_cpu:$(eval echo ${bar[@]}) --overcommit  xthi
+srun  --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntasks=${FULL_CORES} --cpu-bind=map_cpu:${bar[@]} --overcommit  xthi
 
 # Hyperthreaded 
-echo "Hyperthread"
-srun --hint=multithread --distribution=block:block xthi
+echo "** Hyperthread"
+end=$((${FULL_CORES}-1))
+vals=($(seq 0 1 $(eval echo ${end})))
+bar=$(IFS=, ; echo "${vals[*]}")
+srun  --cpu-bind=verbose --hint=multithread --distribution=block:block --ntasks=${FULL_CORES} --cpu-bind=map_cpu:${bar[@]}  xthi
 
-# Consecutive cores 
-echo "Consecutive cores"
-srun --ntasks=2 --cpus-per-task=1 --distribution=block:block --hint=nomultithread xthi 
+## Consecutive cores 
+#echo "** Consecutive cores"
+#
+#srun --ntasks=${FULL_CORES} --cpus-per-task=1 --distribution=block:block --hint=nomultithread -sockets-per-node=1 --cores-per-socket=${FULL_CORES} --threads-per-core=${FULL_CORES} xthi 
 
 
 
