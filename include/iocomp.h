@@ -37,7 +37,7 @@ extern struct iocomp_params iocompParams;
 
 void ioLibraries(double* iodata, struct iocomp_params *iocompParams); 
 void timing_int(double time_diff, double global_data_size, int irep, int MAXLOOP_AVGIO, int local_n, char* filename, MPI_Comm comm);
-void dataSend(double* data, struct iocomp_params *iocompParams); 
+void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request); // function to send data using MPI_Isend 
 void ioServer(struct iocomp_params *iocompParams); 
 int getPair(struct iocomp_params *iocompParams); 
 void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);
@@ -46,6 +46,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM
 void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize, bool flag); // initialises the library 
 void testData(struct iocomp_params *iocompParams, int testFlag); // test data structures with flag to switch on/off  
 void stopSend(struct iocomp_params *iocompParams); // ghost send function that signals MPI_Sends are stopping
+void dataWait(struct iocomp_params *iocompParams, MPI_Request *request); // wrapper function to implement waiting of data IF HT flag is activated 
 
 // checks 
 void mpi_error_check(int ierr);

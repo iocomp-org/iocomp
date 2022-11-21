@@ -5,7 +5,7 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
-void dataSend(double* data, struct iocomp_params *iocompParams)
+void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request)
 {
 
 	int i, ierr; 
@@ -15,7 +15,6 @@ void dataSend(double* data, struct iocomp_params *iocompParams)
 		int globalRank; 
 		ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank);
 		mpi_error_check(ierr); 
-		MPI_Request request;
 
 		/*
 		 *	Send data using MPI_Isend to computeRank in interComm  
@@ -29,11 +28,11 @@ void dataSend(double* data, struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 		printf("Sending data starts from compProcessor with globalRank %i to ioProcessor with globalRank  %i  \n", globalRank, dest); 
 #endif
-		ierr = MPI_Send(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
-				iocompParams->globalComm); // every rank sends its portion of data 
+		// ierr = MPI_Send(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
+		//		iocompParams->globalComm); // every rank sends its portion of data 
 		
-		//ierr = MPI_Isend(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
-		//			iocompParams->interComm, &request); // every rank sends its portion of data 
+		ierr = MPI_Isend(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
+					iocompParams->globalComm, request); // every rank sends its portion of data 
 		mpi_error_check(ierr); 
 
 #ifndef NDEBUG

@@ -4,7 +4,7 @@
 #include "stdio.h"
 #include "mpi.h"
 #include "iocomp.h"
-#define iter 10 
+#define iter 5
 
 // number of iterations for averaging the stream tests 
 void computeStep(double* iodata, struct iocomp_params *iocompParams);

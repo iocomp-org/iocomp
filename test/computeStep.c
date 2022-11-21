@@ -29,6 +29,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 	mpi_error_check(ierr); 
 	double timerStart, timerEnd, timer[4][iter], totalTimer[4][iter]; 
 	timerStart = timerEnd = 0.0; 
+	MPI_Request request; 
 
 #ifndef NDEBUG
 	printf("After inits\n"); 
@@ -50,13 +51,17 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			timer[0][k] = timerEnd - timerStart; 
 		}
-		dataSend(c,iocompParams); // send data off using dataSend
+		dataSend(c,iocompParams, &request); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
 			totalTimer[0][k] = timerEnd - timerStart; 
 		}
 #ifndef NDEBUG
+		for(i = 0; i< iocompParams->localDataSize; i++)
+		{
+			printf("%lf,",c[i]); 
+		}
 		printf("After copy\n"); 
 #endif
 
@@ -75,13 +80,18 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timer[1][k] = timerEnd - timerStart; 
 		}
 
-		dataSend(b,iocompParams); // send data off using dataSend
+		dataWait(iocompParams,&request); // wait for previous data to be sent 
+		dataSend(b,iocompParams, &request); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
 			totalTimer[1][k] = timerEnd - timerStart; 
 		}
 #ifndef NDEBUG
+		for(i = 0; i< iocompParams->localDataSize; i++)
+		{
+			printf("%lf,",b[i]); 
+		}
 		printf("After scale\n"); 
 #endif
 
@@ -100,13 +110,18 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timer[2][k] = timerEnd - timerStart; 
 		}
 
-		dataSend(c,iocompParams); // send data off using dataSend
+		dataWait(iocompParams,&request); // wait for previous data to be sent 
+		dataSend(c,iocompParams, &request); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
 			totalTimer[2][k] = timerEnd - timerStart; 
 		}
 #ifndef NDEBUG
+		for(i = 0; i< iocompParams->localDataSize; i++)
+		{
+			printf("%lf,",c[i]); 
+		}
 		printf("After add\n"); 
 #endif
 
@@ -125,15 +140,21 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timer[3][k] = timerEnd - timerStart; 
 		}
 
-		dataSend(a,iocompParams); // send data off using dataSend
+		dataWait(iocompParams,&request); // wait for previous data to be sent 
+		dataSend(a,iocompParams, &request); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
 			totalTimer[3][k] = timerEnd - timerStart; 
 		}
 #ifndef NDEBUG
+		for(i = 0; i< iocompParams->localDataSize; i++)
+		{
+			printf("%lf,",a[i]); 
+		}
 		printf("After triad\n"); 
 #endif
+		dataWait(iocompParams,&request); // wait for previous data to be sent 
 
 	} // end avg loop  
 
