@@ -7,8 +7,8 @@ dirs = [
     "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/3Nov/Overcommit", 
     "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/3Nov/Serial", 
 ]
-flag = True
+flag = False
 
-dir = f'{os.getcwd()}/ARCHER2_runs/11Nov/0.8' 
-# onePlot(dir,flag)
-readDataWriteTime(dir) 
+dir = f'{os.getcwd()}/ARCHER2_runs/18Nov/1_8'
+onePlot(dir,flag)
+readDataWriteTime(dir,flag) 
