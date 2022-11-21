@@ -23,7 +23,7 @@ echo "** Serial"
 end=$((${HALF_CORES}-1))
 vals=($(seq 0 1 $(eval echo ${end})))
 bar=$(IFS=, ; echo "${vals[*]}")
-srun --hint=nomultithread  --cpu-bind=verbose --distribution=block:block --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]} xthi 
+srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]} xthi 
 
 # Overcommit case 
 echo "** Overcommit"
@@ -37,15 +37,34 @@ srun  --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntask
 
 # Hyperthreaded 
 echo "** Hyperthread"
-end=$((${FULL_CORES}-1))
+end=$((${HALF_CORES}-1))
 vals=($(seq 0 1 $(eval echo ${end})))
-bar=$(IFS=, ; echo "${vals[*]}")
+# seq 2 
+end=$((${HALF_CORES}+128-1))
+start=128
+vals_HT=($(seq $(eval echo ${start}) 1 $(eval echo ${end})))
+for i in `seq 0 $(($FULL_CORES-1))`;
+do 
+  if [ "$((i%2))" -eq 0 ];
+  then 
+    half_i=$(($i/2))
+    updated[$i]=$((vals[${half_i}])) 
+  else
+    half_i=$((($i-1)/2))
+    updated[$i]=$((vals_HT[${half_i}]))
+  fi 
+done 
+echo "${updated[*]}" 
+
+bar=$(IFS=, ; echo "${updated[*]}")
 srun  --cpu-bind=verbose --hint=multithread --distribution=block:block --ntasks=${FULL_CORES} --cpu-bind=map_cpu:${bar[@]}  xthi
 
 ## Consecutive cores 
-#echo "** Consecutive cores"
-#
-#srun --ntasks=${FULL_CORES} --cpus-per-task=1 --distribution=block:block --hint=nomultithread -sockets-per-node=1 --cores-per-socket=${FULL_CORES} --threads-per-core=${FULL_CORES} xthi 
+echo "** Consecutive cores"
+end=$((${FULL_CORES}-1))
+vals=($(seq 0 1 $(eval echo ${end})))
+bar=$(IFS=, ; echo "${vals[*]}")
+srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${FULL_CORES} --cpu-bind=map_cpu:${bar[@]} xthi 
 
 
 
