@@ -131,9 +131,9 @@ def onePlot(parentDir, flag):
 
     # directory = glob(f"{parentDir}/*", recursive = True) # gather names of all sub directories
     directory = {
-        f"{parentDir}/Consecutive": "b",
+        # f"{parentDir}/Consecutive": "b",
         f"{parentDir}/Hyperthread": "k",
-        # f"{parentDir}/Overcommit": "r",
+        f"{parentDir}/Overcommit": "r",
         f"{parentDir}/Serial": "c"
     }
 
@@ -173,7 +173,7 @@ def onePlot(parentDir, flag):
 
     plt.plot(0,0, label = "computeTime",color="k", linestyle = "--") # dummy plots to label compute and total time
     plt.plot(0,0, label = "totalTime", color="k", linestyle = "-")
-    plt.title("iocomp comparison - 0.016GB")
+    plt.title("iocomp benchmark total time vs compute time; 0.8GB")
     plt.xlabel("STREAM benchmark category")
     plt.ylabel("Times(s)")
     plt.xticks
@@ -182,8 +182,8 @@ def onePlot(parentDir, flag):
     plt.yscale('log')
 
     now = datetime.now()
-    date_time = now.strftime("%m:%d:%Y:%H:%M:%S")
-    saveName = f"{date_time}_small"
+    date_time = now.strftime("%d:%m:%Y:%H:%M")
+    saveName = f"comp_wall_t_{date_time}"
     saveData_t = saveData.T 
     saveData_t.to_csv(f"CSV_files/{saveName}.csv") 
     if(flag):
@@ -192,12 +192,12 @@ def onePlot(parentDir, flag):
         plt.savefig(f"Saved_fig/{saveName}.pdf")
 
 
-def readDataWriteTime(parentDir):
+def readDataWriteTime(parentDir,flag):
 
     directory = {
-        f"{parentDir}/Consecutive": "b",
+        # f"{parentDir}/Consecutive": "b",
         f"{parentDir}/Hyperthread": "k",
-        # f"{parentDir}/Overcommit": "r",
+        f"{parentDir}/Overcommit": "r",
         f"{parentDir}/Serial": "c"
     }
 
@@ -229,6 +229,7 @@ def readDataWriteTime(parentDir):
 
             writeTime = [] 
             fileSize = [] 
+            ioBW = [] 
             
             with open(filename) as f: # read individual test.out for printed values of io write times
                 contents = f.read()
@@ -237,8 +238,9 @@ def readDataWriteTime(parentDir):
                 for x in data_retrieve: # add all individual file write times in output file to writeTime and fileSize
                     writeTime.append(float(x[0]))
                     fileSize.append(float(x[1]))
+                    ioBW.append(float(x[1])/float(x[0])) # fileSize/writeTime 
 
-            ioBandwidth[jobruns] = sum(fileSize)/sum(writeTime) # ioBandwidth will be total size of file written/ total time taken
+            ioBandwidth[jobruns] = statistics.harmonic_mean(ioBW) # ioBandwidth will be HM of ind. BWs 
         
         ioBandwidth_avg[type]=statistics.harmonic_mean(ioBandwidth) # avg ioBandwith is harmonic mean of ioBandwidths across job runs 
         ioBandwidth_std[type]=statistics.stdev(ioBandwidth) # avg ioBandwith is harmonic mean of ioBandwidths across job runs 
@@ -246,16 +248,17 @@ def readDataWriteTime(parentDir):
 
     X_axis = np.arange(len(ioBandwidth_avg))
     width = 0.4
-
+    print(ioBandwidth_avg)
     plt.bar(X_axis,ioBandwidth_avg,width, yerr=ioBandwidth_std,alpha=0.5, ecolor='black', capsize=10)
     plt.xticks(X_axis,label_ref)
-    plt.title("I/O bandwidth from stream benchmark")
-    plt.xlabel("STREAM benchmark category")
+    plt.title(f"I/O bandwidth from stream benchmark;local size {round(fileSize[0],2)}GB")
+    plt.xlabel("SLURM mapping")
     plt.ylabel("I/O bandwidth (GB/s)")
     plt.xticks
     # plt.legend() 
     # plt.yscale('log')
-    plt.show() 
+    # plt.show()
+    # plt.savefig("Saved_fig/ioBandwidth_bar.pdf") 
 
 
     """
@@ -272,3 +275,18 @@ def readDataWriteTime(parentDir):
     #     .add(so.Bar(alpha=.5), so.Agg(), so.Dodge())
     #     .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
     # )
+
+    now = datetime.now()
+    date_time = now.strftime("%d:%m:%Y:%H:%M")
+    saveName = f"IO_BW_{date_time}"
+    if(flag):
+        plt.show()
+    else:
+        plt.savefig(f"Saved_fig/{saveName}.pdf")
+        # save data to csv 
+        saveData = pd.DataFrame({
+            'avg_BW':ioBandwidth_avg,
+            'std_dev':ioBandwidth_std,
+            'xaxis':X_axis
+        })
+        saveData.to_csv(f"CSV_files/{saveName}.csv")
