@@ -1,14 +1,9 @@
 from utils import* 
+# True for show, False for save 
+flag = True
 
-# barplot(filename)
-dirs = [  
-    "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/3Nov/Consecutive",
-    "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/3Nov/Hyperthread", 
-    "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/3Nov/Overcommit", 
-    "/Users/sbhardwa/Coding/iocomp/visuals/ARCHER2_runs/3Nov/Serial", 
-]
-flag = False
-
-dir = f'{os.getcwd()}/ARCHER2_runs/18Nov/1_8'
-onePlot(dir,flag)
-readDataWriteTime(dir,flag) 
+dir = f'{os.getcwd()}/ARCHER2_runs/22Nov/1_8'
+# onePlot(dir,flag)
+# readDataWriteTime(dir,flag) 
+dir = f'{os.getcwd()}/ARCHER2_runs/22Nov'
+timings_against_cores(dir)

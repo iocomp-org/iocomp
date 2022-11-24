@@ -11,6 +11,8 @@ import re
 import seaborn as sns
 import seaborn.objects as so
 
+localSize = 0.8
+ranks = 4
 
 def readData(filename):
     """
@@ -104,12 +106,19 @@ def avgJobRuns(dir):
         medTotalTime[i] = statistics.median(totalTime[i])
 
     """
+    remove tab space from X-axis
+    """
+    stream_ob = [] 
+    for el in data["xAxis"]:  
+        stream_ob.append(el.replace("\t", "")) 
+
+    """
     Insert data into dictionary
     """
     avgData = {
         "avgComputeTime": avgComputeTime,
         "avgTotalTime": avgTotalTime,
-        "xAxis": data["xAxis"],
+        "xAxis": stream_ob,
         "stdTotalTime": stdTotalTime,
         "stdComputeTime": stdComputeTime
     }
@@ -131,7 +140,7 @@ def onePlot(parentDir, flag):
 
     # directory = glob(f"{parentDir}/*", recursive = True) # gather names of all sub directories
     directory = {
-        # f"{parentDir}/Consecutive": "b",
+        f"{parentDir}/Consecutive": "b",
         f"{parentDir}/Hyperthread": "k",
         f"{parentDir}/Overcommit": "r",
         f"{parentDir}/Serial": "c"
@@ -173,7 +182,7 @@ def onePlot(parentDir, flag):
 
     plt.plot(0,0, label = "computeTime",color="k", linestyle = "--") # dummy plots to label compute and total time
     plt.plot(0,0, label = "totalTime", color="k", linestyle = "-")
-    plt.title("iocomp benchmark total time vs compute time; 0.8GB")
+    plt.title(f"Compute vs Wall time local size {localSize} GB serial ranks {ranks} ")
     plt.xlabel("STREAM benchmark category")
     plt.ylabel("Times(s)")
     plt.xticks
@@ -182,7 +191,7 @@ def onePlot(parentDir, flag):
     plt.yscale('log')
 
     now = datetime.now()
-    date_time = now.strftime("%d:%m:%Y:%H:%M")
+    date_time = now.strftime("%d,%m,%Y,%H,%M")
     saveName = f"comp_wall_t_{date_time}"
     saveData_t = saveData.T 
     saveData_t.to_csv(f"CSV_files/{saveName}.csv") 
@@ -195,7 +204,7 @@ def onePlot(parentDir, flag):
 def readDataWriteTime(parentDir,flag):
 
     directory = {
-        # f"{parentDir}/Consecutive": "b",
+        f"{parentDir}/Consecutive": "b",
         f"{parentDir}/Hyperthread": "k",
         f"{parentDir}/Overcommit": "r",
         f"{parentDir}/Serial": "c"
@@ -251,7 +260,8 @@ def readDataWriteTime(parentDir,flag):
     print(ioBandwidth_avg)
     plt.bar(X_axis,ioBandwidth_avg,width, yerr=ioBandwidth_std,alpha=0.5, ecolor='black', capsize=10)
     plt.xticks(X_axis,label_ref)
-    plt.title(f"I/O bandwidth from stream benchmark;local size {round(fileSize[0],2)}GB")
+    # plt.title(f"I/O bandwidth from stream benchmark;local size {round(fileSize[0],2)}GB")
+    plt.title(f"I/O bandwidth;local size {localSize} GB serial ranks {ranks}")
     plt.xlabel("SLURM mapping")
     plt.ylabel("I/O bandwidth (GB/s)")
     plt.xticks
@@ -277,7 +287,7 @@ def readDataWriteTime(parentDir,flag):
     # )
 
     now = datetime.now()
-    date_time = now.strftime("%d:%m:%Y:%H:%M")
+    date_time = now.strftime("%d,%m,%Y,%H,%M")
     saveName = f"IO_BW_{date_time}"
     if(flag):
         plt.show()
@@ -290,3 +300,120 @@ def readDataWriteTime(parentDir,flag):
             'xaxis':X_axis
         })
         saveData.to_csv(f"CSV_files/{saveName}.csv")
+
+def comp_vs_wall_time(directory):
+
+    # directory = glob(f"{parentDir}/*", recursive = True) # gather names of all sub directories
+    data = {}
+    output_data = {} 
+
+    """
+    iterate over directories, example Consecutive, Hyperthread etc.
+    """
+    for key,value in directory.items():
+        dir = key
+
+        """
+        Average out the many runs and output standard deviation 
+        """
+        data = avgJobRuns(dir)
+        path = pathlib.PurePath(dir) 
+        label_ = path.name 
+
+        if os.path.isdir(key):
+            mapping = os.path.basename(key) # get mapping from the directory name ex. Serial etc.   
+
+        output_data[f"{mapping}"]=data # append mapping data to output_data dictionary 
+
+    return(output_data)
+
+ 
+def timings_against_cores(parentDir):
+
+    """
+    save data csv headers 
+    """
+    saveData = pd.DataFrame()
+    saveData_T = pd.DataFrame()  # transposed
+    saveData.insert(0, "stream", ["Copy", "Scalar", "Add", "Triad"])
+
+    """
+    select mapping
+    """
+    mapping = [
+        "Consecutive",
+        "Hyperthread",
+        "Overcommit",
+        "Serial"
+    ]
+
+    """
+    get data and store them against num cores in data dict
+    """
+    dir_list = next(os.walk(parentDir))[1]
+    data = {}
+    cores = []  
+    for dir in dir_list:
+        core = dir.split("_",1)[1]
+        cores.append(core)
+        """
+        Can select reqd slurm mappings 
+        """
+        directory = {
+            f"{parentDir}/{dir}/Consecutive": "b",
+            f"{parentDir}/{dir}/Hyperthread": "k",
+            f"{parentDir}/{dir}/Overcommit": "r",
+            f"{parentDir}/{dir}/Serial": "c"
+        }
+        data[core] = comp_vs_wall_time(directory)
+
+    """
+    get data against num procs 
+    """
+    # for key, value in data.items():
+     
+    cores_asc = cores
+    cores_asc = [int(x) for x in cores]
+    cores_asc.sort(key=int)
+
+    x = {} 
+    for ind_mapping in mapping:
+        y = [] 
+        for core in cores_asc:
+            y.append(list(data[f"{core}"][ind_mapping]["avgComputeTime"][])) 
+            print(y)
+            print("core", core, "mapping", ind_mapping)
+        x[ind_mapping] = y 
+
+    # for ind_mapping in mapping:
+    #     print(x[ind_mapping])
+    
+    # plt.plot(list(cores_asc), ,label=ind_mapping) 
+        # print(list(cores_asc), list(y),ind_mapping) 
+
+    # # plt.errorbar( stream_ob, list(data["avgComputeTime"]), yerr=list(data["stdComputeTime"]),color=colour_, fmt = 'o') #, color = colour_, linestyle = "--", fmt = 'o')
+    # # plt.plot( stream_ob, list(data["avgTotalTime"]), color = colour_, linestyle = "-", label = label_ )
+    # # plt.errorbar( stream_ob, list(data["avgTotalTime"]), yerr=list(data["stdTotalTime"]),color=colour_, fmt='o') # , color = colour_, linestyle = "-", fmt = 'o')
+
+    # plt.legend()  
+    # plt.show()
+    
+    # plt.plot(0,0, label = "computeTime",color="k", linestyle = "--") # dummy plots to label compute and total time
+    # plt.plot(0,0, label = "totalTime", color="k", linestyle = "-")
+    # plt.title(f"Compute vs Wall time local size {localSize} GB serial ranks {ranks} ")
+    # plt.xlabel("STREAM benchmark category")
+    # plt.ylabel("Times(s)")
+    # plt.xticks
+    # plt.grid() 
+    # plt.legend() 
+    # plt.yscale('log')
+
+    # now = datetime.now()
+    # date_time = now.strftime("%d,%m,%Y,%H,%M")
+    # saveName = f"comp_wall_t_{date_time}"
+    # saveData_t = saveData.T 
+    # saveData_t.to_csv(f"CSV_files/{saveName}.csv") 
+    # if(flag):
+    #     plt.show()
+    # else:
+    #     plt.savefig(f"Saved_fig/{saveName}.pdf")
