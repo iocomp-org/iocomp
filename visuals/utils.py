@@ -328,7 +328,7 @@ def comp_vs_wall_time(directory):
     return(output_data)
 
  
-def timings_against_cores(parentDir):
+def getStreamTimingData(parentDir):
 
     """
     save data csv headers 
@@ -366,38 +366,105 @@ def timings_against_cores(parentDir):
             f"{parentDir}/{dir}/Serial": "c"
         }
         data[core] = comp_vs_wall_time(directory)
+    
+    return(data)
 
-    """
-    get data against num procs 
-    """
+
+        
+
+def plot_times_vs_numcores(parentDir):
+
+    data = {} 
+    data = getStreamTimingData(parentDir)
+    
     # for key, value in data.items():
-     
+    dir_list = next(os.walk(parentDir))[1]
+    cores = []  
+    for dir in dir_list:
+        core = dir.split("_",1)[1]
+        cores.append(core)
+
     cores_asc = cores
     cores_asc = [int(x) for x in cores]
     cores_asc.sort(key=int)
+    stream = [
+        "copy",
+        "add",
+        "scalar",
+        "triad"
+    ]
+
+    colour = {
+        "Consecutive": "r",
+        "Hyperthread": "b",
+        "Overcommit": "k", 
+        "Serial": "c"
+    }
+
+    ls = {
+        "copy": "--", 
+        "add": ":", 
+        "scalar": "-", 
+        "triad": "-."
+    }
 
     x = {} 
     for ind_mapping in mapping:
-        y = [] 
-        for core in cores_asc:
-            y.append(list(data[f"{core}"][ind_mapping]["avgComputeTime"][])) 
-            print(y)
-            print("core", core, "mapping", ind_mapping)
-        x[ind_mapping] = y 
+        stream_results = {} 
+        for i in range(len(stream)):
+            y = [] 
+            for core in cores_asc:
+                y.append(data[f"{core}"][ind_mapping]["avgTotalTime"][i]) # only for total time
+            stream_results[stream[i]] = y  
+        x[ind_mapping] = stream_results
 
-    # for ind_mapping in mapping:
-    #     print(x[ind_mapping])
+    for ind_mapping in mapping:
+        for i in range(len(stream)):
+            plt.plot(list(cores_asc),x[ind_mapping][stream[i]],color=colour[ind_mapping],linestyle=ls[stream[i]]) 
+
+    plt.title(f"Compute vs Wall time; local size {localSize}GB ")
+    plt.xlabel("Number of cores")
+    plt.ylabel("Times(s)")
+    plt.xticks
+    plt.grid() 
+    plt.legend() 
+    plt.yscale('log')
+    plt.show()
+
+
+def plot_times_vs_streams(parentDir):
+
+    data = {} 
+    data = getStreamTimingData(parentDir)
+
+    """
+    select mapping
+    """
+    mapping = [
+        "Consecutive",
+        "Hyperthread",
+        "Overcommit",
+        "Serial"
+    ]
+
+    dir_list = next(os.walk(parentDir))[1]
+    cores = []  
+    for dir in dir_list:
+        core = dir.split("_",1)[1]
+        cores.append(core)
     
-    # plt.plot(list(cores_asc), ,label=ind_mapping) 
-        # print(list(cores_asc), list(y),ind_mapping) 
+    for core in cores:
+        print(core)
+        for ind_map in mapping:
+            print(ind_map)
+            print(data[core][ind_map])
 
-    # # plt.errorbar( stream_ob, list(data["avgComputeTime"]), yerr=list(data["stdComputeTime"]),color=colour_, fmt = 'o') #, color = colour_, linestyle = "--", fmt = 'o')
-    # # plt.plot( stream_ob, list(data["avgTotalTime"]), color = colour_, linestyle = "-", label = label_ )
-    # # plt.errorbar( stream_ob, list(data["avgTotalTime"]), yerr=list(data["stdTotalTime"]),color=colour_, fmt='o') # , color = colour_, linestyle = "-", fmt = 'o')
 
-    # plt.legend()  
-    # plt.show()
-    
+    # plt.plot(list(data[cores]["xAxis"]), list(data["avgComputeTime"]), color = colour_, linestyle = "--")
+    # plt.errorbar( stream_ob, list(data["avgComputeTime"]), yerr=list(data["stdComputeTime"]),color=colour_, fmt = 'o') #, color = colour_, linestyle = "--", fmt = 'o')
+    # plt.plot( stream_ob, list(data["avgTotalTime"]), color = colour_, linestyle = "-", label = label_ )
+    # plt.errorbar( stream_ob, list(data["avgTotalTime"]), yerr=list(data["stdTotalTime"]),color=colour_, fmt='o') # , color = colour_, linestyle = "-", fmt = 'o')
+
     # plt.plot(0,0, label = "computeTime",color="k", linestyle = "--") # dummy plots to label compute and total time
     # plt.plot(0,0, label = "totalTime", color="k", linestyle = "-")
     # plt.title(f"Compute vs Wall time local size {localSize} GB serial ranks {ranks} ")
