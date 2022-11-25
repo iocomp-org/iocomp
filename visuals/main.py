@@ -7,4 +7,5 @@ dir = f'{os.getcwd()}/ARCHER2_runs/22Nov/1_8'
 # readDataWriteTime(dir,flag) 
 dir = f'{os.getcwd()}/ARCHER2_runs/22Nov'
 # plot_times_vs_numcores(dir)
-plot_times_vs_streams(dir)
+# plot_times_vs_streams(dir)
+bar_plot_times_vs_numcores(dir)

@@ -14,6 +14,37 @@ import seaborn.objects as so
 localSize = 0.8
 ranks = 4
 
+"""
+select mapping
+"""
+mapping = [
+    "Consecutive",
+    "Hyperthread",
+    "Overcommit",
+    "Serial"
+]
+
+stream = [
+    "copy",
+    "add",
+    "scalar",
+    "triad"
+]
+
+colour = {
+    "Consecutive": "r",
+    "Hyperthread": "b",
+    "Overcommit": "k", 
+    "Serial": "c"
+}
+
+ls = {
+    "copy": "--", 
+    "add": ":", 
+    "scalar": "-", 
+    "triad": "-."
+}
+
 def readData(filename):
     """
     Read data
@@ -387,6 +418,17 @@ def plot_times_vs_numcores(parentDir):
     cores_asc = cores
     cores_asc = [int(x) for x in cores]
     cores_asc.sort(key=int)
+
+    """
+    select mapping
+    """
+    mapping = [
+        "Consecutive",
+        "Hyperthread",
+        "Overcommit",
+        "Serial"
+    ]
+    
     stream = [
         "copy",
         "add",
@@ -437,6 +479,9 @@ def plot_times_vs_streams(parentDir):
     data = {} 
     data = getStreamTimingData(parentDir)
 
+
+    # plt.figure(figsize=(10, 8))  # set figure size
+
     """
     select mapping
     """
@@ -453,14 +498,12 @@ def plot_times_vs_streams(parentDir):
         core = dir.split("_",1)[1]
         cores.append(core)
     
-    for core in cores:
-        print(core)
-        for ind_map in mapping:
-            print(ind_map)
-            print(data[core][ind_map])
-
-
-    # plt.plot(list(data[cores]["xAxis"]), list(data["avgComputeTime"]), color = colour_, linestyle = "--")
+    # for core in cores:
+    core = '32'
+    for ind_map in mapping:
+        plt.plot(data[core][ind_map]["xAxis"],data[core][ind_map]["avgComputeTime"],color=colour[ind_map],label=ind_map)
+    plt.legend() 
+    plt.show() 
     # plt.errorbar( stream_ob, list(data["avgComputeTime"]), yerr=list(data["stdComputeTime"]),color=colour_, fmt = 'o') #, color = colour_, linestyle = "--", fmt = 'o')
     # plt.plot( stream_ob, list(data["avgTotalTime"]), color = colour_, linestyle = "-", label = label_ )
     # plt.errorbar( stream_ob, list(data["avgTotalTime"]), yerr=list(data["stdTotalTime"]),color=colour_, fmt='o') # , color = colour_, linestyle = "-", fmt = 'o')
@@ -484,3 +527,30 @@ def plot_times_vs_streams(parentDir):
     #     plt.show()
     # else:
     #     plt.savefig(f"Saved_fig/{saveName}.pdf")
+
+def bar_plot_times_vs_numcores(parentDir):
+
+    data = {} 
+    data = getStreamTimingData(parentDir)
+    dir_list = next(os.walk(parentDir))[1]
+    cores = []  
+    for dir in dir_list:
+        core = dir.split("_",1)[1]
+        cores.append(core)
+    
+    # for core in cores:
+    it = 0
+    X = np.arange(len(stream)) 
+    for core in cores:
+        width = 0.1
+        computeTime = [0]*len(stream)
+        iter = 0
+        for ind_map in mapping:
+            computeTime[iter] = 0 
+            for x in range(len(stream)):
+                computeTime[iter] += data[core][ind_map]["avgComputeTime"][x] # addition of compute steps into each other. 
+            iter += 1 
+        plt.bar(X+it*2, mapping,computeTime, width)
+        it += 1
+    plt.legend() 
+    plt.show() 
