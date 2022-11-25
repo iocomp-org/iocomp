@@ -539,8 +539,9 @@ def bar_plot_times_vs_numcores(parentDir):
         cores.append(core)
     
     # for core in cores:
+    cores.sort(key=int)
     it = 0
-    X = np.arange(len(stream)) 
+    X = np.arange(len(cores)) 
     for core in cores:
         width = 0.1
         computeTime = [0]*len(stream)
@@ -550,7 +551,11 @@ def bar_plot_times_vs_numcores(parentDir):
             for x in range(len(stream)):
                 computeTime[iter] += data[core][ind_map]["avgComputeTime"][x] # addition of compute steps into each other. 
             iter += 1 
-        plt.bar(X+it*2, mapping,computeTime, width)
+        plt.bar(X+it*width, computeTime, width)
         it += 1
+    plt.xticks(ticks = X,labels = cores, rotation = 'vertical')
+
+    # plt.plot(0,0, label = "computeTime",color="k", linestyle = "--") # dummy plots to label compute and total time
+    # plt.plot(0,0, label = "totalTime", color="k", linestyle = "-")
     plt.legend() 
     plt.show() 
