@@ -31,7 +31,7 @@ stream = [
     "triad"
 ]
 
-colour = {
+mapping_colour = {
     "Consecutive": "r",
     "Hyperthread": "b",
     "Overcommit": "k", 
@@ -530,32 +530,53 @@ def plot_times_vs_streams(parentDir):
 
 def bar_plot_times_vs_numcores(parentDir):
 
+    fig1 = plt.figure(figsize=(8,6))  # set figure size
     data = {} 
     data = getStreamTimingData(parentDir)
     dir_list = next(os.walk(parentDir))[1]
     cores = []  
+    localSize = 0.8
     for dir in dir_list:
         core = dir.split("_",1)[1]
         cores.append(core)
-    
-    # for core in cores:
-    cores.sort(key=int)
-    it = 0
-    X = np.arange(len(cores)) 
-    for core in cores:
-        width = 0.1
-        computeTime = [0]*len(stream)
-        iter = 0
-        for ind_map in mapping:
-            computeTime[iter] = 0 
-            for x in range(len(stream)):
-                computeTime[iter] += data[core][ind_map]["avgComputeTime"][x] # addition of compute steps into each other. 
-            iter += 1 
-        plt.bar(X+it*width, computeTime, width)
-        it += 1
-    plt.xticks(ticks = X,labels = cores, rotation = 'vertical')
 
-    # plt.plot(0,0, label = "computeTime",color="k", linestyle = "--") # dummy plots to label compute and total time
-    # plt.plot(0,0, label = "totalTime", color="k", linestyle = "-")
+    cores.sort(key=int)
+    core_num = 0
+    totalTime_hatch="-"
+    plt.rcParams['hatch.linewidth'] = 0.2 
+    
+    for core in cores:
+        width_ = 0.2
+        computeTime = [0]*len(stream) # total compute time for all stream categories
+        totalTime = [0]*len(stream) # total wall time for all stream categories
+        iter = 0
+        mapping_num = 0 
+        
+        for ind_map in mapping:
+            computeTime[mapping_num] = 0 
+            totalTime[mapping_num] = 0 
+       
+            for x in range(len(stream)): # summation of all compute steps from stream categories
+                computeTime[mapping_num] += data[core][ind_map]["avgComputeTime"][x] # addition of compute steps into each other. 
+                totalTime[mapping_num] += data[core][ind_map]["avgTotalTime"][x] # addition of compute steps into each other. 
+
+            plt.bar(core_num+mapping_num*width_, totalTime[mapping_num], alpha=0.5, width=width_, color=mapping_colour[ind_map],hatch=totalTime_hatch)
+            plt.bar(core_num+mapping_num*width_, computeTime[mapping_num], width=width_,color=mapping_colour[ind_map])
+            mapping_num += 1 
+
+        core_num += 1
+    
+    plt.xticks(ticks = np.arange(len(cores))+width_*len(mapping)/2,labels = cores, rotation = 'horizontal')
+
+    for key, value in mapping_colour.items():
+        plt.bar(x=0,height=0,label = key,color = value) # dummy plots to label compute and total time
+     
+    plt.bar(x=0,height=0, label = "TotalTime", color = "white", edgecolor = 'black',hatch=totalTime_hatch) # dummy plots to label compute and total time
+    plt.bar(x=0,height=0, label = "ComputeTime",edgecolor = 'black', color = "white") # dummy plots to label compute and total time
     plt.legend() 
+    plt.title(f"Compute vs Wall time local size {localSize} GB ")
+    plt.xlabel("Number of cores")
+    plt.ylabel("Times(s)")
+    plt.yscale('log')
+    fig1.tight_layout() 
     plt.show() 
