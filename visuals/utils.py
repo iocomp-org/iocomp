@@ -8,11 +8,13 @@ from glob import glob
 from datetime import datetime
 import statistics
 import re 
+import argparse
 import seaborn as sns
 import seaborn.objects as so
 
 localSize = 0.8
 ranks = 4
+plt.style.use("style.mplstyle")  # matplotlib style sheet
 
 """
 select mapping
@@ -518,32 +520,31 @@ def plot_times_vs_streams(parentDir):
     # plt.legend() 
     # plt.yscale('log')
 
-    # now = datetime.now()
-    # date_time = now.strftime("%d,%m,%Y,%H,%M")
-    # saveName = f"comp_wall_t_{date_time}"
-    # saveData_t = saveData.T 
-    # saveData_t.to_csv(f"CSV_files/{saveName}.csv") 
-    # if(flag):
-    #     plt.show()
-    # else:
-    #     plt.savefig(f"Saved_fig/{saveName}.pdf")
+def save_or_show(name,flag,plt):
+    now = datetime.now()
+    date_time = now.strftime("%d,%m,%Y,%H,%M")
+    saveName = f"{name}_{date_time}"
+    if(flag):
+        plt.savefig(f"Saved_fig/{saveName}.pdf")
+    else:
+        plt.show()
 
-def bar_plot_times_vs_numcores(parentDir):
+def bar_plot_times_vs_numcores(parentDir, flag):
 
     fig1 = plt.figure(figsize=(8,6))  # set figure size
     data = {} 
     data = getStreamTimingData(parentDir)
     dir_list = next(os.walk(parentDir))[1]
     cores = []  
-    localSize = 0.8
+
     for dir in dir_list:
         core = dir.split("_",1)[1]
         cores.append(core)
 
     cores.sort(key=int)
     core_num = 0
-    totalTime_hatch="-"
-    plt.rcParams['hatch.linewidth'] = 0.2 
+    totalTime_hatch="///"
+    plt.rcParams['axes.grid'] = False
     
     for core in cores:
         width_ = 0.2
@@ -574,9 +575,9 @@ def bar_plot_times_vs_numcores(parentDir):
     plt.bar(x=0,height=0, label = "TotalTime", color = "white", edgecolor = 'black',hatch=totalTime_hatch) # dummy plots to label compute and total time
     plt.bar(x=0,height=0, label = "ComputeTime",edgecolor = 'black', color = "white") # dummy plots to label compute and total time
     plt.legend() 
-    plt.title(f"Compute vs Wall time local size {localSize} GB ")
+    # plt.title(f"Compute vs Wall time; local size {localSize}GB ")
     plt.xlabel("Number of cores")
     plt.ylabel("Times(s)")
     plt.yscale('log')
     fig1.tight_layout() 
-    plt.show() 
+    save_or_show("comp_wall_bar",flag,plt)
