@@ -66,6 +66,10 @@ void ioServer(struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 			printf("ghost messaged recieved \n"); 	
 #endif
+			int ghost;  
+			ierr = MPI_Recv(&ghost, 0, MPI_INT, source, tag,
+					iocompParams->globalComm,&status);
+			mpi_error_check(ierr); 
 			break; 
 		}
 
