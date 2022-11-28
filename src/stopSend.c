@@ -32,7 +32,7 @@ void stopSend(struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 		printf("Sending data starts from compProcessor with globalRank %i to ioProcessor with globalRank  %i  \n", globalRank, dest); 
 #endif
-		ierr = MPI_Bsend(&ghost, 0 , MPI_DOUBLE, dest, tag,
+		ierr = MPI_Send(&ghost, 0 , MPI_DOUBLE, dest, tag,
 				iocompParams->globalComm); // every rank sends its portion of data 
 		
 		//ierr = MPI_Isend(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
