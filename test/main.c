@@ -77,7 +77,7 @@ int main(int argc, char** argv)
   // data parameters definitions 
 
   int NDIM = 2; 
-  int localArraySize[2] = {10000,10000}; 
+  int localArraySize[2] = {10,10}; 
 
   struct iocomp_params iocompParams; 
 
@@ -107,15 +107,15 @@ int main(int argc, char** argv)
 #endif   
 
   // remove file 
-  if(rank == 0)
-  {
-    int ret; 
-    ret = remove("mpiio.dat");
-
-    if(ret != 0) {
-      printf("Error: unable to delete the file");
-    }
-  } 
+//  if(rank == 0)
+//  {
+//    int ret; 
+//    ret = remove("mpiio.dat");
+//
+//    if(ret != 0) {
+//      printf("Error: unable to delete the file");
+//    }
+//  } 
 #ifndef NDEBUG
   printf("Deleted file\n"); 
 #endif   

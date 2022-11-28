@@ -51,7 +51,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			timer[0][k] = timerEnd - timerStart; 
 		}
-		dataSend(c,iocompParams, &request); // send data off using dataSend
+		//dataSend(c,iocompParams, &request); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -80,8 +80,8 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timer[1][k] = timerEnd - timerStart; 
 		}
 
-		dataWait(iocompParams,&request); // wait for previous data to be sent 
-		dataSend(b,iocompParams, &request); // send data off using dataSend
+		//dataWait(iocompParams,&request); // wait for previous data to be sent 
+		//dataSend(b,iocompParams, &request); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -110,8 +110,8 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timer[2][k] = timerEnd - timerStart; 
 		}
 
-		dataWait(iocompParams,&request); // wait for previous data to be sent 
-		dataSend(c,iocompParams, &request); // send data off using dataSend
+		//dataWait(iocompParams,&request); // wait for previous data to be sent 
+		//dataSend(c,iocompParams, &request); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -140,8 +140,8 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timer[3][k] = timerEnd - timerStart; 
 		}
 
-		dataWait(iocompParams,&request); // wait for previous data to be sent 
-		dataSend(a,iocompParams, &request); // send data off using dataSend
+		//dataWait(iocompParams,&request); // wait for previous data to be sent 
+		//dataSend(a,iocompParams, &request); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -154,7 +154,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		}
 		printf("After triad\n"); 
 #endif
-		dataWait(iocompParams,&request); // wait for previous data to be sent 
+		//dataWait(iocompParams,&request); // wait for previous data to be sent 
 
 	} // end avg loop  
 
