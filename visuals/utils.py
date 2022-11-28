@@ -95,7 +95,7 @@ def avgJobRuns(dir):
     Iterate over directories such as 1,2,3,4 etc to average out the times
     """
 
-    maxloop = 10
+    maxloop = 1
     totalTime = np.empty((10, 10))
     computeTime = np.empty((10, 10))
     avgComputeTime = np.empty((4), dtype=float)
@@ -526,6 +526,8 @@ def save_or_show(name,flag,plt):
     saveName = f"{name}_{date_time}"
     if(flag):
         plt.savefig(f"Saved_fig/{saveName}.pdf")
+        print("Saved in:")
+        print(f"Saved_fig/{saveName}.pdf")
     else:
         plt.show()
 
@@ -579,5 +581,67 @@ def bar_plot_times_vs_numcores(parentDir, flag):
     plt.xlabel("Number of cores")
     plt.ylabel("Times(s)")
     plt.yscale('log')
+    fig1.tight_layout() 
+    save_or_show("comp_wall_bar",flag,plt)
+
+
+def bar_plot_times_vs_numcores_per_stream(parentDir, flag):
+
+    fig1, ax1 = plt.subplots(2, 2,figsize=(14,12))
+    data = {} 
+    data = getStreamTimingData(parentDir)
+    dir_list = next(os.walk(parentDir))[1]
+    cores = []  
+
+    for dir in dir_list:
+        core = dir.split("_",1)[1]
+        cores.append(core)
+
+    cores.sort(key=int)
+    core_num = 0
+    totalTime_hatch="///"
+    plt.rcParams['axes.grid'] = False
+
+    
+    for core in cores:
+        width_ = 0.2
+        computeTime = [0]*len(stream) # total compute time for all stream categories
+        totalTime = [0]*len(stream) # total wall time for all stream categories
+        iter = 0
+        mapping_num = 0 
+        
+        for ind_map in mapping:
+       
+            for x in range(len(stream)): # summation of all compute steps from stream categories
+                computeTime = data[core][ind_map]["avgComputeTime"][x] # addition of compute steps into each other. 
+                totalTime = data[core][ind_map]["avgTotalTime"][x] # addition of compute steps into each other. 
+                i=int(x/2)
+                j=int(x%2)
+                ax1[i,j].bar(core_num+mapping_num*width_, totalTime, alpha=0.5, width=width_, color=mapping_colour[ind_map],hatch=totalTime_hatch)
+                ax1[i,j].bar(core_num+mapping_num*width_, computeTime, width=width_,color=mapping_colour[ind_map])
+       
+            mapping_num += 1 
+
+        core_num += 1
+
+    """
+    ticks for each subplot
+    """
+    for x in range(4):
+        i = int(x/2)
+        j = int(x%2)
+        ax1[i,j].set_xticks(np.arange(len(cores))+width_*len(mapping)/2) 
+        ax1[i,j].set_xticklabels(cores)
+        ax1[i,j].title.set_text(stream[x])
+        ax1[i,j].set_xlabel('Number of processes')
+        ax1[i,j].set_ylabel('Computation times(s)')
+
+        for key, value in mapping_colour.items():
+            ax1[i,j].bar(x=0,height=0,label = key,color = value) # dummy plots to label compute and total time
+            # plt.bar(x=0,height=0, label = "TotalTime", color = "white", edgecolor = 'black',hatch=totalTime_hatch) # dummy plots to label compute and total time
+            # plt.bar(x=0,height=0, label = "ComputeTime",edgecolor = 'black', color = "white") # dummy plots to label compute and total time
+
+    plt.legend() 
+
     fig1.tight_layout() 
     save_or_show("comp_wall_bar",flag,plt)
