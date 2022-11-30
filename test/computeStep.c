@@ -29,7 +29,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 	mpi_error_check(ierr); 
 	double timerStart, timerEnd, timer[4][iter], totalTimer[4][iter]; 
 	timerStart = timerEnd = 0.0; 
-	MPI_Request request; 
+	MPI_Request request1, request2, request3, request4; 
 
 #ifndef NDEBUG
 	printf("After inits\n"); 
@@ -51,7 +51,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timerEnd = MPI_Wtime();
 			timer[0][k] = timerEnd - timerStart; 
 		}
-		//dataSend(c,iocompParams, &request); // send data off using dataSend
+		dataSend(c,iocompParams, &request1); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -80,8 +80,8 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timer[1][k] = timerEnd - timerStart; 
 		}
 
-		//dataWait(iocompParams,&request); // wait for previous data to be sent 
-		//dataSend(b,iocompParams, &request); // send data off using dataSend
+		dataWait(iocompParams,&request1); // wait for previous data to be sent 
+		dataSend(b,iocompParams, &request2); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -110,8 +110,8 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timer[2][k] = timerEnd - timerStart; 
 		}
 
-		//dataWait(iocompParams,&request); // wait for previous data to be sent 
-		//dataSend(c,iocompParams, &request); // send data off using dataSend
+		dataWait(iocompParams,&request2); // wait for previous data to be sent 
+		dataSend(c,iocompParams, &request3); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -140,8 +140,8 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			timer[3][k] = timerEnd - timerStart; 
 		}
 
-		//dataWait(iocompParams,&request); // wait for previous data to be sent 
-		//dataSend(a,iocompParams, &request); // send data off using dataSend
+		dataWait(iocompParams,&request3); // wait for previous data to be sent 
+		dataSend(a,iocompParams, &request4); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
@@ -154,7 +154,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		}
 		printf("After triad\n"); 
 #endif
-		//dataWait(iocompParams,&request); // wait for previous data to be sent 
+		dataWait(iocompParams,&request4); // wait for previous data to be sent 
 
 	} // end avg loop  
 
