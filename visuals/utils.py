@@ -36,7 +36,7 @@ stream = [
 mapping_colour = {
     "Consecutive": "r",
     "Hyperthread": "b",
-    "Overcommit": "k", 
+    "Overcommit": "g", 
     "Serial": "c"
 }
 
@@ -94,8 +94,8 @@ def avgJobRuns(dir):
     """
     Iterate over directories such as 1,2,3,4 etc to average out the times
     """
-
-    maxloop = 1
+    dir_list = next(os.walk(dir))[1] # number of average sub-directories to iterate over
+    maxloop = len(dir_list)
     totalTime = np.empty((10, 10))
     computeTime = np.empty((10, 10))
     avgComputeTime = np.empty((4), dtype=float)
@@ -587,7 +587,7 @@ def bar_plot_times_vs_numcores(parentDir, flag):
 
 def bar_plot_times_vs_numcores_per_stream(parentDir, flag):
 
-    fig1, ax1 = plt.subplots(2, 2,figsize=(14,12))
+    fig1, ax1 = plt.subplots(2, 2,figsize=(8,10),sharey=True)
     data = {} 
     data = getStreamTimingData(parentDir)
     dir_list = next(os.walk(parentDir))[1]
@@ -600,7 +600,6 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag):
     cores.sort(key=int)
     core_num = 0
     totalTime_hatch="///"
-    plt.rcParams['axes.grid'] = False
 
     
     for core in cores:
@@ -630,18 +629,20 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag):
     for x in range(4):
         i = int(x/2)
         j = int(x%2)
-        ax1[i,j].set_xticks(np.arange(len(cores))+width_*len(mapping)/2) 
+        ax1[i,j].set_xticks(np.arange(len(cores))+width_*len(mapping)/2-width_/2) 
         ax1[i,j].set_xticklabels(cores)
         ax1[i,j].title.set_text(stream[x])
-        ax1[i,j].set_xlabel('Number of processes')
-        ax1[i,j].set_ylabel('Computation times(s)')
+        ax1[i,j].set_yscale('log')
 
         for key, value in mapping_colour.items():
             ax1[i,j].bar(x=0,height=0,label = key,color = value) # dummy plots to label compute and total time
             # plt.bar(x=0,height=0, label = "TotalTime", color = "white", edgecolor = 'black',hatch=totalTime_hatch) # dummy plots to label compute and total time
             # plt.bar(x=0,height=0, label = "ComputeTime",edgecolor = 'black', color = "white") # dummy plots to label compute and total time
 
-    plt.legend() 
-
+    fig1.supxlabel('Number of compute processes')
+    fig1.supylabel('Time(s)')
+    ax1[0,0].legend() # legend only in 1st quad
     fig1.tight_layout() 
+    plt.rcParams['grid.alpha'] = 0.5 # grid lines bit less visible
+    plt.rcParams['grid.linewidth'] = 0.1 # grid lines bit less visible
     save_or_show("comp_wall_bar",flag,plt)
