@@ -107,15 +107,15 @@ int main(int argc, char** argv)
 #endif   
 
   // remove file 
-//  if(rank == 0)
-//  {
-//    int ret; 
-//    ret = remove("mpiio.dat");
-//
-//    if(ret != 0) {
-//      printf("Error: unable to delete the file");
-//    }
-//  } 
+  if(rank == 0)
+  {
+    int ret; 
+    ret = remove("mpiio.dat");
+
+    if(ret != 0) {
+      printf("Error: unable to delete the file");
+    }
+  } 
 #ifndef NDEBUG
   printf("Deleted file\n"); 
 #endif   
