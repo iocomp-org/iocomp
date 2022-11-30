@@ -30,6 +30,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 	double timerStart, timerEnd, timer[4][iter], totalTimer[4][iter]; 
 	timerStart = timerEnd = 0.0; 
 	MPI_Request request1, request2, request3, request4; 
+	int mpiWaitFlag; 
 
 #ifndef NDEBUG
 	printf("After inits\n"); 
@@ -73,6 +74,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			b[i] = constant * c[i]; 
+			MPI_Test(&request1,&mpiWaitFlag,MPI_STATUS_IGNORE); // MPI test insertion 
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -103,6 +105,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			c[i] = a[i] + b[i]; 
+			MPI_Test(&request2,&mpiWaitFlag,MPI_STATUS_IGNORE); // MPI test insertion 
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -133,6 +136,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			a[i] = b[i] + c[i] * constant;  
+			MPI_Test(&request3,&mpiWaitFlag,MPI_STATUS_IGNORE); // MPI test insertion 
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -154,6 +158,8 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		}
 		printf("After triad\n"); 
 #endif
+
+		MPI_Test(&request4,&mpiWaitFlag,MPI_STATUS_IGNORE); // MPI test insertion 
 		dataWait(iocompParams,&request4); // wait for previous data to be sent 
 
 	} // end avg loop  
