@@ -46,18 +46,20 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			c[i] = a[i]; 
+			if(iter>0) {dataSendTest(iocompParams,&request4);} // test if previous data got sent, but after the first iter is selected. 
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
 			timer[0][k] = timerEnd - timerStart; 
 		}
-		dataSend(c,iocompParams, &request1); // send data off using dataSend
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
 			totalTimer[0][k] = timerEnd - timerStart; 
 		}
+
+		if(iter>0) {dataSend(c,iocompParams, &request4);} // send data off using dataSend
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
@@ -74,12 +76,12 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			b[i] = constant * c[i]; 
-			MPI_Test(&request1,&mpiWaitFlag,MPI_STATUS_IGNORE); // MPI test insertion 
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
 			timerEnd = MPI_Wtime();
 			timer[1][k] = timerEnd - timerStart; 
+			dataSendTest(iocompParams,&request1); // test if previous data got sent  
 		}
 
 		dataWait(iocompParams,&request1); // wait for previous data to be sent 
@@ -105,7 +107,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			c[i] = a[i] + b[i]; 
-			MPI_Test(&request2,&mpiWaitFlag,MPI_STATUS_IGNORE); // MPI test insertion 
+			dataSendTest(iocompParams,&request2); // test if previous data got sent  
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -136,7 +138,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			a[i] = b[i] + c[i] * constant;  
-			MPI_Test(&request3,&mpiWaitFlag,MPI_STATUS_IGNORE); // MPI test insertion 
+			dataSendTest(iocompParams,&request3); // test if previous data got sent  
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -159,8 +161,6 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		printf("After triad\n"); 
 #endif
 
-		MPI_Test(&request4,&mpiWaitFlag,MPI_STATUS_IGNORE); // MPI test insertion 
-		dataWait(iocompParams,&request4); // wait for previous data to be sent 
 
 	} // end avg loop  
 
