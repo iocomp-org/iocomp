@@ -46,7 +46,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			c[i] = a[i]; 
-			if(iter>0) {dataSendTest(iocompParams,&request4);} // test if previous data got sent, but after the first iter is selected. 
+			if(k>0) {dataSendTest(iocompParams,&request4);} // test if previous data got sent, but after the first iter is selected. 
 		}
 		if (computeRank == 0) // timing will be measured by using ioRank = 0 
 		{	
@@ -59,7 +59,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			totalTimer[0][k] = timerEnd - timerStart; 
 		}
 
-		if(iter>0) {dataSend(c,iocompParams, &request4);} // send data off using dataSend
+		dataSend(c,iocompParams, &request1); // send data off using dataSend
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
