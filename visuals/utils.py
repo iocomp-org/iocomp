@@ -134,7 +134,7 @@ def avgJobRuns(dir):
                 computeTime[i][x] = data["computeTime"][i]
                 totalTime[i][x] = data["totalTime"][i]
         else:
-            print(csv_file_path)
+            print("non-existant", csv_file_path)
 
     """
     find std deviation
@@ -528,16 +528,19 @@ def plot_times_vs_streams(parentDir):
     # plt.legend() 
     # plt.yscale('log')
 
-def save_or_show(name,flag,plt):
-    now = datetime.now()
-    date_time = now.strftime("%d,%m,%Y,%H,%M")
-    saveName = f"{name}_{date_time}"
+def save_or_show(saveName,flag,plt,data):
     if(flag):
         plt.savefig(f"Saved_fig/{saveName}.pdf")
         print("Saved in:")
         print(f"Saved_fig/{saveName}.pdf")
+        bar_plot_times_vs_numcores_per_stream_CSV(saveName,data)
     else:
         plt.show()
+
+def bar_plot_times_vs_numcores_per_stream_CSV(name,data): # save data for plots to csv 
+    
+    df = pd.DataFrame.from_dict(data, orient='index')
+    df.to_csv(f"CSV_files/{name}.csv")
 
 def bar_plot_times_vs_numcores(parentDir, flag):
 
@@ -653,4 +656,9 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag):
     fig1.tight_layout() 
     plt.rcParams['grid.alpha'] = 0.5 # grid lines bit less visible
     plt.rcParams['grid.linewidth'] = 0.1 # grid lines bit less visible
-    save_or_show("comp_wall_bar_NO_MPI_TEST",flag,plt)
+    name = "comp_wall_bar_NO_MPI_TEST"
+    saveName = f"{name}_{datetime.now().strftime('%d,%m,%Y,%H,%M')}"
+    save_or_show(saveName,flag,plt,data)
+
+
+        
