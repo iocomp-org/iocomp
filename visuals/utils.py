@@ -541,6 +541,7 @@ def bar_plot_times_vs_numcores_per_stream_CSV(name,data): # save data for plots 
     
     df = pd.DataFrame.from_dict(data, orient='index')
     df.to_csv(f"CSV_files/{name}.csv")
+    print(f"CSV_files/{name}.csv")
 
 def bar_plot_times_vs_numcores(parentDir, flag):
 
@@ -596,7 +597,7 @@ def bar_plot_times_vs_numcores(parentDir, flag):
     save_or_show("comp_wall_bar",flag,plt)
 
 
-def bar_plot_times_vs_numcores_per_stream(parentDir, flag):
+def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
 
     fig1, ax1 = plt.subplots(2, 2,figsize=(8,10),sharey=True)
     data = {} 
@@ -656,7 +657,8 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag):
     fig1.tight_layout() 
     plt.rcParams['grid.alpha'] = 0.5 # grid lines bit less visible
     plt.rcParams['grid.linewidth'] = 0.1 # grid lines bit less visible
-    name = "comp_wall_bar_NO_MPI_TEST"
+    if (name == None):
+        name = "comp_wall_bar_NO_MPI_TEST"
     saveName = f"{name}_{datetime.now().strftime('%d,%m,%Y,%H,%M')}"
     save_or_show(saveName,flag,plt,data)
 
