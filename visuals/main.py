@@ -9,7 +9,7 @@ parser.add_argument('--save', action='store_true')  # if save used then fig is s
 args = parser.parse_args()
 # onePlot(dir,flag)
 # readDataWriteTime(dir,flag) 
-dir = f'{os.getcwd()}/ARCHER2_runs/22Nov'
+dir = f'{os.getcwd()}/ARCHER2_runs/05Dec'
 # plot_times_vs_numcores(dir)
 # plot_times_vs_streams(dir)
 bar_plot_times_vs_numcores_per_stream(dir,args.save)

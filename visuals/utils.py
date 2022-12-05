@@ -104,6 +104,7 @@ def avgJobRuns(dir):
     stdTotalTime = np.empty((4), dtype=float)
     medTotalTime = np.empty((4), dtype=float)
     medComputeTime = np.empty((4), dtype=float)
+    # print(dir) # error handling 
 
     for l in range(4):
         avgComputeTime[l] = 0
@@ -116,17 +117,24 @@ def avgJobRuns(dir):
     for x in range(maxloop):
 
         # x+1 as the runs are numbered from 1 to 10
-        data = readData(f"{dir}/{x+1}/compute_write_time.csv")
+        # print(x+1) # error handling 
+        csv_file_path=f"{dir}/{x+1}/compute_write_time.csv"
 
-        """
-        iterate over the stream benchmark code types
-        """
-        for i in range(4):
+        if(os.path.isfile(csv_file_path)):
+            
+            data = readData(csv_file_path)
 
-            avgComputeTime[i] += data["computeTime"][i]/maxloop
-            avgTotalTime[i] += data["totalTime"][i]/maxloop
-            computeTime[i][x] = data["computeTime"][i]
-            totalTime[i][x] = data["totalTime"][i]
+            """
+            iterate over the stream benchmark code types
+            """
+            for i in range(4):
+
+                avgComputeTime[i] += data["computeTime"][i]/maxloop
+                avgTotalTime[i] += data["totalTime"][i]/maxloop
+                computeTime[i][x] = data["computeTime"][i]
+                totalTime[i][x] = data["totalTime"][i]
+        else:
+            print(csv_file_path)
 
     """
     find std deviation
@@ -645,4 +653,4 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag):
     fig1.tight_layout() 
     plt.rcParams['grid.alpha'] = 0.5 # grid lines bit less visible
     plt.rcParams['grid.linewidth'] = 0.1 # grid lines bit less visible
-    save_or_show("comp_wall_bar",flag,plt)
+    save_or_show("comp_wall_bar_NO_MPI_TEST",flag,plt)
