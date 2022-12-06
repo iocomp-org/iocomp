@@ -47,7 +47,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 void testData(struct iocomp_params *iocompParams, int testFlag); // test data structures with flag to switch on/off  
 void stopSend(struct iocomp_params *iocompParams); // ghost send function that signals MPI_Sends are stopping
 void dataWait(struct iocomp_params *iocompParams, MPI_Request *request); // wrapper function to implement waiting of data IF HT flag is activated 
-void dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request); // wrapper function to implement testing of send data IF HT flag is on 
+int dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request); // wrapper function to implement testing of send data IF HT flag is on 
 
 // checks 
 void mpi_error_check(int ierr);
