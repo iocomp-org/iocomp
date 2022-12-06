@@ -1,9 +1,9 @@
 #!/bin/bash --login
 #SBATCH --job-name=iocomp
-#SBATCH --nodes=2
-#SBATCH --tasks-per-node=256
+#SBATCH --nodes=1
+#SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
-#SBATCH --time=20:00:00
+#SBATCH --time=00:10:00
 #SBATCH --account=e609
 #SBATCH --partition=standard 
 #SBATCH --qos=lowpriority
@@ -21,7 +21,7 @@ module swap cray-mpich cray-mpich-ucx
 export PPN=${SLURM_NTASKS_PER_NODE}
 export OMP_NUM_THREADS=1
 #export RUNDIR=/work/e609/e609/shr203/iocomp/test/run_dir/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}
-export PARENT_DIR=/work/e609/e609/shr203/iocomp/test/run_dir/28Nov/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}
+export PARENT_DIR=/work/e609/e609/shr203/iocomp/test/test_dir/28Nov/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}
 export TEST=/work/e609/e609/shr203/iocomp/test/test
 export IOCOMP_DIR=/work/e609/e609/shr203/iocomp
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${IOCOMP_DIR}/lib
@@ -29,7 +29,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${IOCOMP_DIR}/lib
 export FULL_CORES=${SLURM_NTASKS_PER_NODE}
 export HALF_CORES=$((${FULL_CORES}/2)) 
 
-for i in {1..10}; do 
+for i in {1..1}; do 
   # Serial case 
   export RUNDIR=${PARENT_DIR}/Serial/$i
   rm -rf ${RUNDIR}
@@ -39,7 +39,7 @@ for i in {1..10}; do
   end=$((${HALF_CORES}-1))
   vals=($(seq 0 1 $(eval echo ${end})))
   bar=$(IFS=, ; echo "${vals[*]}")
-  srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${HALF_CORES} --nodes=1  ${TEST} > test.out
+  srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]} --nodes=1  ${TEST} > test.out
 
  # Overcommit case 
   export RUNDIR=${PARENT_DIR}/Overcommit/$i
@@ -50,7 +50,7 @@ for i in {1..10}; do
   end=$((${HALF_CORES}-1))
   vals=($(seq 0 1 $(eval echo ${end})))
   bar=$(IFS=, ; echo "${vals[*]}")
-  srun  --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntasks=${FULL_CORES} --nodes=1 --overcommit ${TEST} --HT > test.out
+  srun  --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntasks=${FULL_CORES} --cpu-bind=map_cpu:${bar[@]} --nodes=1 --overcommit ${TEST} --HT > test.out
 
   # Hyperthreaded 
   export RUNDIR=${PARENT_DIR}/Hyperthread/$i
@@ -79,7 +79,7 @@ for i in {1..10}; do
   end=$((${FULL_CORES}-1))
   vals=($(seq 0 1 $(eval echo ${end})))
   bar=$(IFS=, ; echo "${vals[*]}")
-  srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${FULL_CORES} --nodes=2 ${TEST} --HT > test.out
+  srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${FULL_CORES} --cpu-bind=map_cpu:${bar[@]} --nodes=1 ${TEST} --HT > test.out
 done 
 
 module list  2>&1 | tee -a test.out 
