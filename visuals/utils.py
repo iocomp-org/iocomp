@@ -22,8 +22,8 @@ select mapping
 mapping = [
     "Consecutive",
     "Hyperthread",
-    "Overcommit",
-    "Serial"
+    "Oversubscribe",
+    "Sequential"
 ]
 
 stream = [
@@ -36,8 +36,8 @@ stream = [
 mapping_colour = {
     "Consecutive": "r",
     "Hyperthread": "b",
-    "Overcommit": "g", 
-    "Serial": "c"
+    "Oversubscribe": "g", 
+    "Sequential": "c"
 }
 
 ls = {
@@ -58,8 +58,8 @@ def readData(filename):
     Data analysis, ignore the first element
     """
     xAxis = mydata2.columns.values[1:]  # header file
-    computeTime = mydata2.iloc[0].values[1:]
-    totalTime = mydata2.iloc[1].values[1:]
+    computeTime = mydata2.iloc[0].values[1:5]
+    totalTime = mydata2.iloc[1].values[1:5]
     data = {
         "xAxis": xAxis,
         "computeTime": computeTime,
@@ -104,7 +104,7 @@ def avgJobRuns(dir):
     stdTotalTime = np.empty((4), dtype=float)
     medTotalTime = np.empty((4), dtype=float)
     medComputeTime = np.empty((4), dtype=float)
-    # print(dir) # error handling 
+    print(dir) # error handling 
 
     for l in range(4):
         avgComputeTime[l] = 0
@@ -118,11 +118,13 @@ def avgJobRuns(dir):
 
         # x+1 as the runs are numbered from 1 to 10
         # print(x+1) # error handling 
-        csv_file_path=f"{dir}/{x+1}/compute_write_time.csv"
+        csv_file_path=f"{dir}/{x}/compute_write_time.csv"
+        print(csv_file_path) 
 
         if(os.path.isfile(csv_file_path)):
             
             data = readData(csv_file_path)
+            print(data)
 
             """
             iterate over the stream benchmark code types
@@ -351,7 +353,7 @@ def comp_vs_wall_time(directory):
     """
     iterate over directories, example Consecutive, Hyperthread etc.
     """
-    for key,value in directory.items():
+    for key in directory: 
         dir = key
 
         """
@@ -379,16 +381,6 @@ def getStreamTimingData(parentDir):
     saveData.insert(0, "stream", ["Copy", "Scalar", "Add", "Triad"])
 
     """
-    select mapping
-    """
-    mapping = [
-        "Consecutive",
-        "Hyperthread",
-        "Overcommit",
-        "Serial"
-    ]
-
-    """
     get data and store them against num cores in data dict
     """
     dir_list = next(os.walk(parentDir))[1]
@@ -400,12 +392,21 @@ def getStreamTimingData(parentDir):
         """
         Can select reqd slurm mappings 
         """
-        directory = {
-            f"{parentDir}/{dir}/Consecutive": "b",
-            f"{parentDir}/{dir}/Hyperthread": "k",
-            f"{parentDir}/{dir}/Overcommit": "r",
-            f"{parentDir}/{dir}/Serial": "c"
-        }
+        directory = []  
+        subDirectory = next(os.walk(f"{parentDir}/{dir}"))[1]
+        for x in subDirectory:
+            directory.append(f"{parentDir}/{dir}/{x}")
+        print(directory) 
+        # directory = f"{parentDir}/{dir}/{mapping}"
+        # name = f"{parentDir}/{dir}"
+        # for map in mapping:
+        #     directory
+        # directory = {
+        #     f"{parentDir}/{dir}/Consecutive": "b",
+        #     f"{parentDir}/{dir}/Hyperthread": "k",
+        #     f"{parentDir}/{dir}/Oversubscribe": "r",
+        #     f"{parentDir}/{dir}/Sequential": "c"
+        # }
         data[core] = comp_vs_wall_time(directory)
     
     return(data)
@@ -638,6 +639,7 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
     """
     ticks for each subplot
     """
+
     for x in range(4):
         i = int(x/2)
         j = int(x%2)
@@ -645,6 +647,7 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
         ax1[i,j].set_xticklabels(cores)
         ax1[i,j].title.set_text(stream[x])
         ax1[i,j].set_yscale('log')
+        ax1[i,j].set_ylim(0,100)
 
         for key, value in mapping_colour.items():
             ax1[i,j].bar(x=0,height=0,label = key,color = value) # dummy plots to label compute and total time

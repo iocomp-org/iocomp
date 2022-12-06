@@ -10,7 +10,7 @@ parser.add_argument('--name')  # if save used then fig is saved, otherwise plt.s
 args = parser.parse_args()
 # onePlot(dir,flag)
 # readDataWriteTime(dir,flag) 
-dir = f'{os.getcwd()}/ARCHER2_runs/MPIWAIT/2Dec/0.8GB'
+dir = f'{os.getcwd()}/ARCHER2_runs/6Dec/0.8GB' 
 # plot_times_vs_numcores(dir)
 # plot_times_vs_streams(dir)
 bar_plot_times_vs_numcores_per_stream(dir,args.save,args.name)
