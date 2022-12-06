@@ -8,20 +8,27 @@
 #include "mpi.h"
 #include "test.h"
 
-void timer_start(double* timerStart, int computeRank)
+#define COPY		0
+#define SCALE		1
+#define ADD			2
+#define TRIAD		3
+
+double timer_start(int computeRank)
 {
+	double timerStart = 0.0; 	
 	if (computeRank == 0) // timing will be measured by using ioRank = 0 
 	{	
-		*timerStart = MPI_Wtime();
+		timerStart = MPI_Wtime();
 	}
+	return(timerStart); 
 }
 
-double timer_end(double* timerStart, int computeRank )
+double timer_end(double timerStart, int computeRank )
 {	
 	double timeDiff = 0.0; 
 	if (computeRank == 0) // timing will be measured by using ioRank = 0 
 	{	
-		timeDiff = MPI_Wtime() - *timerStart; 
+		timeDiff = MPI_Wtime() - timerStart; 
 	} 
 	return(timeDiff); 
 }
@@ -37,7 +44,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		return; 
 	}
 	int i, ierr,k; 
-	int constant = 5; 
+	double constant = 3.0; 
 	double c[iocompParams->localDataSize]; 
 	double b[iocompParams->localDataSize]; 
 	int computeRank;
@@ -45,11 +52,22 @@ void stream(double* a, struct iocomp_params *iocompParams)
 	comm = iocompParams->globalComm; 
 	ierr = MPI_Comm_rank(comm, &computeRank); 
 	mpi_error_check(ierr); 
-	double timerStart, timerEnd, timer[4][iter], totalTimer[4][iter], programStartTime, programEndTime, waitTimer[4][iter], wallTime; 
+	double timerStart, timerEnd, timer[KERNELS][iter], totalTimer[KERNELS][iter], programStartTime, programEndTime, waitTimer[KERNELS][iter], wallTime; 
 	timerStart = 0.0; 
 	timerEnd = 0.0; 
-	MPI_Request requestArray[4]; 
+	MPI_Request requestArray[KERNELS]; 
 	int mpiWaitFlag[KERNELS]; 
+
+	// initialise all timers to be 0 
+	for (i=0; i < KERNELS; i++) 
+	{
+		for (k =0; k<iter; k++)
+		{
+			timer[i][k] = 0.0;
+			totalTimer[i][k] = 0.0;
+			waitTimer[i][k] = 0.0;
+		}
+	} 
 
 #ifndef NDEBUG
 	printf("After inits\n"); 
@@ -60,24 +78,24 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		// wait for data from ADD(C) to be sent 
 		if(k>0)
 		{
-			if(mpiWaitFlag[2] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("ADD data not sent \n");}  // test if HT flag is on
-			timer_start(&timerStart,computeRank); // start timing 
-			dataWait(iocompParams,&requestArray[2]);
-			waitTimer[2][k] = timer_end(&timerStart,computeRank); // wait time for TRIAD 
+			if(mpiWaitFlag[ADD] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("ADD data not sent \n");}  // test if HT flag is on
+			timerStart = timer_start(computeRank); // start timing 
+			dataWait(iocompParams,&requestArray[ADD]);
+			waitTimer[ADD][k] = timer_end(timerStart,computeRank); // wait time for ADD
 		} 
 
 		/*
 		* COPY
 		*/ 
-		timer_start(&timerStart,computeRank); // start timing 
+		timerStart = timer_start(computeRank); // start timing 
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			c[i] = a[i]; 
-			if(k>0){mpiWaitFlag[3] = dataSendTest(iocompParams,&requestArray[3]);} // test if TRIAD data got sent
+			if(k>0){mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&requestArray[TRIAD]);} // test if TRIAD data got sent
 		}
-		timer[0][k] = timer_end(&timerStart,computeRank); // computeTime for COPY 
-		dataSend(c,iocompParams, &requestArray[0]); // send data off using dataSend
-		totalTimer[0][k] = timer_end(&timerStart,computeRank); // total time for COPY  
+		timer[COPY][k] = timer_end(timerStart,computeRank); // computeTime for COPY 
+		dataSend(c,iocompParams, &requestArray[COPY]); // send data off using dataSend
+		totalTimer[COPY][k] = timer_end(timerStart,computeRank); // total time for COPY  
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
 		printf("After COPY\n"); 
@@ -86,47 +104,47 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		// wait for data from previous SCALE(B) to be sent 
 		if(k>0)
 		{
-			if(mpiWaitFlag[1] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("SCALE data not sent \n");}  // test if HT flag is on
-			timer_start(&timerStart,computeRank); // start timing 
-			dataWait(iocompParams,&requestArray[1]);
-			waitTimer[1][k] = timer_end(&timerStart,computeRank); // wait time for SCALE 
+			if(mpiWaitFlag[SCALE] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("SCALE data not sent \n");}  // test if HT flag is on
+			timerStart = timer_start(computeRank); // start timing 
+			dataWait(iocompParams,&requestArray[SCALE]);
+			waitTimer[SCALE][k] = timer_end(timerStart,computeRank); // wait time for SCALE 
 		} 
 
 		/*
 		* SCALE
 		*/ 
-		timer_start(&timerStart,computeRank); // start timing 
+		timerStart = timer_start(computeRank); // start timing 
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			b[i] = constant * c[i]; 
-			mpiWaitFlag[0]=dataSendTest(iocompParams,&requestArray[0]); // test if COPY data got sent 
+			mpiWaitFlag[COPY]=dataSendTest(iocompParams,&requestArray[0]); // test if COPY data got sent 
 		}
-		timer[1][k] = timer_end(&timerStart,computeRank); // computeTime for SCALE
-		dataSend(b,iocompParams, &requestArray[1]); // send data off using dataSend
-		totalTimer[1][k] = timer_end(&timerStart,computeRank); // total time for SCALE
+		timer[SCALE][k] = timer_end(timerStart,computeRank); // computeTime for SCALE
+		dataSend(b,iocompParams, &requestArray[SCALE]); // send data off using dataSend
+		totalTimer[SCALE][k] = timer_end(timerStart,computeRank); // total time for SCALE
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",b[i]); }
 		printf("After SCALE\n"); 
 #endif
 		
 		// wait for data from COPY(C) to be sent
-		if(mpiWaitFlag[0] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("COPY data not sent \n");}  // test if HT flag is on
-		timer_start(&timerStart,computeRank); // start timing 
-		dataWait(iocompParams,&requestArray[0]);
-		waitTimer[0][k] = timer_end(&timerStart,computeRank); // wait time for COPY
+		if(mpiWaitFlag[COPY] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("COPY data not sent \n");}  // test if HT flag is on
+		timerStart = timer_start(computeRank); // start timing 
+		dataWait(iocompParams,&requestArray[COPY]);
+		waitTimer[COPY][k] = timer_end(timerStart,computeRank); // wait time for COPY
 
 		/*
 		* ADD
 		*/ 
-		timer_start(&timerStart,computeRank); // start timing 
+		timerStart = timer_start(computeRank); // start timing 
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			c[i] = a[i] + b[i]; 
-			mpiWaitFlag[1]=dataSendTest(iocompParams,&requestArray[1]); // test if SCALE data got sent  
+			mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&requestArray[SCALE]); // test if SCALE data got sent  
 		}
-		timer[2][k] = timer_end(&timerStart,computeRank); // computeTime for ADD
-		dataSend(c,iocompParams, &requestArray[2]); // send data off using dataSend
-		totalTimer[2][k] = timer_end(&timerStart,computeRank); // total time for ADD
+		timer[ADD][k] = timer_end(timerStart,computeRank); // computeTime for ADD
+		dataSend(c,iocompParams, &requestArray[ADD]); // send data off using dataSend
+		totalTimer[ADD][k] = timer_end(timerStart,computeRank); // total time for ADD
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
 		printf("After ADD\n"); 
@@ -135,24 +153,24 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		// wait for data from previous TRIAD(A) to be sent 
 		if(k>0)
 		{
-			if(mpiWaitFlag[3] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("TRIAD data not sent \n");}  // test if HT flag is on
-			timer_start(&timerStart,computeRank); // start timing 
-			dataWait(iocompParams,&requestArray[3]);
-			waitTimer[3][k] = timer_end(&timerStart,computeRank); // wait time for SCALE 
+			if(mpiWaitFlag[TRIAD] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("TRIAD data not sent \n");}  // test if HT flag is on
+			timerStart = timer_start(computeRank); // start timing 
+			dataWait(iocompParams,&requestArray[TRIAD]);
+			waitTimer[TRIAD][k] = timer_end(timerStart,computeRank); // wait time for SCALE 
 		} 
 
 		/*
 		* TRIAD 
 		*/ 
-		timer_start(&timerStart,computeRank); // start timing 
+		timerStart = timer_start(computeRank); // start timing 
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			a[i] = b[i] + c[i] * constant;  
-			mpiWaitFlag[2]=dataSendTest(iocompParams,&requestArray[2]); // test if ADD data got sent  
+			mpiWaitFlag[ADD]=dataSendTest(iocompParams,&requestArray[ADD]); // test if ADD data got sent  
 		}
-		timer[3][k] = timer_end(&timerStart,computeRank); // computeTime for TRIAD
-		dataSend(a,iocompParams, &requestArray[3]); // send data
-		totalTimer[3][k] = timer_end(&timerStart,computeRank); // total time for TRIAD
+		timer[TRIAD][k] = timer_end(timerStart,computeRank); // computeTime for TRIAD
+		dataSend(a,iocompParams, &requestArray[TRIAD]); // send data
+		totalTimer[TRIAD][k] = timer_end(timerStart,computeRank); // total time for TRIAD
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",a[i]); }
 		printf("After TRIAD\n"); 
