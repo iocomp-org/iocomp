@@ -61,7 +61,7 @@ def readData(filename):
     computeTime = mydata2.iloc[0].values[1:5]
     totalTime = mydata2.iloc[1].values[1:5]
     waitTime = mydata2.iloc[2].values[1:5]
-    wallTime = mydata2.iloc[2].values[5]
+    wallTime = mydata2.iloc[3].values[4] # bug in the iocomp output file, walltimer should have one more comma, it should be 5 value. 
     data = {
         "xAxis": xAxis,
         "computeTime": computeTime,
@@ -503,17 +503,18 @@ def avgJobRuns(dir):
     medTotalTime    = np.empty((4), dtype=np.float64)
     medComputeTime  = np.empty((4), dtype=np.float64)
     medWaitTime     = np.empty((4), dtype=np.float64)
+    wallTime        = np.empty((maxloop), dtype=np.float64)
 
     """
     Initialise average counters 
     """
     for x in range(4):
-        stdComputeTime[x]  =0 
-        stdTotalTime[x]    =0 
-        stdWaitTime[x]     =0 
-        medTotalTime[x]    =0 
-        medComputeTime[x]  =0 
-        medWaitTime[x]     =0 
+        stdComputeTime[x]  = 0 
+        stdTotalTime[x]    = 0 
+        stdWaitTime[x]     = 0 
+        medTotalTime[x]    = 0 
+        medComputeTime[x]  = 0 
+        medWaitTime[x]     = 0 
 
     for x in range(maxloop):
 
@@ -522,6 +523,7 @@ def avgJobRuns(dir):
         if(os.path.isfile(csv_file_path)):
             
             data = readData(csv_file_path)
+
             """
             iterate over the stream benchmark code types, ex. COPY over 1,2,3, sub directories. 
             """
@@ -529,6 +531,9 @@ def avgJobRuns(dir):
                 computeTime[i][x] = data["computeTime"][i]
                 waitTime[i][x] = data["waitTime"][i]
                 totalTime[i][x] = data["totalTime"][i]
+            
+            wallTime[x] = data["wallTime"] # wall time covers the whole program 
+
         else:
             print("non-existant", csv_file_path)
 
@@ -543,6 +548,9 @@ def avgJobRuns(dir):
         medComputeTime[i] = statistics.median(computeTime[i])
         medWaitTime[i] = statistics.median(waitTime[i])
         medTotalTime[i] = statistics.median(totalTime[i])
+
+    medWallTime = statistics.median(wallTime) 
+    stdWallTime = np.std(wallTime)
 
     """
     remove tab space from X-axis
@@ -560,7 +568,9 @@ def avgJobRuns(dir):
         "avgTotalTime": medTotalTime,
         "xAxis": stream_ob,
         "stdTotalTime": stdTotalTime,
-        "stdComputeTime": stdComputeTime
+        "stdComputeTime": stdComputeTime, 
+        "wallTime": medWallTime, 
+        "stdWallTime": stdWallTime 
     }
 
     return (avgData)
@@ -598,7 +608,7 @@ def getStreamTimingData(parentDir):
             directory.append(f"{parentDir}/{dir}/{x}")
 
         """
-        outer level of dictionary saving under core name 
+        outer level of dictionary saving under number of cores 
         """ 
         data[core] = comp_vs_wall_time(directory)
     
@@ -612,6 +622,7 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
     data = getStreamTimingData(parentDir)
     dir_list = next(os.walk(parentDir))[1]
     cores = []  
+    print(data)
 
     for dir in dir_list:
         core = dir.split("_",1)[1]
