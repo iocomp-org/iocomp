@@ -13,4 +13,5 @@ args = parser.parse_args()
 dir = f'{os.getcwd()}/ARCHER2_runs/6Dec/0.8GB' 
 # plot_times_vs_numcores(dir)
 # plot_times_vs_streams(dir)
-bar_plot_times_vs_numcores_per_stream(dir,args.save,args.name)
+# bar_plot_times_vs_numcores_per_stream(dir,args.save,args.name)
+wallTime_vs_numCores(dir)

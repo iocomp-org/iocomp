@@ -569,7 +569,7 @@ def avgJobRuns(dir):
         "xAxis": stream_ob,
         "stdTotalTime": stdTotalTime,
         "stdComputeTime": stdComputeTime, 
-        "wallTime": medWallTime, 
+        "avgWallTime": medWallTime, 
         "stdWallTime": stdWallTime 
     }
 
@@ -622,7 +622,6 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
     data = getStreamTimingData(parentDir)
     dir_list = next(os.walk(parentDir))[1]
     cores = []  
-    print(data)
 
     for dir in dir_list:
         core = dir.split("_",1)[1]
@@ -646,6 +645,7 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
             for x in range(len(stream)): # summation of all compute steps from stream categories
                 computeTime = data[core][ind_map]["avgComputeTime"][x] # addition of compute steps into each other. 
                 totalTime = data[core][ind_map]["avgTotalTime"][x] # addition of compute steps into each other. 
+                stdTotalTime = data[core][ind_map]["stdTotalTime"][x] # addition of compute steps into each other. 
                 waitTime = data[core][ind_map]["avgWaitTime"][x] # addition of compute steps into each other. 
                 i=int(x/2)
                 j=int(x%2)
@@ -668,7 +668,7 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
         ax1[i,j].set_xticklabels(cores)
         ax1[i,j].title.set_text(stream[x])
         ax1[i,j].set_yscale('log')
-        ax1[i,j].set_ylim(0,100)
+        # ax1[i,j].set_ylim(0,100)
 
         for key, value in mapping_colour.items():
             ax1[i,j].bar(x=0,height=0,label = key,color = value) # dummy plots to label compute and total time
@@ -685,6 +685,68 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
         name = "comp_wall_bar_NO_MPI_TEST"
     saveName = f"{name}_{datetime.now().strftime('%d,%m,%Y,%H,%M')}"
     save_or_show(saveName,flag,plt,data)
+
+
+def wallTime_vs_numCores(parentDir):
+
+    fig1 = plt.figure(figsize =(10, 8))
+    data = {} 
+    data = getStreamTimingData(parentDir)
+    dir_list = next(os.walk(parentDir))[1]
+    cores = []  
+
+    for dir in dir_list:
+        core = dir.split("_",1)[1]
+        cores.append(core)
+
+    cores.sort(key=int)
+    core_num = 0
+    totalTime_hatch="///"
+    waitTime_hatch="****"
+    
+    
+    for core in cores:
+        width_ = 0.2
+        computeTime = [0]*len(stream) # total compute time for all stream categories
+        totalTime = [0]*len(stream) # total wall time for all stream categories
+        iter = 0
+        mapping_num = 0 
+        
+        for ind_map in mapping:
+       
+            # for x in range(len(stream)): # summation of all compute steps from stream categories
+            wallTime = data[core][ind_map]["avgWallTime"] 
+            stdWallTime = data[core][ind_map]["stdWallTime"] 
+            plt.bar(core_num+mapping_num*width_,wallTime,yerr=stdWallTime, width=width_,color=mapping_colour[ind_map],capsize=10)
+       
+            mapping_num += 1 
+
+        core_num += 1
+
+    """
+    ticks for each subplot
+    """
+
+    plt.xticks(np.arange(len(cores))+width_*len(mapping)/2-width_/2,cores) 
+    # plt.xticklabels(cores)
+    plt.yscale('log')
+
+    for key, value in mapping_colour.items():
+        plt.bar(x=0,height=0,label = key,color = value) # dummy plots to label compute and total time
+
+    fig1.supxlabel('Number of compute processes')
+    fig1.supylabel('Time(s)')
+    plt.legend() 
+    # ax1[0,0].legend() # legend only in 1st quad
+    fig1.tight_layout() 
+    plt.rcParams['grid.alpha'] = 0.5 # grid lines bit less visible
+    plt.rcParams['grid.linewidth'] = 0.1 # grid lines bit less visible
+    # if (name == None):
+    #     name = "comp_wall_bar_NO_MPI_TEST"
+    # saveName = f"{name}_{datetime.now().strftime('%d,%m,%Y,%H,%M')}"
+    # save_or_show(saveName,flag,plt,data)
+
+    plt.show() 
 
 
         
