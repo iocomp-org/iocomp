@@ -59,12 +59,12 @@ void stream(double* a, struct iocomp_params *iocompParams)
 	programStartTime = MPI_Wtime(); 	
 	for(k = 0; k< iter; k++) // averaging 
 	{
-		// wait for data from triad(C) to be sent 
+		// wait for data from ADD(C) to be sent 
 		if(k>0)
 		{
 			timer_start(&timerStart,computeRank); // start timing 
-			dataWait(iocompParams,&requestArray[3]);
-			waitTimer[3][k] = timer_end(&timerStart,computeRank); // wait time for scale 
+			dataWait(iocompParams,&requestArray[2]);
+			waitTimer[2][k] = timer_end(&timerStart,computeRank); // wait time for TRIAD 
 		} 
 
 		/*
@@ -74,22 +74,22 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			c[i] = a[i]; 
+			if(k>0){dataSendTest(iocompParams,&requestArray[3]);} // test if TRIAD data got sent
 		}
-		timer[0][k] = timer_end(&timerStart,computeRank); // computational time for copy 
-		// end of computation
+		timer[0][k] = timer_end(&timerStart,computeRank); // computeTime for COPY 
 		dataSend(c,iocompParams, &requestArray[0]); // send data off using dataSend
-		totalTimer[0][k] = timer_end(&timerStart,computeRank); // total time for copy  
+		totalTimer[0][k] = timer_end(&timerStart,computeRank); // total time for COPY  
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
-		printf("After copy\n"); 
+		printf("After COPY\n"); 
 #endif
 
-		// wait for data from previous scale(B) to be sent 
+		// wait for data from previous SCALE(B) to be sent 
 		if(k>0)
 		{
 			timer_start(&timerStart,computeRank); // start timing 
 			dataWait(iocompParams,&requestArray[1]);
-			waitTimer[1][k] = timer_end(&timerStart,computeRank); // wait time for scale 
+			waitTimer[1][k] = timer_end(&timerStart,computeRank); // wait time for SCALE 
 		} 
 
 		/*
@@ -99,20 +99,20 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			b[i] = constant * c[i]; 
-			dataSendTest(iocompParams,&requestArray[0]); // test if copy data got sent 
+			dataSendTest(iocompParams,&requestArray[0]); // test if COPY data got sent 
 		}
-		timer[1][k] = timer_end(&timerStart,computeRank); // computational time for scale
+		timer[1][k] = timer_end(&timerStart,computeRank); // computeTime for SCALE
 		dataSend(b,iocompParams, &requestArray[1]); // send data off using dataSend
-		totalTimer[1][k] = timer_end(&timerStart,computeRank); // total time for scale
+		totalTimer[1][k] = timer_end(&timerStart,computeRank); // total time for SCALE
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",b[i]); }
-		printf("After scale\n"); 
+		printf("After SCALE\n"); 
 #endif
 		
-		// wait for copy array (c) to be sent 
+		// wait for data from COPY(C) to be sent
 		timer_start(&timerStart,computeRank); // start timing 
 		dataWait(iocompParams,&requestArray[0]);
-		waitTimer[0][k] = timer_end(&timerStart,computeRank); // wait time for copy 
+		waitTimer[0][k] = timer_end(&timerStart,computeRank); // wait time for COPY
 
 		/*
 		* ADD
@@ -121,22 +121,22 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			c[i] = a[i] + b[i]; 
-			dataSendTest(iocompParams,&requestArray[1]); // test if scale data got sent  
+			dataSendTest(iocompParams,&requestArray[1]); // test if SCALE data got sent  
 		}
-		timer[2][k] = timer_end(&timerStart,computeRank); // computeTime for add
+		timer[2][k] = timer_end(&timerStart,computeRank); // computeTime for ADD
 		dataSend(c,iocompParams, &requestArray[2]); // send data off using dataSend
-		totalTimer[2][k] = timer_end(&timerStart,computeRank); // total time for add
+		totalTimer[2][k] = timer_end(&timerStart,computeRank); // total time for ADD
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
-		printf("After add\n"); 
+		printf("After ADD\n"); 
 #endif
 		
-		// wait for data from previous triad(A) to be sent 
+		// wait for data from previous TRIAD(A) to be sent 
 		if(k>0)
 		{
 			timer_start(&timerStart,computeRank); // start timing 
 			dataWait(iocompParams,&requestArray[3]);
-			waitTimer[3][k] = timer_end(&timerStart,computeRank); // wait time for scale 
+			waitTimer[3][k] = timer_end(&timerStart,computeRank); // wait time for SCALE 
 		} 
 
 		/*
@@ -146,14 +146,14 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		for(i = 0; i< iocompParams->localDataSize; i++)
 		{
 			a[i] = b[i] + c[i] * constant;  
-			dataSendTest(iocompParams,&requestArray[2]); // test if previous data got sent  
+			dataSendTest(iocompParams,&requestArray[2]); // test if ADD data got sent  
 		}
-		timer[3][k] = timer_end(&timerStart,computeRank); // computeTime for triad
+		timer[3][k] = timer_end(&timerStart,computeRank); // computeTime for TRIAD
 		dataSend(a,iocompParams, &requestArray[3]); // send data
-		totalTimer[3][k] = timer_end(&timerStart,computeRank); // total time for triad
+		totalTimer[3][k] = timer_end(&timerStart,computeRank); // total time for TRIAD
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",a[i]); }
-		printf("After triad\n"); 
+		printf("After TRIAD\n"); 
 #endif
 	} // end avg loop  
 

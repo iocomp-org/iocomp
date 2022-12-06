@@ -33,8 +33,8 @@ void resultsOutput(double timer[4][iter], double totalTimer[4][iter],double wait
 
 	// calculate the averages from the total time 
 	avg(avgCompTimer, timer); 
-	avg(avgTotalTimer, timer); 
-	avg(avgWaitTimer, timer); 
+	avg(avgTotalTimer, totalTimer); 
+	avg(avgWaitTimer, waitTimer); 
 	// avgTotalTimer = avg(totalTimer); 
 	// avgWaitTimer = avg(waitTimer); 
 
