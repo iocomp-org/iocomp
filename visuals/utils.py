@@ -61,11 +61,13 @@ def readData(filename):
     computeTime = mydata2.iloc[0].values[1:5]
     totalTime = mydata2.iloc[1].values[1:5]
     waitTime = mydata2.iloc[2].values[1:5]
+    wallTime = mydata2.iloc[2].values[5]
     data = {
         "xAxis": xAxis,
         "computeTime": computeTime,
         "totalTime": totalTime, 
-        "waitTime": waitTime
+        "waitTime": waitTime,
+        "wallTime": wallTime 
     }
     return data
 
@@ -224,7 +226,6 @@ def readDataWriteTime(parentDir,flag):
 
     X_axis = np.arange(len(ioBandwidth_avg))
     width = 0.4
-    print(ioBandwidth_avg)
     plt.bar(X_axis,ioBandwidth_avg,width, yerr=ioBandwidth_std,alpha=0.5, ecolor='black', capsize=10)
     plt.xticks(X_axis,label_ref)
     # plt.title(f"I/O bandwidth from stream benchmark;local size {round(fileSize[0],2)}GB")
@@ -491,8 +492,8 @@ def avgJobRuns(dir):
     """
     Iterate over directories such as 1,2,3,4 etc to average out the times
     """
-    dir_list        = next(os.walk(dir))[1] # number of average sub-directories to iterate over
-    maxloop         = len(dir_list)
+    dir_list        = next(os.walk(dir))[1] 
+    maxloop         = len(dir_list) # number of job submission to loop over 
     totalTime       = np.empty((10, maxloop),dtype=np.float64)
     computeTime     = np.empty((10, maxloop),dtype=np.float64)
     waitTime        = np.empty((10, maxloop),dtype=np.float64)
@@ -502,7 +503,6 @@ def avgJobRuns(dir):
     medTotalTime    = np.empty((4), dtype=np.float64)
     medComputeTime  = np.empty((4), dtype=np.float64)
     medWaitTime     = np.empty((4), dtype=np.float64)
-    print(dir) # error handling 
 
     """
     Initialise average counters 
@@ -518,8 +518,7 @@ def avgJobRuns(dir):
     for x in range(maxloop):
 
         csv_file_path=f"{dir}/{x}/compute_write_time.csv"
-        print(csv_file_path) 
-
+        
         if(os.path.isfile(csv_file_path)):
             
             data = readData(csv_file_path)
@@ -530,7 +529,6 @@ def avgJobRuns(dir):
                 computeTime[i][x] = data["computeTime"][i]
                 waitTime[i][x] = data["waitTime"][i]
                 totalTime[i][x] = data["totalTime"][i]
-                print("compute timer",computeTime[i][x])
         else:
             print("non-existant", csv_file_path)
 
@@ -582,17 +580,26 @@ def getStreamTimingData(parentDir):
     dir_list = next(os.walk(parentDir))[1]
     data = {}
     cores = []  
+
     for dir in dir_list:
         core = dir.split("_",1)[1]
         cores.append(core)
+
         """
         Get available SLURM mappings and obtain path
         """
         directory = []  
         subDirectory = next(os.walk(f"{parentDir}/{dir}"))[1]
+
+        """
+        Get average values using median 
+        """
         for x in subDirectory:
             directory.append(f"{parentDir}/{dir}/{x}")
-        print(directory) 
+
+        """
+        outer level of dictionary saving under core name 
+        """ 
         data[core] = comp_vs_wall_time(directory)
     
     return(data)
@@ -613,6 +620,7 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
     cores.sort(key=int)
     core_num = 0
     totalTime_hatch="///"
+    waitTime_hatch="****"
 
     
     for core in cores:
@@ -627,8 +635,10 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
             for x in range(len(stream)): # summation of all compute steps from stream categories
                 computeTime = data[core][ind_map]["avgComputeTime"][x] # addition of compute steps into each other. 
                 totalTime = data[core][ind_map]["avgTotalTime"][x] # addition of compute steps into each other. 
+                waitTime = data[core][ind_map]["avgWaitTime"][x] # addition of compute steps into each other. 
                 i=int(x/2)
                 j=int(x%2)
+                ax1[i,j].bar(core_num+mapping_num*width_, waitTime, alpha=0.5, width=width_, color=mapping_colour[ind_map],hatch=waitTime_hatch)
                 ax1[i,j].bar(core_num+mapping_num*width_, totalTime, alpha=0.5, width=width_, color=mapping_colour[ind_map],hatch=totalTime_hatch)
                 ax1[i,j].bar(core_num+mapping_num*width_, computeTime, width=width_,color=mapping_colour[ind_map])
        
