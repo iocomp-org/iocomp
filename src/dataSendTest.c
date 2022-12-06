@@ -5,7 +5,7 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
-void dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request)
+int dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request)
 {
 
 	int i, ierr; 
@@ -17,7 +17,10 @@ void dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request)
 #ifndef NDEBUG
 		printf("MPI test\n"); 
 #endif
+			return(mpiWaitFlag);
 	}
+	else
+		return 0; 
 
 } 
 
