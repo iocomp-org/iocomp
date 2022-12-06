@@ -60,10 +60,12 @@ def readData(filename):
     xAxis = mydata2.columns.values[1:]  # header file
     computeTime = mydata2.iloc[0].values[1:5]
     totalTime = mydata2.iloc[1].values[1:5]
+    waitTime = mydata2.iloc[2].values[1:5]
     data = {
         "xAxis": xAxis,
         "computeTime": computeTime,
-        "totalTime": totalTime
+        "totalTime": totalTime, 
+        "waitTime": waitTime
     }
     return data
 
@@ -89,84 +91,6 @@ def barplot(filename, flag):
     else:
         plt.savefig(f"{filename}fig.pdf")
 
-
-def avgJobRuns(dir):
-    """
-    Iterate over directories such as 1,2,3,4 etc to average out the times
-    """
-    dir_list = next(os.walk(dir))[1] # number of average sub-directories to iterate over
-    maxloop = len(dir_list)
-    totalTime = np.empty((10, 10))
-    computeTime = np.empty((10, 10))
-    avgComputeTime = np.empty((4), dtype=float)
-    avgTotalTime = np.empty((4), dtype=float)
-    stdComputeTime = np.empty((4), dtype=float)
-    stdTotalTime = np.empty((4), dtype=float)
-    medTotalTime = np.empty((4), dtype=float)
-    medComputeTime = np.empty((4), dtype=float)
-    print(dir) # error handling 
-
-    for l in range(4):
-        avgComputeTime[l] = 0
-        avgTotalTime[l] = 0
-        stdComputeTime[l] = 0
-        stdTotalTime[l] = 0
-        medComputeTime[l] = 0
-        medTotalTime[l] = 0
-
-    for x in range(maxloop):
-
-        # x+1 as the runs are numbered from 1 to 10
-        # print(x+1) # error handling 
-        csv_file_path=f"{dir}/{x}/compute_write_time.csv"
-        print(csv_file_path) 
-
-        if(os.path.isfile(csv_file_path)):
-            
-            data = readData(csv_file_path)
-            print(data)
-
-            """
-            iterate over the stream benchmark code types
-            """
-            for i in range(4):
-
-                avgComputeTime[i] += data["computeTime"][i]/maxloop
-                avgTotalTime[i] += data["totalTime"][i]/maxloop
-                computeTime[i][x] = data["computeTime"][i]
-                totalTime[i][x] = data["totalTime"][i]
-        else:
-            print("non-existant", csv_file_path)
-
-    """
-    find std deviation
-    """
-    for i in range(4):
-
-        stdComputeTime[i] = np.std(computeTime[i])
-        stdTotalTime[i] = np.std(totalTime[i])
-        medComputeTime[i] = statistics.median(computeTime[i])
-        medTotalTime[i] = statistics.median(totalTime[i])
-
-    """
-    remove tab space from X-axis
-    """
-    stream_ob = [] 
-    for el in data["xAxis"]:  
-        stream_ob.append(el.replace("\t", "")) 
-
-    """
-    Insert data into dictionary
-    """
-    avgData = {
-        "avgComputeTime": avgComputeTime,
-        "avgTotalTime": avgTotalTime,
-        "xAxis": stream_ob,
-        "stdTotalTime": stdTotalTime,
-        "stdComputeTime": stdComputeTime
-    }
-
-    return (avgData)
 
 
 def saveDatatoPD(data, label, saveData):
@@ -371,46 +295,6 @@ def comp_vs_wall_time(directory):
     return(output_data)
 
  
-def getStreamTimingData(parentDir):
-
-    """
-    save data csv headers 
-    """
-    saveData = pd.DataFrame()
-    saveData_T = pd.DataFrame()  # transposed
-    saveData.insert(0, "stream", ["Copy", "Scalar", "Add", "Triad"])
-
-    """
-    get data and store them against num cores in data dict
-    """
-    dir_list = next(os.walk(parentDir))[1]
-    data = {}
-    cores = []  
-    for dir in dir_list:
-        core = dir.split("_",1)[1]
-        cores.append(core)
-        """
-        Can select reqd slurm mappings 
-        """
-        directory = []  
-        subDirectory = next(os.walk(f"{parentDir}/{dir}"))[1]
-        for x in subDirectory:
-            directory.append(f"{parentDir}/{dir}/{x}")
-        print(directory) 
-        # directory = f"{parentDir}/{dir}/{mapping}"
-        # name = f"{parentDir}/{dir}"
-        # for map in mapping:
-        #     directory
-        # directory = {
-        #     f"{parentDir}/{dir}/Consecutive": "b",
-        #     f"{parentDir}/{dir}/Hyperthread": "k",
-        #     f"{parentDir}/{dir}/Oversubscribe": "r",
-        #     f"{parentDir}/{dir}/Sequential": "c"
-        # }
-        data[core] = comp_vs_wall_time(directory)
-    
-    return(data)
-
 
         
 
@@ -596,6 +480,122 @@ def bar_plot_times_vs_numcores(parentDir, flag):
     plt.yscale('log')
     fig1.tight_layout() 
     save_or_show("comp_wall_bar",flag,plt)
+
+
+"""
+Plotting functions for bar plot showing num cores vs STREAM categories 
+"""
+
+
+def avgJobRuns(dir):
+    """
+    Iterate over directories such as 1,2,3,4 etc to average out the times
+    """
+    dir_list        = next(os.walk(dir))[1] # number of average sub-directories to iterate over
+    maxloop         = len(dir_list)
+    totalTime       = np.empty((10, maxloop),dtype=np.float64)
+    computeTime     = np.empty((10, maxloop),dtype=np.float64)
+    waitTime        = np.empty((10, maxloop),dtype=np.float64)
+    stdComputeTime  = np.empty((4), dtype=np.float64)
+    stdTotalTime    = np.empty((4), dtype=np.float64)
+    stdWaitTime     = np.empty((4), dtype=np.float64)
+    medTotalTime    = np.empty((4), dtype=np.float64)
+    medComputeTime  = np.empty((4), dtype=np.float64)
+    medWaitTime     = np.empty((4), dtype=np.float64)
+    print(dir) # error handling 
+
+    """
+    Initialise average counters 
+    """
+    for x in range(4):
+        stdComputeTime[x]  =0 
+        stdTotalTime[x]    =0 
+        stdWaitTime[x]     =0 
+        medTotalTime[x]    =0 
+        medComputeTime[x]  =0 
+        medWaitTime[x]     =0 
+
+    for x in range(maxloop):
+
+        csv_file_path=f"{dir}/{x}/compute_write_time.csv"
+        print(csv_file_path) 
+
+        if(os.path.isfile(csv_file_path)):
+            
+            data = readData(csv_file_path)
+            """
+            iterate over the stream benchmark code types, ex. COPY over 1,2,3, sub directories. 
+            """
+            for i in range(4):
+                computeTime[i][x] = data["computeTime"][i]
+                waitTime[i][x] = data["waitTime"][i]
+                totalTime[i][x] = data["totalTime"][i]
+                print("compute timer",computeTime[i][x])
+        else:
+            print("non-existant", csv_file_path)
+
+    """
+    find std deviation and median
+    """
+    for i in range(4):
+
+        stdComputeTime[i] = np.std(computeTime[i])
+        stdTotalTime[i] = np.std(totalTime[i])
+        stdWaitTime[i] = np.std(waitTime[i])
+        medComputeTime[i] = statistics.median(computeTime[i])
+        medWaitTime[i] = statistics.median(waitTime[i])
+        medTotalTime[i] = statistics.median(totalTime[i])
+
+    """
+    remove tab space from X-axis
+    """
+    stream_ob = [] 
+    for el in data["xAxis"]:  
+        stream_ob.append(el.replace("\t", "")) 
+
+    """
+    Insert data into dictionary
+    """
+    avgData = {
+        "avgComputeTime": medComputeTime,
+        "avgWaitTime": medWaitTime,
+        "avgTotalTime": medTotalTime,
+        "xAxis": stream_ob,
+        "stdTotalTime": stdTotalTime,
+        "stdComputeTime": stdComputeTime
+    }
+
+    return (avgData)
+
+def getStreamTimingData(parentDir):
+
+    """
+    save data csv headers 
+    """
+    saveData = pd.DataFrame()
+    saveData_T = pd.DataFrame()  # transposed
+    saveData.insert(0, "stream", ["Copy", "Scalar", "Add", "Triad"])
+
+    """
+    get data and store them against num cores in data dict
+    """
+    dir_list = next(os.walk(parentDir))[1]
+    data = {}
+    cores = []  
+    for dir in dir_list:
+        core = dir.split("_",1)[1]
+        cores.append(core)
+        """
+        Get available SLURM mappings and obtain path
+        """
+        directory = []  
+        subDirectory = next(os.walk(f"{parentDir}/{dir}"))[1]
+        for x in subDirectory:
+            directory.append(f"{parentDir}/{dir}/{x}")
+        print(directory) 
+        data[core] = comp_vs_wall_time(directory)
+    
+    return(data)
 
 
 def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
