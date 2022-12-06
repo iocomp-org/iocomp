@@ -20,7 +20,7 @@ int dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request)
 			return(mpiWaitFlag);
 	}
 	else
-		return 0; 
+		return -1; 
 
 } 
 
