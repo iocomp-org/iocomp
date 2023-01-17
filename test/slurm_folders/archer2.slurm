@@ -1,13 +1,13 @@
 #!/bin/bash --login
 #SBATCH --job-name=iocomp
-#SBATCH --nodes=1
-#SBATCH --tasks-per-node=128
+#SBATCH --nodes=2
+#SBATCH --tasks-per-node=256
 #SBATCH --cpus-per-task=1
-#SBATCH --time=01:00:00
+#SBATCH --time=06:00:00
 #SBATCH --account=e609
 #SBATCH --partition=standard 
 #SBATCH --qos=lowpriority
-#SBATCH --array=0-10
+#SBATCH --array=0-1
 
 #module load cray-hdf5-parallel
 #module load cray-python 
@@ -43,6 +43,8 @@ export HALF_CORES=$((${FULL_CORES}/2))
   vals=($(seq 0 1 $(eval echo ${end})))
   bar=$(IFS=, ; echo "${vals[*]}")
   srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${HALF_CORES} --nodes=1  ${TEST} > test.out
+  #srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${HALF_CORES} --nodes=1  --cpu-bind=map_cpu:${bar[@]} ${TEST} > test.out
+  wait 
 
   # Case 2
   export CASE=Oversubscribe
@@ -56,7 +58,9 @@ export HALF_CORES=$((${FULL_CORES}/2))
   end=$((${HALF_CORES}-1))
   vals=($(seq 0 1 $(eval echo ${end})))
   bar=$(IFS=, ; echo "${vals[*]}")
-  srun  --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntasks=${FULL_CORES} --nodes=1 --overcommit ${TEST} --HT > test.out
+  #srun  --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntasks=${FULL_CORES} --nodes=1 --cpu-bind=map_cpu:${bar[@]} --overcommit ${TEST} --HT > test.out
+  srun  --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntasks=${FULL_CORES} --nodes=1 --overcommit ${TEST} --HT > test.out 
+  wait 
 
   # Case 3
   export CASE=Hyperthread
@@ -77,6 +81,7 @@ export HALF_CORES=$((${FULL_CORES}/2))
   updated=("${vals[@]}" "${vals_HT[@]}")
   bar=$(IFS=, ; echo "${updated[*]}")
   srun  --cpu-bind=verbose --hint=multithread --distribution=block:block --ntasks=${FULL_CORES} --nodes=1 --cpu-bind=map_cpu:${bar[@]} ${TEST} --HT > test.out
+  wait
 
   # Case 4
   export CASE=Consecutive
@@ -90,7 +95,9 @@ export HALF_CORES=$((${FULL_CORES}/2))
   end=$((${FULL_CORES}-1))
   vals=($(seq 0 1 $(eval echo ${end})))
   bar=$(IFS=, ; echo "${vals[*]}")
-  srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${FULL_CORES} --nodes=1 ${TEST} --HT > test.out
+  #srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${FULL_CORES} --nodes=2 --cpu-bind=map_cpu:${bar[@]} ${TEST} --HT > test.out
+  srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${FULL_CORES} --nodes=2  ${TEST} --HT > test.out
+
 
 module list  2>&1 | tee -a test.out 
 
