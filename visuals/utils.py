@@ -9,8 +9,8 @@ from datetime import datetime
 import statistics
 import re 
 import argparse
-import seaborn as sns
-import seaborn.objects as so
+# import seaborn as sns
+# import seaborn.objects as so
 
 localSize = 0.8
 ranks = 4
@@ -617,7 +617,7 @@ def getStreamTimingData(parentDir):
 
 def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
 
-    fig1, ax1 = plt.subplots(2, 2,figsize=(8,10),sharey=True)
+    fig1, ax1 = plt.subplots(2, 2,figsize=(8,14),sharey=True)
     data = {} 
     data = getStreamTimingData(parentDir)
     dir_list = next(os.walk(parentDir))[1]
@@ -668,7 +668,7 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
         ax1[i,j].set_xticklabels(cores)
         ax1[i,j].title.set_text(stream[x])
         ax1[i,j].set_yscale('log')
-        # ax1[i,j].set_ylim(0,100)
+        ax1[i,j].set_ylim(10**-1,13**3)
 
         for key, value in mapping_colour.items():
             ax1[i,j].bar(x=0,height=0,label = key,color = value) # dummy plots to label compute and total time
@@ -682,12 +682,12 @@ def bar_plot_times_vs_numcores_per_stream(parentDir, flag, name=None):
     plt.rcParams['grid.alpha'] = 0.5 # grid lines bit less visible
     plt.rcParams['grid.linewidth'] = 0.1 # grid lines bit less visible
     if (name == None):
-        name = "comp_wall_bar_NO_MPI_TEST"
+        name = "STREAM_timers"
     saveName = f"{name}_{datetime.now().strftime('%d,%m,%Y,%H,%M')}"
     save_or_show(saveName,flag,plt,data)
 
 
-def wallTime_vs_numCores(parentDir):
+def wallTime_vs_numCores(parentDir, flag, name=None):
 
     fig1 = plt.figure(figsize =(10, 8))
     data = {} 
@@ -741,12 +741,86 @@ def wallTime_vs_numCores(parentDir):
     fig1.tight_layout() 
     plt.rcParams['grid.alpha'] = 0.5 # grid lines bit less visible
     plt.rcParams['grid.linewidth'] = 0.1 # grid lines bit less visible
-    # if (name == None):
-    #     name = "comp_wall_bar_NO_MPI_TEST"
-    # saveName = f"{name}_{datetime.now().strftime('%d,%m,%Y,%H,%M')}"
-    # save_or_show(saveName,flag,plt,data)
+    plt.ylim(10,13**3)
+
+    if (name == None):
+        name = "WallTime"
+    saveName = f"{name}_{datetime.now().strftime('%d,%m,%Y,%H,%M')}"
+    save_or_show(saveName,flag,plt,data)
 
     plt.show() 
 
+
+def stream_times_bw(parentDir, flag, name=None):
+
+    fig1, ax1 = plt.subplots(2, 2,figsize=(10,8),sharey=True)
+    data = {} 
+    data = getStreamTimingData(parentDir)
+    # print(data)
+    dir_list = next(os.walk(parentDir))[1]
+    cores = []  
+    bw = [
+        2,
+        2,
+        3,
+        3
+    ]
+
+    for dir in dir_list:
+        core = dir.split("_",1)[1]
+        cores.append(core)
+
+    cores.sort(key=int)
+    core_num = 0
+    totalTime_hatch="///"
+    waitTime_hatch="****"
+
+    
+    for core in cores:
+        width_ = 0.2
+        computeTime = [0]*len(stream) # total compute time for all stream categories
+        totalTime = [0]*len(stream) # total wall time for all stream categories
+        iter = 0
+        mapping_num = 0 
+        
+        for ind_map in mapping:
+       
+            for x in range(len(stream)): # summation of all compute steps from stream categories
+                totalTime = data[core][ind_map]["avgTotalTime"][x] + data[core][ind_map]["avgWaitTime"][x] # addition of compute steps into each other. 
+                i=int(x/2)
+                j=int(x%2)
+                bandwidth = 0.8*bw[x]*int(core)/totalTime
+                ax1[i,j].bar(core_num+mapping_num*width_, bandwidth,width=width_, color=mapping_colour[ind_map],capsize=10)
+       
+            mapping_num += 1 
+
+        core_num += 1
+
+    """
+    ticks for each subplot
+    """
+
+    for x in range(4):
+        i = int(x/2)
+        j = int(x%2)
+        ax1[i,j].set_xticks(np.arange(len(cores))+width_*len(mapping)/2-width_/2) 
+        ax1[i,j].set_xticklabels(cores)
+        ax1[i,j].title.set_text(stream[x])
+        ax1[i,j].set_yscale('log')
+        ax1[i,j].set_ylim(10**-1,10**2)
+
+        for key, value in mapping_colour.items():
+            ax1[i,j].bar(x=0,height=0,label = key,color = value) # dummy plots to label compute and total time
+
+    fig1.supxlabel('Number of compute processes')
+    fig1.supylabel('Effective average memory bandwidth (GB/s)')
+    ax1[0,0].legend() # legend only in 1st quad
+    fig1.tight_layout() 
+    plt.rcParams['grid.alpha'] = 0.5 # grid lines bit less visible
+    plt.rcParams['grid.linewidth'] = 0.1 # grid lines bit less visible
+    if (name == None):
+        name = "STREAM_BW"
+    saveName = f"{name}_{datetime.now().strftime('%d,%m,%Y,%H,%M')}"
+    save_or_show(saveName,flag,plt,data)
 
         
