@@ -1,0 +1,51 @@
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+** I/O write time=3.413985 filesize(GB)=6.400000
+** I/O write time=2.688543 filesize(GB)=6.400000
+** I/O write time=2.670337 filesize(GB)=6.400000
+** I/O write time=2.651247 filesize(GB)=6.400000
+** I/O write time=2.706595 filesize(GB)=6.400000
+** I/O write time=2.698163 filesize(GB)=6.400000
+** I/O write time=2.658542 filesize(GB)=6.400000
+** I/O write time=2.652993 filesize(GB)=6.400000
+** I/O write time=2.646646 filesize(GB)=6.400000
+** I/O write time=2.691444 filesize(GB)=6.400000
+** I/O write time=2.996268 filesize(GB)=6.400000
+** I/O write time=2.795169 filesize(GB)=6.400000
+** I/O write time=2.645708 filesize(GB)=6.400000
+** I/O write time=2.898333 filesize(GB)=6.400000
+** I/O write time=2.689646 filesize(GB)=6.400000
+** I/O write time=2.662514 filesize(GB)=6.400000
+** I/O write time=2.683813 filesize(GB)=6.400000
+** I/O write time=2.690152 filesize(GB)=6.400000
+** I/O write time=2.641022 filesize(GB)=6.400000
+** I/O write time=2.542729 filesize(GB)=6.400000
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+HT flag is set to on
+
+Currently Loaded Modules:
+  1) gcc/10.2.0                                  9) load-epcc-module
+  2) craype/2.7.6                               10) PrgEnv-gnu/8.0.0
+  3) craype-x86-rome                            11) cmake/3.21.3
+  4) perftools-base/21.02.0                     12) xthi/1.2
+  5) xpmem/2.2.40-7.0.1.0_2.7__g1d7a24d.shasta  13) cray-ucx/2.7.0-1
+  6) cray-libsci/21.04.1.1                      14) craype-network-ucx
+  7) bolt/0.8                                   15) cray-mpich-ucx/8.1.9
+  8) epcc-setup-env
+
+ 
+
+JOB ID 2735569
+JOB NAME iocomp
