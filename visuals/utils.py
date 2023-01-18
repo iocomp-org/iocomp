@@ -295,9 +295,6 @@ def comp_vs_wall_time(directory):
 
     return(output_data)
 
- 
-
-        
 
 def plot_times_vs_numcores(parentDir):
 
@@ -824,3 +821,47 @@ def stream_times_bw(parentDir, flag, name=None):
     save_or_show(saveName,flag,plt,data)
 
         
+def speedup_per_mapping(parentDir, flag, name=None):
+
+    # fig1, ax1 = plt.subplots(2, 2,figsize=(10,8),sharey=True)
+    """
+    get timing data from this function.
+    dictionary arranged by NumCores>Mapping>AveragedTimings>STREAM_kernel   
+    """
+    data = {} 
+    data = getStreamTimingData(parentDir)
+
+    """
+    get number of cores from directories 
+    """
+    dir_list = next(os.walk(parentDir))[1]
+    cores = []  
+    for dir in dir_list:
+        core = dir.split("_",1)[1]
+        cores.append(core)
+    cores.sort(key=int)
+
+    """
+    trawl through the dictionary. Get speedup compared to the base case sequential
+    """
+    # avgData = pd.DataFrame(data.items(), columns=['cores','mapping','avgTimers','StreamKernel'])
+    # avgData = pd.DataFrame(columns=['cores','mapping','streamKernel','TotalTime'])
+    avgData = pd.DataFrame()
+    # avgData = pd.DataFrame(data.items())
+    column_names = ['cores','mapping','streamKernel','TotalTime']
+    
+    for core in cores:
+        totalTime = [0]*len(stream) # total wall time for all stream categories
+        newrow = pd.DataFrame() 
+        for ind_map in mapping:
+            for x in range(len(stream)): # summation of all compute steps from stream categories
+                totalTime[x] = data[core][ind_map]["avgTotalTime"][x] + data[core][ind_map]["avgWaitTime"][x] # addition of compute steps into each other. 
+                # newrow = {"cores":core,"mapping":ind_map,"streamKernel":stream[x],"totalTime":totalTime[x]}
+                newrow = pd.DataFrame([[core,ind_map,stream[x],totalTime[x]]],columns=column_names)
+                # print(newrow)
+                # print(newrow)
+                avgData = pd.concat([newrow,avgData],ignore_index=True)
+                # avgData.concat(newrow,ignore_index=True)
+    # print(avgData) 
+    avgData.to_csv('output.csv',index=False)
+

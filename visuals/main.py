@@ -15,4 +15,5 @@ dir = f'{os.getcwd()}/ARCHER2_runs/6Dec/0.8GB'
 # plot_times_vs_streams(dir)
 # bar_plot_times_vs_numcores_per_stream(dir,args.save,args.name)
 # wallTime_vs_numCores(dir,args.save, args.name)
-stream_times_bw(dir,args.save, args.name)
+# stream_times_bw(dir,args.save, args.name)
+speedup_per_mapping(dir, args.save, args.name)
