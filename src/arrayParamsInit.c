@@ -16,7 +16,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM
 {
 
 #ifndef NDEBUG
-	printf("Start of intercomm_init\n"); 
+	printf("arrayParamsInit -> start\n"); 
 #endif
 
 	int globalRank, globalSize, ierr, i;
@@ -63,12 +63,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM
 		iocompParams->globalDataSize *= iocompParams->globalSize[i]; 
 	} 
 #ifndef NDEBUG
-	printf("size definitions, localDataSize %i, globalDataSize %i\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
-#endif
-
-
-#ifndef NDEBUG
-	printf("End intercomm_init\n"); 
+	printf("arrayParamsInit -> size definitions, localDataSize %i, globalDataSize %i\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
 #endif
 
 } 

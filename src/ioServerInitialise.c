@@ -20,21 +20,32 @@
  */
 void ioServerInitialise(struct iocomp_params *iocompParams)
 {
+	
+#ifndef NDEBUG
+			printf("ioServerInitialise -> start with flag %i \n", iocompParams->hyperthreadFlag); 
+#endif
 	if(iocompParams->hyperthreadFlag)
 	{
 		if(iocompParams->colour == ioColour)
 		{
+#ifndef NDEBUG
+			printf("ioServerInitialise -> ioServer called\n"); 
+#endif
 			ioServer(iocompParams);
 #ifndef NDEBUG
-			printf("After ioServer\n"); 
+			printf("ioServerInitialise -> After ioServer\n"); 
 #endif
 			MPI_Finalize(); 
 
 #ifndef NDEBUG
-			printf("After finalize\n"); 
+			printf("ioServerInitialise -> After finalize\n"); 
 #endif
 			exit(0); 
 		} 
+	}
+	else
+	{
+		printf("ioServerInitialise -> not ioprocess \n"); 
 	} 
 
 } 

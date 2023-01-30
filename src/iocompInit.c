@@ -49,28 +49,6 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	 * iocomp function that sends data to ioServer if flag is true
 	 * if not then its a dead send 
 	 */ 
-	//ioServerInitialise(iocompParams); 
-	/*
-	if(iocompParams->hyperthreadFlag)
-	{
-		if(iocompParams->colour == ioColour)
-		{
-			ioServer(iocompParams);
-#ifndef NDEBUG
-			printf("After ioServer\n"); 
-#endif
-			MPI_Finalize(); 
-
-#ifndef NDEBUG
-			printf("After finalize\n"); 
-#endif
-			exit(0); 
-#ifndef NDEBUG
-			printf("After exit\n"); 
-#endif
-		} 
-	} 
-	*/ 
 
 #ifndef NDEBUG
 	printf("End of intercomm\n"); 
