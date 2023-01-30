@@ -5,7 +5,7 @@
 #include "mpi.h"
 #include "getopt.h"
 #include "iocomp.h"
-
+#define NDIM 2 
 static int verbose_flag;
 static int HT_flag; 
 
@@ -30,7 +30,6 @@ int main(int argc, char** argv)
   MPI_Comm_rank(comm, &rank); 
   // data parameters definitions 
 
-  int NDIM = 2; 
   int localArraySize[NDIM] = {4,4}; 
 	size_t localDataSize = 1; 
 	for(int i = 0; i < NDIM; i++)
@@ -40,7 +39,7 @@ int main(int argc, char** argv)
 
   struct iocomp_params iocompParams; 
 
-  iocompInit(&iocompParams, comm, HT_flag); 
+  iocompInit(&iocompParams, comm,  NDIM, localArraySize, HT_flag); 
 #ifndef NDEBUG
   printf("After intercommInit\n"); 
 #endif
@@ -54,13 +53,13 @@ int main(int argc, char** argv)
 		data[j] = (double)j*2; 
 	}
 
+	MPI_Request request; 
+	dataSend(data,&iocompParams, &request); // send data off using dataSend
 	arrayParamsInit(&iocompParams,comm,NDIM,localArraySize);
 
 	ioServerInitialise(&iocompParams); 
 
-	MPI_Request request; 
-
-	dataSend(data,&iocompParams, &request);
+	dataWait(&iocompParams,&request);
 
   stopSend(&iocompParams); 
 
