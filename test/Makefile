@@ -15,7 +15,8 @@ ODIR = Object_files
 LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm -L$(IOCOMP_DIR)/lib -liocomp # -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 # -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi  -lm 
 
 # define C source files 
-SRCS = main.c computeStep.c resultsOutput.c 
+SRCS = main.c
+
 
 # define executable file  
 MAIN = test 

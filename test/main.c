@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "test.h"
 #include "getopt.h"
+#include "iocomp.h"
 
 static int verbose_flag;
 static int HT_flag; 
@@ -16,53 +16,7 @@ int main(int argc, char** argv)
   ierr = MPI_Init(&argc, &argv);  
   mpi_error_check(ierr); 
 
-  /*
-   * Command line arguments 
-   */ 
-  /* Flag set by ‘--verbose’. */
-
-  int c;
-
-  while (1)
-  {
-    static struct option long_options[] =
-    {
-      /* These options set a flag. */
-      {"verbose", no_argument,       &verbose_flag, 0},
-      {"HT",   no_argument,       &HT_flag, 1},
-      /* These options don’t set a flag.
-         We distinguish them by their indices. */
-      {0, 0, 0, 0}
-    };
-    /* getopt_long stores the option index here. */
-    int option_index = 0;
-
-    c = getopt_long (argc, argv, "abc:d:f:",						long_options, &option_index);
-
-    /* Detect the end of the options. */
-    if (c == -1)
-      break;
-
-    switch (c)
-    {
-      case 0:
-        /* If this option set a flag, do nothing else now. */
-        if (long_options[option_index].flag != 0)
-          break;
-        printf ("option %s", long_options[option_index].name);
-        if (optarg)
-          printf (" with arg %s", optarg);
-        printf ("\n");
-        break;
-
-      case '?':
-        /* getopt_long already printed an error message. */
-        break;
-
-      default:
-        abort ();
-    }
-  }
+	HT_flag = 1; 
 
   // check for HT flag 
   if (HT_flag)
@@ -77,29 +31,38 @@ int main(int argc, char** argv)
   // data parameters definitions 
 
   int NDIM = 2; 
-  int localArraySize[2] = {100,100}; 
+  int localArraySize[NDIM] = {4,4}; 
+	size_t localDataSize = 1; 
+	for(int i = 0; i < NDIM; i++)
+	{
+		localDataSize *= localArraySize[i]; 
+	}
 
   struct iocomp_params iocompParams; 
 
-  iocompInit(&iocompParams, comm,  NDIM, localArraySize, HT_flag); 
+  iocompInit(&iocompParams, comm, HT_flag); 
 #ifndef NDEBUG
   printf("After intercommInit\n"); 
 #endif
 
   double* data = NULL; // initialise data pointer  
-  data = (double*)malloc(iocompParams.localDataSize*sizeof(double)); // one rank only sends to one rank
-  computeStep(data,&iocompParams); // do compute 
-#ifndef NDEBUG
-  printf("after computeStep \n"); 
-#endif
-  if(rank == 0)
-  {
-    int testFlag = 1; 
-    //				testData(&iocompParams, testFlag); // test data 
-  } 
-#ifndef NDEBUG
-  printf("after test\n"); 
-#endif
+  data = (double*)malloc(localDataSize*sizeof(double)); // one rank only sends to one rank
+
+	// populate values of test array 
+	for(int j=0; j < localDataSize; j++)
+	{
+		data[j] = (double)j*2; 
+	}
+
+	arrayParamsInit(&iocompParams,comm,NDIM,localArraySize);
+
+	ioServerInitialise(&iocompParams); 
+
+	MPI_Request request; 
+
+	dataSend(data,&iocompParams, &request);
+
+  stopSend(&iocompParams); 
 
   MPI_Finalize(); 
 #ifndef NDEBUG
@@ -107,21 +70,19 @@ int main(int argc, char** argv)
 #endif   
 
   // remove file 
-  if(rank == 0)
-  {
-    int ret; 
-    ret = remove("mpiio.dat");
-
-    if(ret != 0) {
-      printf("Error: unable to delete the file");
-    }
-  } 
+  // if(rank == 0)
+  // {
+  //   int ret; 
+  //   ret = remove("mpiio.dat");
+  //   if(ret != 0) {
+  //     printf("Error: unable to delete the file");
+  //   }
+  // } 
 #ifndef NDEBUG
   printf("Deleted file\n"); 
 #endif   
   free(data); 
   data = NULL; 
-
   return 0; 
 } 
 
