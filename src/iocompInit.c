@@ -49,7 +49,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	 * iocomp function that sends data to ioServer if flag is true
 	 * if not then its a dead send 
 	 */ 
-	ioServerInitialise(iocompParams); 
+	//ioServerInitialise(iocompParams); 
 
 #ifndef NDEBUG
 	printf("End of intercomm\n"); 

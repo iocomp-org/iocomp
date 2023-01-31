@@ -23,7 +23,7 @@ int compServerSize;
 // for data_output function 
 double writeTime; 
 char ioLibs[ioLibCount][100]; 
-int iolibNum; // select ioLib 
+int ioLibNum; // select ioLib 
 // for io_libraries function 
 int NDIM; 
 int* localSize; 
@@ -44,7 +44,7 @@ void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);
 void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm); 
 void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize); 
 void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize, bool flag); // initialises the library 
-void ioServerInitialise(struct iocomp_params *iocompParams); // initialise and send off ioServer 
+void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum); // initialise ioServer if ioProcessor 
 void testData(struct iocomp_params *iocompParams, int testFlag); // test data structures with flag to switch on/off  
 void stopSend(struct iocomp_params *iocompParams); // ghost send function that signals MPI_Sends are stopping
 void dataWait(struct iocomp_params *iocompParams, MPI_Request *request); // wrapper function to implement waiting of data IF HT flag is activated 

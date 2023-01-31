@@ -18,9 +18,9 @@
 /*
  * Initialises the library 
  */
-void ioServerInitialise(struct iocomp_params *iocompParams)
+void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum)
 {
-	
+	iocompParams->ioLibNum = ioLibNum; 
 #ifndef NDEBUG
 			printf("ioServerInitialise -> start with flag %i \n", iocompParams->hyperthreadFlag); 
 #endif

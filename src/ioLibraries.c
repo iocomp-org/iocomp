@@ -47,6 +47,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 		coords[j] = 0;
 	}
 	char *filename = "mpiio.dat";
+	double writeTime = 0.0; 
 
 	/* new communicator to which topology information is added */
 	MPI_Comm cartcomm;
@@ -72,38 +73,42 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	double timerStart = 0.0; 
 	
 #ifndef NDEBUG
-	printf("ioLibraries -> Pass off to I/O libraries  \n");
+	printf("ioLibraries -> Pass off to I/O libraries with ioLibNum %i  \n", iocompParams->ioLibNum);
 #endif
 
-	switch(iocompParams->iolibNum){
+	switch(iocompParams->ioLibNum){
 
 		case 1:
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 			mpiiowrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, filename, iocompParams->dataType);
 			MPI_Barrier(comm);
-			if (!ioRank) {iocompParams->writeTime = MPI_Wtime() - timerStart;} 
+			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 		break; 
 
 		case 2: 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 			phdf5write(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "hdf5.h5");
 			MPI_Barrier(comm);
-			if (!ioRank) {iocompParams->writeTime = MPI_Wtime() - timerStart;} 
+			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 		break; 
 	
 		case 3: 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP4", "output.bp4");
 			MPI_Barrier(comm);
-			if (!ioRank) {iocompParams->writeTime = MPI_Wtime() - timerStart;} 
+			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 		break; 
 	
 		case 4: 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP5", "output.bp5");
 			MPI_Barrier(comm);
-			if (!ioRank) {iocompParams->writeTime = MPI_Wtime() - timerStart;} 
+			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 		break; 
+
+		default:
+			printf("Invalid I/O library number \n"); 
+			break; 
 	} 
 		
 #ifndef NDEBUG
@@ -112,7 +117,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	if (!ioRank) 
 	{
 		double fileSize = iocompParams->globalDataSize*sizeof(double)/(pow(10,9)); 
-		printf("** I/O write time=%lf filesize(GB)=%lf\n", iocompParams->writeTime,fileSize) ; 
+		printf("** I/O write time=%lf filesize(GB)=%lf\n", writeTime,fileSize) ; 
 	} 
 
 #ifndef NDEBUG

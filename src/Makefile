@@ -1,5 +1,5 @@
 # define c compiler 
-CC = $(OMPI_DIR)/bin/mpicc 
+CC = cc 
 CFLAGS = -Wall -Wpedantic -Werror -Wextra -Wno-unused-variable -Wno-unused-but-set-variable -Werror=deprecated-declarations 
 #CFLAGS = -Wall #-Wpedantic -Werror -Wextra 
 # define compile time flags 
