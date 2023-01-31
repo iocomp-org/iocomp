@@ -1,18 +1,19 @@
 # define c compiler 
-CC = $(OMPI_DIR)/bin/mpicc 
+#CC = $(OMPI_DIR)/bin/mpicc
+CC = cc
 CFLAGS = -Wall -Wpedantic -Werror -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
 CFLAGS += -fPIC -g -Og -DADIOS2_USE_MPI -DNDEBUG
 
 # linker flags
-LFLAGS += -I$(OMPI_DIR)/include -I$(IOCOMP_DIR)/include 
+LFLAGS += -I$(IOCOMP_DIR)/include -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
 
 # object file directory
 ODIR = Object_files
 
 # define library paths 
-LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm -L$(IOCOMP_DIR)/lib -liocomp # -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 # -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi  -lm 
+LIBS +=  -L$(IOCOMP_DIR)/lib -liocomp -L$(OMPI_DIR)/lib -lmpi -lm -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi  -lm 
 
 # define C source files 
 SRCS = main.c

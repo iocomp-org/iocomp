@@ -5,6 +5,13 @@
 #include "mpi.h"
 #include "getopt.h"
 #include "iocomp.h"
+#include <hdf5.h>
+#include <H5FDmpio.h>
+#include <H5FDmpi.h> 
+#include <hdf5_hl.h> 
+#include <adios2_c.h>
+#include <adios2/c/adios2_c_types.h>
+
 #define NDIM 2 
 static int verbose_flag;
 static int HT_flag; 
@@ -56,11 +63,10 @@ int main(int argc, char** argv)
 	MPI_Request request; 
 	dataSend(data,&iocompParams, &request); // send data off using dataSend
 	arrayParamsInit(&iocompParams,comm,NDIM,localArraySize);
-
-	ioServerInitialise(&iocompParams); 
-
+	int ioLibNum; 
+	ioLibNum = 3; 
+	ioServerInitialise(&iocompParams, ioLibNum); 
 	dataWait(&iocompParams,&request);
-
   stopSend(&iocompParams); 
 
   MPI_Finalize(); 
