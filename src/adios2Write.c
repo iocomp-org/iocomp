@@ -51,8 +51,9 @@ void adioswrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraysta
     // shape[0] *= nprocs;
     // start[0] = myrank * n1;
 
-    // adios2_adios *adios = adios2_init_config(config_file, 1); // cartcomm); // if using ADIOS2 MPI, need to include debugger. 
-    adios2_adios *adios = adios2_init_config(config_file, cartcomm, 1); // cartcomm); // if using ADIOS2 MPI, need to include debugger. 
+    //adios2_adios *adios = adios2_init_config(config_file, 1); // cartcomm); // if using ADIOS2 MPI, need to include debugger. 
+    //adios2_adios *adios = adios2_init_config(config_file, cartcomm, 1); // cartcomm); // if using ADIOS2 MPI, need to include debugger. 
+    adios2_adios *adios = adios2_init_config_mpi(config_file, cartcomm); // cartcomm); // if using ADIOS2 MPI, need to include debugger. 
     adios2_io *io = adios2_declare_io(adios, IO_ENGINE); //IO handler declaration
     
     /*

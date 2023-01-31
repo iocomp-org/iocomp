@@ -2,8 +2,7 @@
 #include <stdbool.h>
 #define ioColour 0
 #define compColour 1 
-#define writeLoops 10 
-#define ioLibCount 1 
+#define ioLibCount 4
 /*
 * structure passes around to most functions in program 
 */ 
@@ -22,8 +21,9 @@ int compServerRank;
 int ioServerSize; 
 int compServerSize;
 // for data_output function 
-double writeTime[ioLibCount][writeLoops]; 
+double writeTime; 
 char ioLibs[ioLibCount][100]; 
+int iolibNum; // select ioLib 
 // for io_libraries function 
 int NDIM; 
 int* localSize; 
@@ -61,5 +61,5 @@ void free_check(double* test);
 
 void phdf5write(double* iodata, int*local_size, int* global_size, int* arraystart, int NDIM, MPI_Comm cartcomm, char* FILENAME);  
 void mpiiowrite(double* iodata, int*local_size, int* global_size, int* arraystart, int NDIM, MPI_Comm cartcomm, char* FILENAME, MPI_Datatype dataType);  
-//void adioswrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraystart, int NDIM, MPI_Comm cartcomm, char *IOENGINE, char* FILENAME); 
+void adioswrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraystart, int NDIM, MPI_Comm cartcomm, char *IOENGINE, char* FILENAME); 
 
