@@ -1,31 +1,48 @@
 #include <stdlib.h>
+#include <math.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "iocomp.h"
+#include "test.h"
 
-#define NDIM 2 
-static int verbose_flag;
+#define IOLIBNUM 3 
 static int HT_flag; 
 
-double* initialise(struct iocomp_params* iocompParams, MPI_Comm comm)
+double* initialise(struct iocomp_params* iocompParams, struct test_variables* testParams, MPI_Comm comm)
 {
 
 	// command line stuff can go here.. 
-
+	
   // check for HT flag 
-	HT_flag = 1; 
+	HT_flag = 0; 
   if (HT_flag)
     puts ("HT flag is set to on");
   else 
     puts ("HT flag is switched off"); 
-
+	
+	// assign filenames to test structure 
+	char* filenames[5] = {
+		"mpiio.dat",
+		"hdf5.h5",
+		"adios2.h5",
+		"adios2.bp4",
+		"adios2.bp5"
+	}; 
+	testParams->FILENAMES[0] = "mpiio.dat"; 
+	testParams->FILENAMES[1] = "hdf5.h5"; 
+	testParams->FILENAMES[2] = "adios2.h5";
+	testParams->FILENAMES[3] = "adios2.bp4";
+	testParams->FILENAMES[4] = "adios2.bp5"; 
+	
   int localArraySize[NDIM] = {4,4}; 
+  testParams->ioLibNum = IOLIBNUM; 
 	size_t localDataSize = 1; 
 	for(int i = 0; i < NDIM; i++)
 	{
 		localDataSize *= localArraySize[i]; 
 	}
 
+	testParams->localDataSize = localDataSize; 
+	testParams->globalDataSize = localDataSize * testParams->mysize * pow(10,9); 
   double* data = NULL; // initialise data pointer  
   data = (double*)malloc(localDataSize*sizeof(double)); // one rank only sends to one rank
 
