@@ -94,14 +94,21 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	
 		case 3: 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
-			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP4", "output.bp4");
+			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "HDF5", "adios2.h5");
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 		break; 
 	
 		case 4: 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
-			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP5", "output.bp5");
+			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP4", "adios2.bp4");
+			MPI_Barrier(comm);
+			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
+		break;
+
+		case 5: 
+			if (!ioRank) {timerStart = MPI_Wtime();} 
+			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP5", "adios2.bp5");
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 		break; 
