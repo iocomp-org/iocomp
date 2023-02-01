@@ -3,18 +3,7 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "getopt.h"
-#include "iocomp.h"
-#include <hdf5.h>
-#include <H5FDmpio.h>
-#include <H5FDmpi.h> 
-#include <hdf5_hl.h> 
-#include <adios2_c.h>
-#include <adios2/c/adios2_c_types.h>
-
-#define NDIM 2 
-static int verbose_flag;
-static int HT_flag; 
+#include "test.h"
 
 int main(int argc, char** argv)
 {
@@ -23,48 +12,21 @@ int main(int argc, char** argv)
   ierr = MPI_Init(&argc, &argv);  
   mpi_error_check(ierr); 
 
-	HT_flag = 1; 
-
-  // check for HT flag 
-  if (HT_flag)
-    puts ("HT flag is set to on");
-  else 
-    puts ("HT flag is switched off"); 
-
   MPI_Comm comm; 
   MPI_Comm_dup(MPI_COMM_WORLD,&comm); 
   int rank; 
   MPI_Comm_rank(comm, &rank); 
   // data parameters definitions 
 
-  int localArraySize[NDIM] = {4,4}; 
-	size_t localDataSize = 1; 
-	for(int i = 0; i < NDIM; i++)
-	{
-		localDataSize *= localArraySize[i]; 
-	}
-
-  struct iocomp_params iocompParams; 
-
-  iocompInit(&iocompParams, comm,  NDIM, localArraySize, HT_flag); 
-#ifndef NDEBUG
-  printf("After intercommInit\n"); 
-#endif
-
-  double* data = NULL; // initialise data pointer  
-  data = (double*)malloc(localDataSize*sizeof(double)); // one rank only sends to one rank
-
-	// populate values of test array 
-	for(int j=0; j < localDataSize; j++)
-	{
-		data[j] = (double)j*2; 
-	}
+  struct iocomp_params iocompParams;
+	double* data;
+	// initialise function and populate iocompParams, returning data array to write. 
+	data = initialise(&iocompParams, comm); 
 
 	MPI_Request request; 
 	dataSend(data,&iocompParams, &request); // send data off using dataSend
-	arrayParamsInit(&iocompParams,comm,NDIM,localArraySize);
-	int ioLibNum; 
-	ioLibNum = 3; 
+
+	int ioLibNum = 3; 
 	ioServerInitialise(&iocompParams, ioLibNum); 
 	dataWait(&iocompParams,&request);
   stopSend(&iocompParams); 
@@ -73,19 +35,11 @@ int main(int argc, char** argv)
 #ifndef NDEBUG
   printf("MPI finalize\n"); 
 #endif   
-
-  // remove file 
-  // if(rank == 0)
-  // {
-  //   int ret; 
-  //   ret = remove("mpiio.dat");
-  //   if(ret != 0) {
-  //     printf("Error: unable to delete the file");
-  //   }
-  // } 
-#ifndef NDEBUG
-  printf("Deleted file\n"); 
-#endif   
+	
+	if(rank == 0)	
+	{
+		deleteFile(ioLibNum); 
+	} 
   free(data); 
   data = NULL; 
   return 0; 
