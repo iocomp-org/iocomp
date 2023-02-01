@@ -78,35 +78,35 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 
 	switch(iocompParams->ioLibNum){
 
-		case 1:
+		case 0:
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 			mpiiowrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, filename, iocompParams->dataType);
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 		break; 
 
-		case 2: 
+		case 1: 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 			phdf5write(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "hdf5.h5");
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 		break; 
 	
-		case 3: 
+		case 2: 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "HDF5", "adios2.h5");
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 		break; 
 	
-		case 4: 
+		case 3: 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP4", "adios2.bp4");
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 		break;
 
-		case 5: 
+		case 4: 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP5", "adios2.bp5");
 			MPI_Barrier(comm);
@@ -131,3 +131,4 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	printf("ioLibraries -> Timing function ended  \n");
 #endif
 }
+

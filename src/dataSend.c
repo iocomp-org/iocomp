@@ -41,7 +41,7 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 	}
 	else
 	{
-		ioLibraries(data,iocompParams); // otherwise go straight to writing 
+		ioLibraries(data,iocompParams); // otherwise go straight to writing using ioLibraries 
 	}
 
 } 

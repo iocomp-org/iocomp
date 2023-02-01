@@ -43,10 +43,6 @@ void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum)
 			exit(0); 
 		} 
 	}
-	else
-	{
-		printf("ioServerInitialise -> not ioprocess \n"); 
-	} 
 
 } 
 
