@@ -13,11 +13,19 @@ void deleteFile(int ioname)
 		"output.bp4",
 		"output.bp5"
 	}; 
-
-	int ret; 
-	ret = remove(filenames[ioname]);
-	if(ret != 0) {
-		printf("Error: unable to delete the file");
+	
+	if(ioname<4) // if not adios2, then its a file. 
+	{
+		int ret; 
+		ret = remove(filenames[ioname-1]);
+		if(ret != 0) {
+			printf("Error: unable to delete the file");
+		}
+	} 
+	else // if its adios2, then its a directory
+	{
+		int test; 
+		test = rmdir(filenames[ioname-1]); 
 	}
 
 #ifndef NDEBUG
