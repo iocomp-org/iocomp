@@ -16,7 +16,7 @@ ODIR = Object_files
 LIBS +=  -L$(IOCOMP_DIR)/lib -liocomp -L$(OMPI_DIR)/lib -lmpi -lm -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi  -lm 
 
 # define C source files 
-SRCS = main.c initialise.c deleteFile.c rmdir.c 
+SRCS = main.c initialise.c deleteFile.c rmdir.c stats.c 
 
 
 # define executable file  
