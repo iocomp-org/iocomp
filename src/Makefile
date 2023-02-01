@@ -3,7 +3,7 @@ CC = cc
 CFLAGS = -Wall -Wpedantic -Werror -Wextra -Wno-unused-variable -Wno-unused-but-set-variable -Werror=deprecated-declarations 
 #CFLAGS = -Wall #-Wpedantic -Werror -Wextra 
 # define compile time flags 
-CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared #-DNDEBUG
+CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared -DNDEBUG
 
 # linker flags
 LFLAGS += -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 

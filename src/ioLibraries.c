@@ -28,6 +28,16 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	MPI_Comm_size(comm, &ioSize);
 	MPI_Comm_rank(comm, &ioRank);
 
+	/*	
+	 * Initiliase filename 
+	 */ 
+	iocompParams->FILENAMES[0] = "mpiio.dat"; 
+	iocompParams->FILENAMES[1] = "hdf5.h5"; 
+	iocompParams->FILENAMES[2] = "adios2.h5";
+	iocompParams->FILENAMES[3] = "adios2.bp4";
+	iocompParams->FILENAMES[4] = "adios2.bp5"; 
+
+
 	/*
 	 * Define and initialise arrayStart
 	 */ 

@@ -32,6 +32,8 @@ int* globalSize;
 int globalDataSize; 
 int localDataSize; 
 MPI_Datatype dataType; 
+// filenames 
+char *FILENAMES[5]; 
 }; 
 extern struct iocomp_params iocompParams; 
 
