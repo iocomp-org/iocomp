@@ -18,7 +18,7 @@
 /*
  * Initialises the library 
  */
-void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize, bool FLAG)
+void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize, bool FLAG, int ioLibNum)
 {
 
 #ifndef NDEBUG
@@ -49,7 +49,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	 * iocomp function that sends data to ioServer if flag is true
 	 * if not then its a dead send 
 	 */ 
-	//ioServerInitialise(iocompParams); 
+	ioServerInitialise(iocompParams, ioLibNum); 
 
 #ifndef NDEBUG
 	printf("End of iocomp_init\n"); 
