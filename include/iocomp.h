@@ -1,5 +1,7 @@
 #include "mpi.h"
 #include <stdbool.h>
+#include <stddef.h>
+
 #define ioColour 0
 #define compColour 1 
 #define ioLibCount 4
