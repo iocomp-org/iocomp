@@ -61,10 +61,9 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM
 	{
 		iocompParams->localDataSize *= iocompParams->localSize[i]; 
 		iocompParams->globalDataSize *= iocompParams->globalSize[i]; 
-		printf("arrayParamsInit -> i %i localdatasize %i \n",i,iocompParams->localDataSize); 
 	} 
 #ifndef NDEBUG
-	printf("arrayParamsInit -> size definitions, localDataSize %i, globalDataSize %i\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
+	printf("arrayParamsInit -> size definitions, localDataSize %li, globalDataSize %li\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
 #endif
 
 } 

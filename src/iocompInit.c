@@ -22,7 +22,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 {
 
 #ifndef NDEBUG
-	printf("Start of intercomm_init\n"); 
+	printf("iocompInit -> Start of intercomm_init\n"); 
 #endif
 
 	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
@@ -32,7 +32,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 
 	arrayParamsInit(iocompParams, comm, NDIM, localArraySize); 
 #ifndef NDEBUG
-	printf("Array variables initialised\n"); 
+	printf("iocompInit -> Array variables initialised\n"); 
 #endif
 
 	/*
@@ -42,7 +42,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 
 	comm_split(iocompParams, comm); 
 #ifndef NDEBUG
-	printf("communicator split up and colour assigned \n"); 
+	printf("iocompInit -> communicator split up and colour assigned \n"); 
 #endif
 
 	/*
@@ -50,10 +50,6 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	 * if not then its a dead send 
 	 */ 
 	//ioServerInitialise(iocompParams); 
-
-#ifndef NDEBUG
-	printf("End of intercomm\n"); 
-#endif
 
 #ifndef NDEBUG
 	printf("End of iocomp_init\n"); 
