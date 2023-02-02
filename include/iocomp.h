@@ -29,8 +29,8 @@ int NDIM;
 int* localSize; 
 int* arrayStart; 
 int* globalSize; 
-int globalDataSize; 
-int localDataSize; 
+size_t globalDataSize; 
+size_t localDataSize; 
 MPI_Datatype dataType; 
 // filenames 
 char *FILENAMES[5]; 
