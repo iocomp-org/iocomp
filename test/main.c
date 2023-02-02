@@ -52,7 +52,8 @@ int main(int argc, char** argv)
 	
 	if(rank == 0)	
 	{
-		deleteFile(&testParams ); 
+//		deleteFile(&testParams ); 
+		printf("\n");
 	} 
 
   free(data); 

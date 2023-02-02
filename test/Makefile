@@ -4,7 +4,7 @@ CC = cc
 CFLAGS = -Wall -Wpedantic -Werror -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
-CFLAGS += -fPIC -g -Og -DADIOS2_USE_MPI -DNDEBUG
+CFLAGS += -fPIC -g -Og -DADIOS2_USE_MPI # -DNDEBUG
 
 # linker flags
 LFLAGS += -I$(IOCOMP_DIR)/include -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 

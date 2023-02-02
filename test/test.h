@@ -1,7 +1,7 @@
 #include "mpi.h"
 #include "iocomp.h"
 #define LOOPCOUNT 10 
-#define NDIM 3 
+#define NDIM 2
 struct test_variables{
     int LOOP_COUNT; 
 	double startTime[LOOPCOUNT], endTime[LOOPCOUNT]; 

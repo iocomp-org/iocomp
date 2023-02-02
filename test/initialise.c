@@ -33,7 +33,7 @@ double* initialise(struct iocomp_params* iocompParams, struct test_variables* te
 	testParams->FILENAMES[3] = "adios2.bp4";
 	testParams->FILENAMES[4] = "adios2.bp5"; 
 	
-  int localArraySize[NDIM] = {4,4}; 
+  int localArraySize[NDIM] = {1000,1000}; 
   testParams->ioLibNum = IOLIBNUM; 
 	size_t localDataSize = 1; 
 	for(int i = 0; i < NDIM; i++)
@@ -51,6 +51,8 @@ double* initialise(struct iocomp_params* iocompParams, struct test_variables* te
 	{
 		data[j] = (double)j*2; 
 	}
+
+	printf("Test -> localArraySize value %i %i \n", localArraySize[0], localArraySize[1]); 
 
   iocompInit(iocompParams, comm,  NDIM, localArraySize, HT_flag); 
 

@@ -30,7 +30,7 @@ void stats(struct test_variables* testParams)
 		for(int i = 0; i < LOOPCOUNT; i++)
 		{
 			writeTime = testParams->endTime[i] - testParams->startTime[i]; 
-			globalDataSize = testParams->localDataSize * testParams->mysize / (pow(10,9)); 
+			globalDataSize = (double) testParams->localDataSize * testParams->mysize * sizeof(double) / (pow(10,9)); 
 			fprintf(fp,"%s, %i, %lf, %i, %lf \n", testParams->FILENAMES[testParams->ioLibNum], testParams->mysize, globalDataSize, i, writeTime  ) ; 
 		}
 	} 
