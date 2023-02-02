@@ -28,7 +28,7 @@ void ioServer(struct iocomp_params *iocompParams)
 	recv = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 	malloc_check(recv); 
 
-	for ( i = 0; i < iocompParams->localDataSize; i++)
+	for ( i = 0; i < (int)iocompParams->localDataSize; i++)
 	{
 		recv[i] = 0; // initialise recv array 
 	}
@@ -50,8 +50,8 @@ void ioServer(struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 	printf("Recieving data starts from source rank %i \n", source); 
 #endif
-	int test_probe, test_count; 
-	test_count = 1; 
+	int test_probe; 
+	int test_count = 1; 
 	
 	/*
 	 * Check for ghost messages, for ever loop activated
@@ -73,7 +73,7 @@ void ioServer(struct iocomp_params *iocompParams)
 			break; 
 		}
 
-		else if(test_count!= iocompParams->localDataSize)
+		else if(test_count!= (int)iocompParams->localDataSize)
 		{
 			printf("complete message not recieved \n"); 
 			exit(0); 
@@ -91,7 +91,7 @@ void ioServer(struct iocomp_params *iocompParams)
 
 #ifndef NDEBUG
 		printf("Recv data coming from rank %i \n",source ); 
-		for(i = 0; i < iocompParams->localDataSize; i++)
+		for(i = 0; i < (int)iocompParams->localDataSize; i++)
 		{
 			printf("%lf ",recv[i]); // init size in each dimension to be n. For ex. NDIM = 2 will reslt in n x n 
 		}
