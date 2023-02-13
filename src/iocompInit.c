@@ -30,7 +30,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	 * arrayParamsInit initialises all the array datasize variables 
 	 */ 
 
-	arrayParamsInit(iocompParams, comm, NDIM, localArraySize); 
+	//arrayParamsInit(iocompParams, comm, NDIM, localArraySize); 
 #ifndef NDEBUG
 	printf("iocompInit -> Array variables initialised\n"); 
 #endif
@@ -49,7 +49,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	 * iocomp function that sends data to ioServer if flag is true
 	 * if not then its a dead send 
 	 */ 
-	ioServerInitialise(iocompParams, ioLibNum); 
+	//ioServerInitialise(iocompParams, ioLibNum); 
 
 #ifndef NDEBUG
 	printf("End of iocomp_init\n"); 
