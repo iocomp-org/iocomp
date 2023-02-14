@@ -14,7 +14,7 @@ void dataWait(struct iocomp_params *iocompParams,MPI_Request *request)
 	{
 		MPI_Wait(request, MPI_STATUS_IGNORE); // wait for the data to be sent from previous dataSend  
 #ifndef NDEBUG
-		printf("MPI wait activated\n"); 
+		printf("dataWait -> MPI wait activated\n"); 
 #endif
 	}
 

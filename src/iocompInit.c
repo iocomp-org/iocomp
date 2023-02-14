@@ -18,7 +18,7 @@
 /*
  * Initialises the library 
  */
-void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize, bool FLAG, int ioLibNum)
+void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum)
 {
 
 #ifndef NDEBUG
@@ -52,7 +52,7 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int
 	ioServerInitialise(iocompParams, ioLibNum); 
 
 #ifndef NDEBUG
-	printf("End of iocomp_init\n"); 
+	printf("iocomp_init -> end of function\n"); 
 #endif
 
 } 

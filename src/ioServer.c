@@ -9,7 +9,7 @@ void ioServer(struct iocomp_params *iocompParams)
 {
 
 #ifndef NDEBUG
-	printf("ioServer started\n"); 
+	printf("ioServer -> started\n"); 
 #endif
 	int i, ierr; 
 	int ioRank; 
@@ -23,7 +23,6 @@ void ioServer(struct iocomp_params *iocompParams)
 	MPI_Request request; 
 	MPI_Info info;  
 
-
 	/*
 	 * Recieving data starts using interComm
 	 * source is ioRank in interComm, as that is the 
@@ -36,7 +35,7 @@ void ioServer(struct iocomp_params *iocompParams)
 	tag = source; 
 
 #ifndef NDEBUG
-	printf("Recieving data starts from source rank %i \n", source); 
+	printf("ioServer -> Recieving data starts from source rank %i \n", source); 
 #endif
 	int test_probe; 
 	int test_count = 1; 
@@ -55,7 +54,7 @@ void ioServer(struct iocomp_params *iocompParams)
 		if(!test_count)
 		{
 #ifndef NDEBUG
-			printf("ghost messaged recieved \n"); 	
+			printf("ioServer -> ghost messaged recieved \n"); 	
 #endif
 			int ghost;  
 			ierr = MPI_Recv(&ghost, 0, MPI_INT, source, tag,
@@ -80,22 +79,15 @@ void ioServer(struct iocomp_params *iocompParams)
 				recv[i] = 0; // initialise recv array 
 			}
 #ifndef NDEBUG
-			printf("Initialisation of recv array \n"); 
+			printf("ioServer -> Initialisation of recv array with count %i \n", test_count); 
 #endif
 			iocompParams->localDataSize = test_count; 
-			ierr = MPI_Recv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
+			ierr = MPI_Recv(recv, iocompParams->localDataSize, MPI_DOUBLE, source, tag,
 					iocompParams->globalComm,&status);
 			mpi_error_check(ierr); 
 
-			// ierr = MPI_Irecv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
-			// 		iocompParams->interComm, &request); 
-			// mpi_error_check(ierr); 
-
-			// ierr = 	MPI_Waitall(1, &request, &status); // wait for all processes to finish sending and recieving  
-			// mpi_error_check(ierr); 
-
 #ifndef NDEBUG
-			printf("Recv data coming from rank %i \n",source ); 
+			printf("ioServer -> Recv data coming from rank %i \n",source ); 
 			for(i = 0; i < (int)iocompParams->localDataSize; i++)
 			{
 				printf("%lf ",recv[i]); // init size in each dimension to be n. For ex. NDIM = 2 will reslt in n x n 
@@ -108,6 +100,9 @@ void ioServer(struct iocomp_params *iocompParams)
 			 * Parameters passed using iocompParams  
 			 */ 
 
+#ifndef NDEBUG
+			printf("ioServer -> Send to ioLibraries \n"); 
+#endif
 			ioLibraries(recv, iocompParams); 
 			free(recv);
 			recv = NULL; 
