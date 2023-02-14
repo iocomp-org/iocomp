@@ -5,7 +5,7 @@
 #include "mpi.h"
 #include "test.h"
 #define LOOP_COUNT 1
-#define NDIM 1 
+#define NDIM 2 
 
 int main(int argc, char** argv)
 {
@@ -24,9 +24,8 @@ int main(int argc, char** argv)
   MPI_Comm_size(comm, &size); 
 	testParams.myrank = rank; 
 	testParams.mysize = size; 
-	// int localArraySize[NDIM] = {1000,1000}; 
 	
-	int localArraySize[NDIM] = {10}; 
+	int localArraySize[NDIM] = {10,10}; 
 	size_t localDataSize = 1; 
 	for(int j = 0; j < NDIM; j++)
 	{
@@ -34,7 +33,7 @@ int main(int argc, char** argv)
 	}
 
 	int HT_flag = 1; 
-	int IOLIBNUM = 1; 
+	int IOLIBNUM = 3; 
 
 	/*
 	 * initialise test function and populate iocompParams, returning data array to write. 
