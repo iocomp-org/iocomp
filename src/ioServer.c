@@ -23,18 +23,6 @@ void ioServer(struct iocomp_params *iocompParams)
 	MPI_Request request; 
 	MPI_Info info;  
 
-	// initialise recv array 
-	double* recv = NULL; 
-	recv = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
-	malloc_check(recv); 
-
-	for ( i = 0; i < (int)iocompParams->localDataSize; i++)
-	{
-		recv[i] = 0; // initialise recv array 
-	}
-#ifndef NDEBUG
-	printf("Initialisation of recv array \n"); 
-#endif
 
 	/*
 	 * Recieving data starts using interComm
@@ -81,6 +69,18 @@ void ioServer(struct iocomp_params *iocompParams)
 		 */ 
 		else
 		{
+			// initialise recv array 
+			double* recv = NULL; 
+			recv = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
+			malloc_check(recv); 
+
+			for ( i = 0; i < (int)iocompParams->localDataSize; i++)
+			{
+				recv[i] = 0; // initialise recv array 
+			}
+#ifndef NDEBUG
+			printf("Initialisation of recv array \n"); 
+#endif
 			iocompParams->localDataSize = test_count; 
 			ierr = MPI_Recv(recv, iocompParams->localDataSize, iocompParams->dataType, source, tag,
 					iocompParams->globalComm,&status);
@@ -108,10 +108,9 @@ void ioServer(struct iocomp_params *iocompParams)
 			 */ 
 
 			ioLibraries(recv, iocompParams); 
+			free(recv);
+			recv = NULL; 
 		}  
 
-
-		free(recv);
-		recv = NULL; 
-
 	} 
+} 

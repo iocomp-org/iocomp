@@ -5,10 +5,12 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
-void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request)
+void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize)
 {
 
 	int i, ierr; 
+
+	iocompParams->localDataSize = localDataSize; // assign size of local array 
 
 	if(iocompParams->hyperthreadFlag) // check if flag is true? 
 	{
@@ -28,8 +30,6 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 #ifndef NDEBUG
 		printf("Sending data starts from compProcessor with globalRank %i to ioProcessor with globalRank  %i  \n", globalRank, dest); 
 #endif
-		// ierr = MPI_Send(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
-		//		iocompParams->globalComm); // every rank sends its portion of data 
 		
 		ierr = MPI_Isend(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
 					iocompParams->globalComm, request); // every rank sends its portion of data 
