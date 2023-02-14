@@ -4,16 +4,16 @@
 #include "mpi.h"
 #include "test.h"
 
-#define IOLIBNUM 3 
-static int HT_flag; 
+#define IOLIBNUM 1
+static int HT_flag;
 
-double* initialise(struct iocomp_params* iocompParams, struct test_variables* testParams, MPI_Comm comm)
+double* initialise(struct iocomp_params* iocompParams, struct test_variables* testParams, int NDIM, int* localArraySize, MPI_Comm comm)
 {
 
 	// command line stuff can go here.. 
 	
   // check for HT flag 
-	HT_flag = 0; 
+	HT_flag = 1; 
   if (HT_flag)
     puts ("HT flag is set to on");
   else 
@@ -33,7 +33,7 @@ double* initialise(struct iocomp_params* iocompParams, struct test_variables* te
 	testParams->FILENAMES[3] = "adios2.bp4";
 	testParams->FILENAMES[4] = "adios2.bp5"; 
 	
-  int localArraySize[NDIM] = {1000,1000}; 
+  // int localArraySize[NDIM] = {1000,1000}; 
   testParams->ioLibNum = IOLIBNUM; 
 	size_t localDataSize = 1; 
 	for(int i = 0; i < NDIM; i++)
@@ -54,9 +54,6 @@ double* initialise(struct iocomp_params* iocompParams, struct test_variables* te
 
 	printf("Test -> localArraySize value %i %i \n", localArraySize[0], localArraySize[1]); 
 
-  iocompInit(iocompParams, comm,  NDIM, localArraySize, HT_flag); 
-
-	arrayParamsInit(iocompParams,comm,NDIM,localArraySize);
 
 	return data; 
 }

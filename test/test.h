@@ -1,11 +1,11 @@
 #include "mpi.h"
 #include "iocomp.h"
 #define LOOPCOUNT 10 
-#define NDIM 2
+
 struct test_variables{
     int LOOP_COUNT; 
 	double startTime[LOOPCOUNT], endTime[LOOPCOUNT]; 
-	int localArraySize[NDIM]; 
+	int localArraySize[2]; 
 	size_t localDataSize; 
 	size_t globalDataSize; 
 	int myrank; 
@@ -14,7 +14,7 @@ struct test_variables{
 	char* FILENAMES[5];  
 }; 
 extern struct test_variables testParams; 
-double* initialise(struct iocomp_params* iocompParams, struct test_variables* testParams, MPI_Comm comm); 
+double* initialise(struct iocomp_params* iocompParams, struct test_variables* testParams, int NDIM, int* localArraySize, MPI_Comm comm); 
 void deleteFile(struct test_variables* testParams); 
 int rmdir(char *path); // delete the directory 
 void rmfile(char* filename); // delete a file 
