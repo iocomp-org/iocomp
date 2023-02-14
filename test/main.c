@@ -4,8 +4,8 @@
 #include "stdio.h"
 #include "mpi.h"
 #include "test.h"
-#define LOOP_COUNT 10
-#define NDIM 2 
+#define LOOP_COUNT 1
+#define NDIM 1 
 
 int main(int argc, char** argv)
 {
@@ -24,8 +24,15 @@ int main(int argc, char** argv)
   MPI_Comm_size(comm, &size); 
 	testParams.myrank = rank; 
 	testParams.mysize = size; 
-	size_t localDataSize = 1000*1000;
-	int localArraySize[NDIM] = {1000,1000}; 
+	// int localArraySize[NDIM] = {1000,1000}; 
+	
+	int localArraySize[NDIM] = {10}; 
+	size_t localDataSize = 1; 
+	for(int j = 0; j < NDIM; j++)
+	{
+		localDataSize*=localArraySize[j]; 
+	}
+
 	int HT_flag = 1; 
 	int IOLIBNUM = 1; 
 
@@ -34,13 +41,11 @@ int main(int argc, char** argv)
 	 */ 
 	double* data = initialise(&iocompParams,&testParams,NDIM, localArraySize, comm); 
 
-	// ioServerInitialise(&iocompParams, testParams.ioLibNum); 
-	
 	/*
 	 * iocompInit function takes in data, and initialises ioServer 
 	 */ 
-  iocompInit(&iocompParams, comm,  NDIM, localArraySize, HT_flag, IOLIBNUM); 
-	arrayParamsInit(&iocompParams,comm,NDIM,localArraySize);
+  iocompInit(&iocompParams, comm,  HT_flag, IOLIBNUM); 
+	// arrayParamsInit(&iocompParams,comm,NDIM,localArraySize);
 	MPI_Request request; 
 	
 	/* 
@@ -49,7 +54,7 @@ int main(int argc, char** argv)
 	for(int i = 0; i < LOOP_COUNT; i++)
 	{
 		testParams.startTime[i] = MPI_Wtime();  
-		dataSend(data,&iocompParams, &request,localDataSize ); // send data off using dataSend
+		dataSend(data,&iocompParams,&request,localDataSize); // send data off using dataSend
 		dataWait(&iocompParams,&request);
 		testParams.endTime[i] = MPI_Wtime();  
 	} 
