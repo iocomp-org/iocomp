@@ -65,12 +65,13 @@ void ioServer(struct iocomp_params *iocompParams)
 		}
 
 		/*
-		 * Elae recieve message 
+		 * Else recieve message 
 		 */ 
 		else
 		{
 			// initialise recv array 
 			double* recv = NULL; 
+			iocompParams->localDataSize = test_count; 
 			recv = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 			malloc_check(recv); 
 

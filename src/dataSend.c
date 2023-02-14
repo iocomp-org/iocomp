@@ -31,7 +31,7 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 		printf("Sending data starts from compProcessor with globalRank %i to ioProcessor with globalRank  %i  \n", globalRank, dest); 
 #endif
 		
-		ierr = MPI_Isend(data, iocompParams->localDataSize , iocompParams->dataType, dest, tag,
+		ierr = MPI_Isend(data, iocompParams->localDataSize , MPI_DOUBLE, dest, tag,
 					iocompParams->globalComm, request); // every rank sends its portion of data 
 		mpi_error_check(ierr); 
 
