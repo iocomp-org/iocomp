@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "test.h"
+#include "stream.h"
 #include "getopt.h"
 
 static int verbose_flag;
@@ -76,19 +76,36 @@ int main(int argc, char** argv)
   MPI_Comm_rank(comm, &rank); 
   // data parameters definitions 
 
-  int NDIM = 2; 
-  int localArraySize[2] = {100,100}; 
 
   struct iocomp_params iocompParams; 
+  int ioLib = 1; 
 
-  iocompInit(&iocompParams, comm,  NDIM, localArraySize, HT_flag); 
+	/*
+	 * iocomp - iocompInit initialises the ioServer 
+	 * and initialises the compute comm 
+	 */ 
+  iocompInit(&iocompParams,comm, HT_flag, ioLib); 
 #ifndef NDEBUG
   printf("After intercommInit\n"); 
 #endif
 
-  double* data = NULL; // initialise data pointer  
-  data = (double*)malloc(iocompParams.localDataSize*sizeof(double)); // one rank only sends to one rank
-  computeStep(data,&iocompParams); // do compute 
+	/*	
+	 * initialise stream param struct  
+	 */ 
+	struct stream_params streamParams; 
+	
+	/*
+	 * initialises the local array sizes 
+	 * and data size 
+	 */ 
+  int NDIM = 2; 
+  int localArraySize[2] = {100,100}; 
+	streamParams.localDataSize = 1;  
+	for(int j = 0; j < NDIM; j++) 
+	{
+		streamParams.localDataSize *= localArraySize[j]; 
+	}
+  computeStep(&iocompParams, &streamParams); // do compute 
 #ifndef NDEBUG
   printf("after computeStep \n"); 
 #endif
@@ -121,8 +138,6 @@ int main(int argc, char** argv)
 #ifndef NDEBUG
   printf("Deleted file\n"); 
 #endif   
-  free(data); 
-  data = NULL; 
 
   return 0; 
 } 

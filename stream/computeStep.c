@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include "test.h"
+#include "stream.h"
 
 #define COPY		0
 #define SCALE		1
@@ -33,7 +33,7 @@ double timer_end(double timerStart, int computeRank )
 	return(timeDiff); 
 }
 
-void stream(double* a, struct iocomp_params *iocompParams)
+void stream(double* a, struct iocomp_params *iocompParams, struct stream_params *streamParams)
 {
 #ifndef NDEBUG
 	printf("stream starts\n"); 
@@ -45,27 +45,29 @@ void stream(double* a, struct iocomp_params *iocompParams)
 	}
 	int i, ierr,k; 
 	double constant = 3.0; 
-	double c[iocompParams->localDataSize]; 
-	double b[iocompParams->localDataSize]; 
+	double c[streamParams->localDataSize]; 
+	double b[streamParams->localDataSize]; 
 	int computeRank;
 	MPI_Comm comm; 
 	comm = iocompParams->globalComm; 
 	ierr = MPI_Comm_rank(comm, &computeRank); 
 	mpi_error_check(ierr); 
-	double timerStart, timerEnd, timer[KERNELS][iter], totalTimer[KERNELS][iter], programStartTime, programEndTime, waitTimer[KERNELS][iter], wallTime; 
+	double timerStart, timerEnd, programStartTime, programEndTime,  wallTime; 
+  // streamParams->compTimer[KERNELS][iter], totalTimer[KERNELS][iter],waitTimer[KERNELS][iter]; 
 	timerStart = 0.0; 
 	timerEnd = 0.0; 
 	MPI_Request requestArray[KERNELS]; 
 	int mpiWaitFlag[KERNELS]; 
+
 
 	// initialise all timers to be 0 
 	for (i=0; i < KERNELS; i++) 
 	{
 		for (k =0; k<iter; k++)
 		{
-			timer[i][k] = 0.0;
-			totalTimer[i][k] = 0.0;
-			waitTimer[i][k] = 0.0;
+			streamParams->compTimer[i][k] = 0.0;
+			streamParams->sendTimer[i][k] = 0.0;
+			streamParams->waitTimer[i][k] = 0.0;
 		}
 	} 
 
@@ -73,7 +75,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 	printf("After inits\n"); 
 #endif
 	programStartTime = MPI_Wtime(); 	
-	for(k = 0; k< iter; k++) // averaging 
+	for(k = 0; k< LOOPCOUNT; k++) // averaging 
 	{
 		// wait for data from ADD(C) to be sent 
 		if(k>0)
@@ -81,7 +83,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			if(mpiWaitFlag[ADD] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("ADD data not sent \n");}  // test if HT flag is on
 			timerStart = timer_start(computeRank); // start timing 
 			dataWait(iocompParams,&requestArray[ADD]);
-			waitTimer[ADD][k] = timer_end(timerStart,computeRank); // wait time for ADD
+			streamParams->waitTimer[ADD][k] = timer_end(timerStart,computeRank); // wait time for ADD
 		} 
 
 		/*
@@ -93,9 +95,9 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			c[i] = a[i]; 
 			if(k>0){mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&requestArray[TRIAD]);} // test if TRIAD data got sent
 		}
-		timer[COPY][k] = timer_end(timerStart,computeRank); // computeTime for COPY 
-		dataSend(c,iocompParams, &requestArray[COPY]); // send data off using dataSend
-		totalTimer[COPY][k] = timer_end(timerStart,computeRank); // total time for COPY  
+		streamParams->compTimer[COPY][k] = timer_end(timerStart,computeRank); // computeTime for COPY 
+		dataSend(c,iocompParams, &requestArray[COPY],streamParams->localDataSize); // send data off using dataSend
+		streamParams->sendTimer[COPY][k] = timer_end(timerStart,computeRank); // send time for COPY 
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
 		printf("After COPY\n"); 
@@ -107,7 +109,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			if(mpiWaitFlag[SCALE] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("SCALE data not sent \n");}  // test if HT flag is on
 			timerStart = timer_start(computeRank); // start timing 
 			dataWait(iocompParams,&requestArray[SCALE]);
-			waitTimer[SCALE][k] = timer_end(timerStart,computeRank); // wait time for SCALE 
+			streamParams->waitTimer[SCALE][k] = timer_end(timerStart,computeRank); // wait time for SCALE 
 		} 
 
 		/*
@@ -119,9 +121,9 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			b[i] = constant * c[i]; 
 			mpiWaitFlag[COPY]=dataSendTest(iocompParams,&requestArray[0]); // test if COPY data got sent 
 		}
-		timer[SCALE][k] = timer_end(timerStart,computeRank); // computeTime for SCALE
-		dataSend(b,iocompParams, &requestArray[SCALE]); // send data off using dataSend
-		totalTimer[SCALE][k] = timer_end(timerStart,computeRank); // total time for SCALE
+		streamParams->compTimer[SCALE][k] = timer_end(timerStart,computeRank); // computeTime for SCALE
+		dataSend(b,iocompParams, &requestArray[SCALE],  streamParams->localDataSize); // send data off using dataSend
+		streamParams->sendTimer[SCALE][k] = timer_end(timerStart,computeRank); // send time for SCALE
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",b[i]); }
 		printf("After SCALE\n"); 
@@ -131,7 +133,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 		if(mpiWaitFlag[COPY] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("COPY data not sent \n");}  // test if HT flag is on
 		timerStart = timer_start(computeRank); // start timing 
 		dataWait(iocompParams,&requestArray[COPY]);
-		waitTimer[COPY][k] = timer_end(timerStart,computeRank); // wait time for COPY
+		streamParams->waitTimer[COPY][k] = timer_end(timerStart,computeRank); // wait time for COPY
 
 		/*
 		* ADD
@@ -142,9 +144,9 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			c[i] = a[i] + b[i]; 
 			mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&requestArray[SCALE]); // test if SCALE data got sent  
 		}
-		timer[ADD][k] = timer_end(timerStart,computeRank); // computeTime for ADD
-		dataSend(c,iocompParams, &requestArray[ADD]); // send data off using dataSend
-		totalTimer[ADD][k] = timer_end(timerStart,computeRank); // total time for ADD
+		streamParams->compTimer[ADD][k] = timer_end(timerStart,computeRank); // computeTime for ADD
+		dataSend(c,iocompParams, &requestArray[ADD], streamParams->localDataSize); // send data off using dataSend
+		streamParams->sendTimer[ADD][k] = timer_end(timerStart,computeRank); // send time for ADD
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
 		printf("After ADD\n"); 
@@ -156,7 +158,7 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			if(mpiWaitFlag[TRIAD] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("TRIAD data not sent \n");}  // test if HT flag is on
 			timerStart = timer_start(computeRank); // start timing 
 			dataWait(iocompParams,&requestArray[TRIAD]);
-			waitTimer[TRIAD][k] = timer_end(timerStart,computeRank); // wait time for SCALE 
+			streamParams->waitTimer[TRIAD][k] = timer_end(timerStart,computeRank); // wait time for SCALE 
 		} 
 
 		/*
@@ -168,9 +170,9 @@ void stream(double* a, struct iocomp_params *iocompParams)
 			a[i] = b[i] + c[i] * constant;  
 			mpiWaitFlag[ADD]=dataSendTest(iocompParams,&requestArray[ADD]); // test if ADD data got sent  
 		}
-		timer[TRIAD][k] = timer_end(timerStart,computeRank); // computeTime for TRIAD
-		dataSend(a,iocompParams, &requestArray[TRIAD]); // send data
-		totalTimer[TRIAD][k] = timer_end(timerStart,computeRank); // total time for TRIAD
+		streamParams->compTimer[TRIAD][k] = timer_end(timerStart,computeRank); // computeTime for TRIAD
+		dataSend(a,iocompParams, &requestArray[TRIAD], streamParams->localDataSize); // send data
+		streamParams->sendTimer[TRIAD][k] = timer_end(timerStart,computeRank); // send time for TRIAD 
 #ifndef NDEBUG
 		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",a[i]); }
 		printf("After TRIAD\n"); 
@@ -186,14 +188,17 @@ void stream(double* a, struct iocomp_params *iocompParams)
 	{
 		programEndTime = MPI_Wtime();
 		wallTime = programEndTime - programStartTime; 
-		resultsOutput(timer, totalTimer, waitTimer,wallTime); // write to csv file for compute write 
+		//resultsOutput(streamParams->compTimer, streamParams->sendTimer, streamParams->waitTimer,wallTime); // write to csv file for compute write 
 	} 
 
 }
 
-void computeStep(double* data, struct iocomp_params *iocompParams)
+void computeStep(struct iocomp_params *iocompParams, struct stream_params *streamParams)
 {
 	int i, globalMPIRank, ierr;   
+
+  double* data = NULL; // initialise data pointer  
+  data = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 
 	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalMPIRank); 
 	mpi_error_check(ierr); 
@@ -201,10 +206,13 @@ void computeStep(double* data, struct iocomp_params *iocompParams)
 	{
 		data[i] =iocompParams->localDataSize * globalMPIRank + i; 
 	}
-	stream(data,iocompParams); 
+	stream(data,iocompParams, streamParams); 
 #ifndef NDEBUG
 	printf("After stream\n"); 
 #endif
+
+  free(data); 
+  data = NULL; 
 } 
 
 

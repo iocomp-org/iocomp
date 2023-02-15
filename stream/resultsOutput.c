@@ -4,7 +4,7 @@
 #include <string.h> 
 #include "stdio.h"
 #include "mpi.h"
-#include "test.h" 
+#include "stream.h"
 #define filename "compute_write_time.csv"
 
 void avg(double sum[KERNELS], double data[KERNELS][iter])
