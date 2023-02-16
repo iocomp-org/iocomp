@@ -30,7 +30,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	{
 		data[i] = streamParams->localDataSize  + i; 
 	}
-	// stream(data,iocompParams, streamParams, comm); 
+	stream(data,iocompParams, streamParams, comm); 
 	stopSend(iocompParams); 
 #ifndef NDEBUG
 	printf("After stream\n"); 

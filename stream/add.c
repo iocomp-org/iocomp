@@ -5,7 +5,7 @@
 #include "mpi.h"
 #include "stream.h"
 
-void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a)
+void add(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a)
 {
 
 	// timerStart = timer_start(computeRank); // start timing 
@@ -25,7 +25,7 @@ void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams
 #endif
 }
 
-void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k)
+void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k)
 {
 	// wait for data from COPY(C) to be sent
 	double timerStart = 0.0; 

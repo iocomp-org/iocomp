@@ -19,9 +19,12 @@ struct stream_params{
 	double sendTimer[KERNELS][LOOPCOUNT]; 
 	size_t localDataSize; 
 	size_t globalDataSize; 
+	MPI_Request requestArray[KERNELS]; 
+	int mpiWaitFlag[KERNELS]; 
 }; 
 extern struct stream_params streamParams; 
-
+void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a); 
+void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
 void computeStep(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm);
 void stream(double* iodata, struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm); 
 void initData(double* iodata, struct iocomp_params *iocompParams);

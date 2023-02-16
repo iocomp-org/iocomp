@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include "mpi.h"
 #include "stream.h"
+
 void stream(double* a, struct iocomp_params *iocompParams, struct stream_params *streamParams, MPI_Comm comm)
 {
 #ifndef NDEBUG
@@ -23,14 +24,6 @@ void stream(double* a, struct iocomp_params *iocompParams, struct stream_params 
 	ierr = MPI_Comm_rank(comm, &computeRank); 
 	mpi_error_check(ierr); 
 
-	double timerStart, timerEnd, programStartTime, programEndTime,  wallTime; 
-  // streamParams->compTimer[KERNELS][iter], totalTimer[KERNELS][iter],waitTimer[KERNELS][iter]; 
-	timerStart = 0.0; 
-	timerEnd = 0.0; 
-	MPI_Request requestArray[KERNELS]; 
-	int mpiWaitFlag[KERNELS] = {0,0,0,0}; 
-
-
 	// initialise all timers to be 0 
 	for (i=0; i < KERNELS; i++) 
 	{
@@ -45,6 +38,8 @@ void stream(double* a, struct iocomp_params *iocompParams, struct stream_params 
 #ifndef NDEBUG
 	printf("After inits\n"); 
 #endif
+	
+	double programStartTime, programEndTime, wallTime; 
 	programStartTime = MPI_Wtime(); 	
 	for(k = 0; k< LOOPCOUNT; k++) // averaging 
 	{
@@ -52,6 +47,7 @@ void stream(double* a, struct iocomp_params *iocompParams, struct stream_params 
 	printf("stream loop starts\n"); 
 #endif
 		// wait for data from ADD(C) to be sent 
+		/*
 		if(k>0)
 		{
 			if(mpiWaitFlag[ADD] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("ADD data not sent \n");}  // test if HT flag is on
@@ -59,98 +55,88 @@ void stream(double* a, struct iocomp_params *iocompParams, struct stream_params 
 			dataWait(iocompParams,&requestArray[ADD]);
 			streamParams->waitTimer[ADD][k] = timer_end(timerStart,computeRank); // wait time for ADD
 		} 
+		*/ 
 
 		/*
 		* COPY
 		*/ 
-		timerStart = timer_start(computeRank); // start timing 
-		for(i = 0; i< iocompParams->localDataSize; i++)
-		{
-			c[i] = a[i]; 
-			//if(k>0){mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&requestArray[TRIAD]);} // test if TRIAD data got sent
-		}
-		streamParams->compTimer[COPY][k] = timer_end(timerStart,computeRank); // computeTime for COPY 
-		dataSend(c,iocompParams, &requestArray[COPY],streamParams->localDataSize); // send data off using dataSend
-		streamParams->sendTimer[COPY][k] = timer_end(timerStart,computeRank); // send time for COPY 
-#ifndef NDEBUG
-		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
-		printf("After COPY\n"); 
-#endif
-
-		// wait for data from previous SCALE(B) to be sent 
-		if(k>0)
-		{
-			if(mpiWaitFlag[SCALE] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("SCALE data not sent \n");}  // test if HT flag is on
-			timerStart = timer_start(computeRank); // start timing 
-			dataWait(iocompParams,&requestArray[SCALE]);
-			streamParams->waitTimer[SCALE][k] = timer_end(timerStart,computeRank); // wait time for SCALE 
-		} 
-
-		/*
-		* SCALE
-		*/ 
-		timerStart = timer_start(computeRank); // start timing 
-		for(i = 0; i< iocompParams->localDataSize; i++)
-		{
-			b[i] = constant * c[i]; 
-			mpiWaitFlag[COPY]=dataSendTest(iocompParams,&requestArray[0]); // test if COPY data got sent 
-		}
-		streamParams->compTimer[SCALE][k] = timer_end(timerStart,computeRank); // computeTime for SCALE
-		dataSend(b,iocompParams, &requestArray[SCALE],  streamParams->localDataSize); // send data off using dataSend
-		streamParams->sendTimer[SCALE][k] = timer_end(timerStart,computeRank); // send time for SCALE
-#ifndef NDEBUG
-		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",b[i]); }
-		printf("After SCALE\n"); 
-#endif
+		copy(iocompParams, streamParams, k, c, a); // send copy data and get timers for send and compute  
+		copy_wait(iocompParams, streamParams, k); // wait for copy to be send its data 
 		
-		// wait for data from COPY(C) to be sent
-		if(mpiWaitFlag[COPY] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("COPY data not sent \n");}  // test if HT flag is on
-		timerStart = timer_start(computeRank); // start timing 
-		dataWait(iocompParams,&requestArray[COPY]);
-		streamParams->waitTimer[COPY][k] = timer_end(timerStart,computeRank); // wait time for COPY
-
-		/*
-		* ADD
-		*/ 
-		timerStart = timer_start(computeRank); // start timing 
-		for(i = 0; i< iocompParams->localDataSize; i++)
-		{
-			c[i] = a[i] + b[i]; 
-			mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&requestArray[SCALE]); // test if SCALE data got sent  
-		}
-		streamParams->compTimer[ADD][k] = timer_end(timerStart,computeRank); // computeTime for ADD
-		dataSend(c,iocompParams, &requestArray[ADD], streamParams->localDataSize); // send data off using dataSend
-		streamParams->sendTimer[ADD][k] = timer_end(timerStart,computeRank); // send time for ADD
-#ifndef NDEBUG
-		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
-		printf("After ADD\n"); 
-#endif
-		
-		// wait for data from previous TRIAD(A) to be sent 
-		if(k>0)
-		{
-			if(mpiWaitFlag[TRIAD] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("TRIAD data not sent \n");}  // test if HT flag is on
-			timerStart = timer_start(computeRank); // start timing 
-			dataWait(iocompParams,&requestArray[TRIAD]);
-			streamParams->waitTimer[TRIAD][k] = timer_end(timerStart,computeRank); // wait time for SCALE 
-		} 
-
-		/*
-		* TRIAD 
-		*/ 
-		timerStart = timer_start(computeRank); // start timing 
-		for(i = 0; i< iocompParams->localDataSize; i++)
-		{
-			a[i] = b[i] + c[i] * constant;  
-			mpiWaitFlag[ADD]=dataSendTest(iocompParams,&requestArray[ADD]); // test if ADD data got sent  
-		}
-		streamParams->compTimer[TRIAD][k] = timer_end(timerStart,computeRank); // computeTime for TRIAD
-		dataSend(a,iocompParams, &requestArray[TRIAD], streamParams->localDataSize); // send data
-		streamParams->sendTimer[TRIAD][k] = timer_end(timerStart,computeRank); // send time for TRIAD 
-#ifndef NDEBUG
-		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",a[i]); }
-		printf("After TRIAD\n"); 
-#endif
+//		// wait for data from previous SCALE(B) to be sent 
+//		if(k>0)
+//		{
+//			if(mpiWaitFlag[SCALE] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("SCALE data not sent \n");}  // test if HT flag is on
+//			timerStart = timer_start(computeRank); // start timing 
+//			dataWait(iocompParams,&requestArray[SCALE]);
+//			streamParams->waitTimer[SCALE][k] = timer_end(timerStart,computeRank); // wait time for SCALE 
+//		} 
+//
+//		/*
+//		* SCALE
+//		*/ 
+//		timerStart = timer_start(computeRank); // start timing 
+//		for(i = 0; i< iocompParams->localDataSize; i++)
+//		{
+//			b[i] = constant * c[i]; 
+//			mpiWaitFlag[COPY]=dataSendTest(iocompParams,&requestArray[0]); // test if COPY data got sent 
+//		}
+//		streamParams->compTimer[SCALE][k] = timer_end(timerStart,computeRank); // computeTime for SCALE
+//		dataSend(b,iocompParams, &requestArray[SCALE],  streamParams->localDataSize); // send data off using dataSend
+//		streamParams->sendTimer[SCALE][k] = timer_end(timerStart,computeRank); // send time for SCALE
+//#ifndef NDEBUG
+//		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",b[i]); }
+//		printf("After SCALE\n"); 
+//#endif
+//		
+//		// wait for data from COPY(C) to be sent
+//		if(mpiWaitFlag[COPY] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("COPY data not sent \n");}  // test if HT flag is on
+//		timerStart = timer_start(computeRank); // start timing 
+//		dataWait(iocompParams,&requestArray[COPY]);
+//		streamParams->waitTimer[COPY][k] = timer_end(timerStart,computeRank); // wait time for COPY
+//
+//		/*
+//		* ADD
+//		*/ 
+//		timerStart = timer_start(computeRank); // start timing 
+//		for(i = 0; i< iocompParams->localDataSize; i++)
+//		{
+//			c[i] = a[i] + b[i]; 
+//			mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&requestArray[SCALE]); // test if SCALE data got sent  
+//		}
+//		streamParams->compTimer[ADD][k] = timer_end(timerStart,computeRank); // computeTime for ADD
+//		dataSend(c,iocompParams, &requestArray[ADD], streamParams->localDataSize); // send data off using dataSend
+//		streamParams->sendTimer[ADD][k] = timer_end(timerStart,computeRank); // send time for ADD
+//#ifndef NDEBUG
+//		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
+//		printf("After ADD\n"); 
+//#endif
+//		
+//		// wait for data from previous TRIAD(A) to be sent 
+//		if(k>0)
+//		{
+//			if(mpiWaitFlag[TRIAD] == 0 && iocompParams->hyperthreadFlag!= 0) {printf("TRIAD data not sent \n");}  // test if HT flag is on
+//			timerStart = timer_start(computeRank); // start timing 
+//			dataWait(iocompParams,&requestArray[TRIAD]);
+//			streamParams->waitTimer[TRIAD][k] = timer_end(timerStart,computeRank); // wait time for SCALE 
+//		} 
+//
+//		/*
+//		* TRIAD 
+//		*/ 
+//		timerStart = timer_start(computeRank); // start timing 
+//		for(i = 0; i< iocompParams->localDataSize; i++)
+//		{
+//			a[i] = b[i] + c[i] * constant;  
+//			mpiWaitFlag[ADD]=dataSendTest(iocompParams,&requestArray[ADD]); // test if ADD data got sent  
+//		}
+//		streamParams->compTimer[TRIAD][k] = timer_end(timerStart,computeRank); // computeTime for TRIAD
+//		dataSend(a,iocompParams, &requestArray[TRIAD], streamParams->localDataSize); // send data
+//		streamParams->sendTimer[TRIAD][k] = timer_end(timerStart,computeRank); // send time for TRIAD 
+//#ifndef NDEBUG
+//		for(i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",a[i]); }
+//		printf("After TRIAD\n"); 
+//#endif
 	} // end avg loop  
 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
