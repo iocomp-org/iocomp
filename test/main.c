@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 	/*
 	 * iocompInit function takes in data, and initialises ioServer 
 	 */ 
-  iocompInit(&iocompParams, comm,  HT_flag, IOLIBNUM); 
+  MPI_Comm computeComm = iocompInit(&iocompParams, comm,  HT_flag, IOLIBNUM); 
 	// arrayParamsInit(&iocompParams,comm,NDIM,localArraySize);
 	MPI_Request request; 
 	
