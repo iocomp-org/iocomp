@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 		localDataSize*=localArraySize[j]; 
 	}
 
-	int HT_flag = 1; 
+	int HT_flag = 0; 
 	int IOLIBNUM = 3; 
 
 	/*

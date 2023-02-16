@@ -10,15 +10,6 @@ static int HT_flag;
 double* initialise(struct iocomp_params* iocompParams, struct test_variables* testParams, int NDIM, int* localArraySize, MPI_Comm comm)
 {
 
-	// command line stuff can go here.. 
-	
-  // check for HT flag 
-	HT_flag = 1; 
-  if (HT_flag)
-    puts ("HT flag is set to on");
-  else 
-    puts ("HT flag is switched off"); 
-	
 	// assign filenames to test structure 
 	char* filenames[5] = {
 		"mpiio.dat",
