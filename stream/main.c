@@ -5,6 +5,7 @@
 #include "mpi.h"
 #include "stream.h"
 #include "getopt.h"
+#define NDIM 2
 
 static int verbose_flag;
 static int HT_flag; 
@@ -86,7 +87,7 @@ int main(int argc, char** argv)
 	 */ 
   iocompInit(&iocompParams,comm, HT_flag, ioLib); 
 #ifndef NDEBUG
-  printf("After intercommInit\n"); 
+  printf("stream->After intercommInit\n"); 
 #endif
 
 	/*	
@@ -98,17 +99,21 @@ int main(int argc, char** argv)
 	 * initialises the local array sizes 
 	 * and data size 
 	 */ 
-  int NDIM = 2; 
-  int localArraySize[2] = {100,100}; 
+  int localArraySize[NDIM] = {4,4}; 
 	streamParams.localDataSize = 1;  
 	for(int j = 0; j < NDIM; j++) 
 	{
 		streamParams.localDataSize *= localArraySize[j]; 
 	}
-  computeStep(&iocompParams, &streamParams); // do compute 
 #ifndef NDEBUG
-  printf("after computeStep \n"); 
+  printf("stream-> localdatasize initialised with %li \n", streamParams.localDataSize); 
 #endif
+
+  computeStep(&iocompParams, &streamParams, comm); // do compute 
+#ifndef NDEBUG
+  printf("stream-> after computeStep \n"); 
+#endif
+
   if(rank == 0)
   {
     int testFlag = 1; 
