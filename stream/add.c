@@ -5,7 +5,7 @@
 #include "mpi.h"
 #include "stream.h"
 
-void add(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a)
+void add(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a, double* b)
 {
 
 	// timerStart = timer_start(computeRank); // start timing 
@@ -13,23 +13,23 @@ void add(struct iocomp_params *iocompParams, struct stream_params* streamParams,
 	timerStart = MPI_Wtime(); 
 	for(int i = 0; i< streamParams->localDataSize; i++)
 	{
-		c[i] = a[i]; 
-		//if(k>0){mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&requestArray[TRIAD]);} // test if TRIAD data got sent
+		c[i] = a[i] + b[i]; 
+//			mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&requestArray[SCALE]); // test if SCALE data got sent  
 	}
-	streamParams->compTimer[COPY][k] = MPI_Wtime() - timerStart;  // computeTime for COPY 
-	dataSend(c,iocompParams, &streamParams->requestArray[COPY],streamParams->localDataSize); // send data off using dataSend
-	streamParams->sendTimer[COPY][k] = MPI_Wtime() - timerStart; // send time for COPY 
+	streamParams->compTimer[ADD][k] = MPI_Wtime() - timerStart;  // computeTime for ADD 
+	dataSend(c,iocompParams, &streamParams->requestArray[ADD],streamParams->localDataSize); // send data off using dataSend
+	streamParams->sendTimer[ADD][k] = MPI_Wtime() - timerStart; // send time for ADD 
 #ifndef NDEBUG
 	for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
-	printf("After COPY\n"); 
+	printf("After ADD\n"); 
 #endif
 }
 
 void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k)
 {
-	// wait for data from COPY(C) to be sent
+	// wait for data from ADD(C) to be sent
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
-	dataWait(iocompParams,&streamParams->requestArray[COPY]);
-	streamParams->waitTimer[COPY][k] = MPI_Wtime() - timerStart; // wait time for COPY
+	dataWait(iocompParams,&streamParams->requestArray[ADD]);
+	streamParams->waitTimer[ADD][k] = MPI_Wtime() - timerStart; // wait time for ADD
 }

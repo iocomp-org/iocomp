@@ -63,6 +63,18 @@ void stream(double* a, struct iocomp_params *iocompParams, struct stream_params 
 		copy(iocompParams, streamParams, k, c, a); // send copy data and get timers for send and compute  
 		copy_wait(iocompParams, streamParams, k); // wait for copy to be send its data 
 		
+		/*
+		* SCALE
+		*/ 
+
+		/*
+		* ADD
+		*/ 
+		add(iocompParams, streamParams, k, c, a, b); // send copy data and get timers for send and compute  
+		add_wait(iocompParams, streamParams, k); // wait for copy to be send its data 
+
+
+
 //		// wait for data from previous SCALE(B) to be sent 
 //		if(k>0)
 //		{
@@ -98,6 +110,7 @@ void stream(double* a, struct iocomp_params *iocompParams, struct stream_params 
 //		/*
 //		* ADD
 //		*/ 
+			
 //		timerStart = timer_start(computeRank); // start timing 
 //		for(i = 0; i< iocompParams->localDataSize; i++)
 //		{
