@@ -1,7 +1,6 @@
 #include "mpi.h"
 #include "iocomp.h"
 
-#define iter 5
 #define KERNELS 4
 #define LOOPCOUNT 10
 #define COPY		0
@@ -17,6 +16,7 @@ struct stream_params{
 	double compTimer[KERNELS][LOOPCOUNT]; 
 	double waitTimer[KERNELS][LOOPCOUNT]; 
 	double sendTimer[KERNELS][LOOPCOUNT]; 
+	double wallTimer; 
 	size_t localDataSize; 
 	size_t globalDataSize; 
 	MPI_Request requestArray[KERNELS]; 
@@ -34,10 +34,11 @@ void triad(struct iocomp_params *iocompParams, struct stream_params* streamParam
 void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
 
 // others. 
+void resultsOutput(struct stream_params* streamParams); 
+void init(struct stream_params* streamParams, double* a, double* b, double* c); 
 void computeStep(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm);
 void stream(double* iodata, struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm); 
 void initData(double* iodata, struct iocomp_params *iocompParams);
-void resultsOutput(double timer[4][iter], double totalTimer[4][iter],double waitTimer[4][iter], double wallTimer); 
-void avg(double sum[KERNELS], double data[KERNELS][iter]); 
+void avg(double sum[KERNELS], double data[KERNELS][LOOPCOUNT]); 
 double timer_start(int computeRank); 
 double timer_end(double timerStart, int computeRank ); 

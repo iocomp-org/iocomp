@@ -14,30 +14,71 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 #ifndef NDEBUG
 	printf("Starting computeStep \n"); 
 #endif
-	int i, globalMPIRank, ierr;   
-
-  double* data = NULL; // initialise data pointer  
-  data = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
-#ifndef NDEBUG
-	printf("After malloc \n"); 
-#endif
-
-	ierr = MPI_Comm_rank(comm, &globalMPIRank); 
-	printf("global mpi rank %i \n",globalMPIRank); 
-	mpi_error_check(ierr); 
-
-	for(i = 0; i < streamParams->localDataSize; i++)
+	
+	/*
+	 * mallocing the pointers 
+	 */ 
+  double* a = NULL; // initialise data pointer  
+  double* b = NULL; // initialise data pointer  
+  double* c = NULL; // initialise data pointer  
+	init(streamParams,a,b,c); // malloc and initialise the pointers 
+	
+	double wallTime_start, wallTime_end; 
+	wallTime_start = MPI_Wtime(); 
+	
+	/*
+	 * STREAM kernels, add, copy, scale and triad 
+	 * loop till LOOPCOUNT to get an average 
+	 */
+	for(int k = 0; k< LOOPCOUNT; k++) // averaging 
 	{
-		data[i] = streamParams->localDataSize  + i; 
-	}
-	stream(data,iocompParams, streamParams, comm); 
-	stopSend(iocompParams); 
 #ifndef NDEBUG
-	printf("After stream\n"); 
+	printf("stream loop starts\n"); 
+#endif
+		if(k>0)
+		{
+			add_wait(iocompParams, streamParams, k); // wait for copy to be send its data 
+		} 
+
+		/*
+		* COPY
+		*/ 
+		copy(iocompParams, streamParams, k, c, a); // send copy data and get timers for send and compute  
+		scale_wait(iocompParams, streamParams, k); // wait for send to be finished sending its data 
+		
+		/*
+		* SCALE
+		*/ 
+		scale(iocompParams, streamParams, k, c, b); // send scale data and get timers for send and compute  
+		copy_wait(iocompParams, streamParams, k); // wait for copy to be send its data 
+
+		/*
+		* ADD
+		*/ 
+		add(iocompParams, streamParams, k, c, a, b); // send copy data and get timers for send and compute  
+		triad_wait(iocompParams, streamParams, k); // wait for copy to be send its data 
+
+		/*
+		* TRIAD 
+		*/ 
+		triad(iocompParams, streamParams, k, c, a, b); // send copy data and get timers for send and compute  
+
+	} // end avg loop  
+
+	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
+#ifndef NDEBUG
+	printf("After stopSend function\n"); 
 #endif
 
-  free(data); 
-  data = NULL; 
+	wallTime_end = MPI_Wtime(); 
+	streamParams->wallTimer=wallTime_start - wallTime_end; 
+
+  free(a); 
+  free(b); 
+  free(c); 
+  a = NULL; 
+  b = NULL; 
+  c = NULL; 
 } 
 
 

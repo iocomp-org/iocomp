@@ -1,9 +1,9 @@
 # define c compiler 
-CC = $(OMPI_DIR)/bin/mpicc 
+CC = cc 
 CFLAGS = -Wall -Wpedantic -Werror -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
-CFLAGS += -fPIC -g -Og -DADIOS2_USE_MPI -DNDEBUG
+CFLAGS += -fPIC -g -Og -DADIOS2_USE_MPI # -DNDEBUG
 
 # linker flags
 LFLAGS += -I$(OMPI_DIR)/include -I$(IOCOMP_DIR)/include 
@@ -12,10 +12,10 @@ LFLAGS += -I$(OMPI_DIR)/include -I$(IOCOMP_DIR)/include
 ODIR = Object_files
 
 # define library paths 
-LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm -L$(IOCOMP_DIR)/lib -liocomp # -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 # -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi  -lm 
+LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm -L$(IOCOMP_DIR)/lib -liocomp  -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5  -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi  -lm 
 
 # define C source files 
-SRCS = main.c computeStep.c resultsOutput.c 
+SRCS = main.c computeStep.c resultsOutput.c  timers.c copy.c add.c scale.c triad.c init.c 
 
 # define executable file  
 MAIN = test 

@@ -7,36 +7,31 @@
 #include "stream.h"
 #define filename "compute_write_time.csv"
 
-void avg(double sum[KERNELS], double data[KERNELS][iter])
+void avg(double sum[KERNELS], double data[KERNELS][LOOPCOUNT])
 {
   int i,k;  
-	// double sum[KERNELS]; 
 	for (i = 0; i<KERNELS; i++)
 	{
 		sum[i] = 0.0; 
-		for (k = 0; k < iter; k++)
+		for (k = 0; k < LOOPCOUNT; k++)
 		{
 			sum[i] += data[i][k]; 
 		}
-		sum[i] = sum[i]/iter; 
+		sum[i] = sum[i]/LOOPCOUNT; 
 	}
 	// return(sum); 
 }
 
-void resultsOutput(double timer[4][iter], double totalTimer[4][iter],double waitTimer[4][iter], double wallTimer)
+void resultsOutput(struct stream_params* streamParams)
 {
 	double avgCompTimer[KERNELS], 
-	avgTotalTimer[KERNELS], 
+	avgSendTimer[KERNELS], 
 	avgWaitTimer[KERNELS]; 
 
-	int i,k; 
-
 	// calculate the averages from the total time 
-	avg(avgCompTimer, timer); 
-	avg(avgTotalTimer, totalTimer); 
-	avg(avgWaitTimer, waitTimer); 
-	// avgTotalTimer = avg(totalTimer); 
-	// avgWaitTimer = avg(waitTimer); 
+	avg(avgCompTimer, streamParams->compTimer); 
+	avg(avgSendTimer, streamParams->sendTimer); 
+	avg(avgWaitTimer, streamParams->waitTimer); 
 
 	// initialise the file variables 
 	int test; 
@@ -58,11 +53,11 @@ void resultsOutput(double timer[4][iter], double totalTimer[4][iter],double wait
 		exit(1);
 	}
 
-	// printing
+	// write to file
 	fprintf(out, "Timer,Copy(s),Scalar(s),Add(s),Triad(s),Total(s)\n"); 
 	fprintf(out, "Compute,%lf,%lf,%lf,%lf \n", avgCompTimer[0], avgCompTimer[1], avgCompTimer[2], avgCompTimer[3]); 
-	fprintf(out, "Total,%lf,%lf,%lf,%lf \n", avgTotalTimer[0], avgTotalTimer[1], avgTotalTimer[2], avgTotalTimer[3]); 
+	fprintf(out, "Send,%lf,%lf,%lf,%lf \n", avgSendTimer[0], avgSendTimer[1], avgSendTimer[2], avgSendTimer[3]); 
 	fprintf(out, "Wait,%lf,%lf,%lf,%lf \n", avgWaitTimer[0], avgWaitTimer[1], avgWaitTimer[2], avgWaitTimer[3]); 
-	fprintf(out, "WallTimer,,,,%lf \n", wallTimer); 
+	fprintf(out, "WallTimer,,,,%lf \n", streamParams->wallTimer); 
 } 
 

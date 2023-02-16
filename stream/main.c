@@ -85,7 +85,7 @@ int main(int argc, char** argv)
 	 * iocomp - iocompInit initialises the ioServer 
 	 * and initialises the compute comm 
 	 */ 
-  iocompInit(&iocompParams,comm, HT_flag, ioLib); 
+  MPI_Comm computeComm = iocompInit(&iocompParams,comm, HT_flag, ioLib); 
 #ifndef NDEBUG
   printf("stream->After intercommInit\n"); 
 #endif
@@ -113,35 +113,20 @@ int main(int argc, char** argv)
 #ifndef NDEBUG
   printf("stream-> after computeStep \n"); 
 #endif
-
-  if(rank == 0)
-  {
-    int testFlag = 1; 
-    //				testData(&iocompParams, testFlag); // test data 
-  } 
+	
+	int computeRank; 
+	MPI_Comm_rank(computeComm, &computeRank); 
+	if(computeRank == 0)
+	{
+		resultsOutput(&streamParams); // write to csv file for compute write 
+	} 
 #ifndef NDEBUG
-  printf("after test\n"); 
+  printf("stream-> after results output \n"); 
 #endif
 
   MPI_Finalize(); 
 #ifndef NDEBUG
   printf("MPI finalize\n"); 
-#endif   
-
-  // remove file 
-	/*
-  if(rank == 0)
-  {
-    int ret; 
-    ret = remove("mpiio.dat");
-
-    if(ret != 0) {
-      printf("Error: unable to delete the file");
-    }
-  } 
-	*/ 
-#ifndef NDEBUG
-  printf("Deleted file\n"); 
 #endif   
 
   return 0; 
