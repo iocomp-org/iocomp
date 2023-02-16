@@ -5,18 +5,20 @@
 #include "mpi.h"
 #include "stream.h"
 
-void init(struct stream_params* streamParams, double* a, double* b, double* c) 
+double* init(struct stream_params* streamParams, double* a) 
 {
 	
-  a = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
-  b = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
-  c = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 #ifndef NDEBUG
-	printf("After malloc \n"); 
+	printf("stream -> After malloc \n"); 
 #endif
 	
 	for(int i = 0; i < streamParams->localDataSize; i++)
 	{
 		a[i] = streamParams->localDataSize  + i; 
 	}
+#ifndef NDEBUG
+	printf("stream -> a array defined \n"); 
+#endif
+
+	return(a); 
 }

@@ -8,7 +8,9 @@
 void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a)
 {
 
-	// timerStart = timer_start(computeRank); // start timing 
+#ifndef NDEBUG
+	printf("stream -> COPY starts\n"); 
+#endif
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
 	for(int i = 0; i< streamParams->localDataSize; i++)
@@ -21,15 +23,20 @@ void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams
 	streamParams->sendTimer[COPY][k] = MPI_Wtime() - timerStart; // send time for COPY 
 #ifndef NDEBUG
 	for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
-	printf("After COPY\n"); 
+	printf("stream -> After COPY\n"); 
 #endif
 }
 
 void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k)
 {
-	// wait for data from COPY(C) to be sent
+#ifndef NDEBUG
+	printf("stream -> COPY wait starts \n"); 
+#endif
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
 	dataWait(iocompParams,&streamParams->requestArray[COPY]);
 	streamParams->waitTimer[COPY][k] = MPI_Wtime() - timerStart; // wait time for COPY
+#ifndef NDEBUG
+	printf("stream -> COPY wait end \n"); 
+#endif
 }
