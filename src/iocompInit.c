@@ -18,7 +18,7 @@
 /*
  * Initialises the library 
  */
-void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum)
+MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum)
 {
 
 #ifndef NDEBUG
@@ -50,7 +50,11 @@ void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, in
 	 * if not then its a dead send 
 	 */ 
 	ioServerInitialise(iocompParams, ioLibNum); 
-
+	
+	if(iocompParams->colour != ioColour)
+	{
+		return(iocompParams->compServerComm); 
+	}
 #ifndef NDEBUG
 	printf("iocomp_init -> end of function\n"); 
 #endif

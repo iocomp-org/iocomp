@@ -48,7 +48,7 @@ void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);
 void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm); 
 void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm ); 
 //void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize, bool flag, int ioLibNum); // initialises the library 
-void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum); // initialises the library 
+MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum); // initialises the library 
 void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum); // initialise ioServer if ioProcessor 
 void testData(struct iocomp_params *iocompParams, int testFlag); // test data structures with flag to switch on/off  
 void stopSend(struct iocomp_params *iocompParams); // ghost send function that signals MPI_Sends are stopping
