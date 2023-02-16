@@ -16,7 +16,6 @@ void stream(double* a, struct iocomp_params *iocompParams, struct stream_params 
 		return; 
 	}
 	int i, ierr,k; 
-	double constant = 3.0; 
 	double c[streamParams->localDataSize]; 
 	double b[streamParams->localDataSize]; 
 	int computeRank;
@@ -66,6 +65,8 @@ void stream(double* a, struct iocomp_params *iocompParams, struct stream_params 
 		/*
 		* SCALE
 		*/ 
+		scale(iocompParams, streamParams, k, c, b); // send scale data and get timers for send and compute  
+		scale_wait(iocompParams, streamParams, k); // wait for send to be finished sending its data 
 
 		/*
 		* ADD
@@ -73,7 +74,11 @@ void stream(double* a, struct iocomp_params *iocompParams, struct stream_params 
 		add(iocompParams, streamParams, k, c, a, b); // send copy data and get timers for send and compute  
 		add_wait(iocompParams, streamParams, k); // wait for copy to be send its data 
 
-
+		/*
+		* TRIAD 
+		*/ 
+		triad(iocompParams, streamParams, k, c, a, b); // send copy data and get timers for send and compute  
+		triad_wait(iocompParams, streamParams, k); // wait for copy to be send its data 
 
 //		// wait for data from previous SCALE(B) to be sent 
 //		if(k>0)
