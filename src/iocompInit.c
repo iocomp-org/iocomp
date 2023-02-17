@@ -55,6 +55,10 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	{
 		return(iocompParams->compServerComm); 
 	}
+	else
+	{
+		return(NULL); 
+	}
 #ifndef NDEBUG
 	printf("iocomp_init -> end of function\n"); 
 #endif
