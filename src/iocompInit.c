@@ -51,14 +51,8 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 */ 
 	ioServerInitialise(iocompParams, ioLibNum); 
 	
-	if(iocompParams->colour != ioColour)
-	{
-		return(iocompParams->compServerComm); 
-	}
-	else
-	{
-		return(NULL); 
-	}
+	return(iocompParams->compServerComm); 
+
 #ifndef NDEBUG
 	printf("iocomp_init -> end of function\n"); 
 #endif

@@ -4,7 +4,9 @@
 
 #define ioColour 0
 #define compColour 1 
-#define ioLibCount 4
+#define NODESIZE 128
+#define ioLibCount 5
+
 /*
 * structure passes around to most functions in program 
 */ 
