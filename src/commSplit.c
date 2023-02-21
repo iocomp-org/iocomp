@@ -49,18 +49,42 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		/*
 		 * assume high low ordering of hyperthreads 
 		 * Comp server ranks are lower ranked, IO server ranks are higher ranked 
+		 * in 1 node when using Hyperthreads 
 		 */ 
 		if(ordering == HIGH_LOW) // if size is lesser than fullNode of archer2 
 		{	   
-			if (globalRank < globalSize/2) // comp server 
-			{
-				iocompParams->colour					= compColour;
-			} 
 
-			else if(globalRank >= globalSize/2) // io server
+			if(globalSize <= NODESIZE*2)
 			{
-				iocompParams->colour					= ioColour; 
+				if (globalRank < globalSize/2) // comp server 
+				{
+					iocompParams->colour					= compColour;
+				} 
+
+				else if(globalRank >= globalSize/2) // io server
+				{
+					iocompParams->colour					= ioColour; 
+				}
 			}
+
+			/*
+			 * If size is greater than a full node and its Hyperthreads
+			 * eg. ARCHER2 nodesize is 128. If size > 128*2 
+			 *
+			 */ 
+			else if(globalSize > NODESIZE*2)
+			{
+				if (globalRank%(NODESIZE*2) < globalSize%(NODESIZE*2)/2) // comp server 
+				{
+					iocompParams->colour					= compColour;
+				} 
+
+				else if(globalRank >= globalSize%(NODESIZE*2)/2) // io server
+				{
+					iocompParams->colour					= ioColour; 
+				}
+			}
+
 		}
 #ifndef NDEBUG
 		printf("commSplit -> colour assigned based on HIGH LOW ordering \n"); 
