@@ -53,7 +53,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		 */ 
 		if(ordering == HIGH_LOW)
 		{	   
-      highLowOrdering(iocompParams); 
+      highlowOrdering(iocompParams); 
 		}
 #ifndef NDEBUG
 		printf("commSplit -> colour assigned based on HIGH LOW ordering \n"); 

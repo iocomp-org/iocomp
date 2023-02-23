@@ -18,56 +18,56 @@
  * and divides ranks into nodes given by NODESIZE
  */
 
-void highLowOrdering(struct iocomp_params *iocompParams) 
+void highlowOrdering(struct iocomp_params *iocompParams) 
 {
-  int globalRank, globalSize; 
-  MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
-  MPI_Comm_size(iocompParams->globalComm, &globalSize); 
+	int globalRank, globalSize; 
+	MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
+	MPI_Comm_size(iocompParams->globalComm, &globalSize); 
 
-  int numNodes = int(globalSize/(NODESIZE*2)) 
-    int lastwholeNode = numNodes *NODESIZE*2
+	int numNodes = (int)(globalSize/(NODESIZE*2)); 
+	int lastwholeNode = numNodes *NODESIZE*2; 
 
-    if(globalSize <= NODESIZE*2)
-    {
-      if(globalRank < globalSize/2){
-        printf("comp", globalRank); 
-        iocompParams->colour = compColour; 
-      } 
-      else{
-        printf("io", globalRank)
-          iocompParams->colour = ioColour; 
-      }
-    } 
+	if(globalSize <= NODESIZE*2)
+	{
+		if(globalRank < globalSize/2){
+			printf("comp %i \n", globalRank); 
+			iocompParams->colour = compColour; 
+		} 
+		else{
+			printf("io %i \n", globalRank); 
+			iocompParams->colour = ioColour; 
+		}
+	} 
 
-  // size greater than 256 
-    else{           
+	// size greater than 256 
+	else{           
 
-      if(globalRank < lastwholeNode){ // globalRank comes within full node? 
-        for(int x = 0; x <= numNodes; x+=2 ) 
-        {
-          if(globalRank <  (x+1)*NODESIZE && globalRank >= (x)*NODESIZE){
-            printf("comp", globalRank); 
-            iocompParams->colour = compColour; 
-          } 
-          if(globalRank >=  (x+1)*NODESIZE and globalRank < (x+2)*NODESIZE){
-            printf("io", globalRank); 
-            iocompParams->colour = ioColour; 
-          } 
-        }
-      } 
+		if(globalRank < lastwholeNode){ // globalRank comes within full node? 
+			for(int x = 0; x <= numNodes; x+=2 ) 
+			{
+				if(globalRank <  (x+1)*NODESIZE && globalRank >= (x)*NODESIZE){
+					printf("comp %i \n", globalRank); 
+					iocompParams->colour = compColour; 
+				} 
+				if(globalRank >=  (x+1)*NODESIZE && globalRank < (x+2)*NODESIZE){
+					printf("io %i \n", globalRank); 
+					iocompParams->colour = ioColour; 
+				} 
+			}
+		} 
 
 
-      else if(globalRank >= lastwholeNode){ // globalRank is not within full node. 
-        if(globalRank  < (globalSize + lastwholeNode)/2){
-          printf("comp", globalRank);
-          iocompParams->colour = compColour; 
-        } 
-        else{
-          printf("io", globalRank);
-          iocompParams->colour = ioColour; 
-        } 
+		else if(globalRank >= lastwholeNode){ // globalRank is not within full node. 
+			if(globalRank  < (globalSize + lastwholeNode)/2){
+				printf("comp %i \n", globalRank); 
+				iocompParams->colour = compColour; 
+			} 
+			else{
+				printf("io %i \n", globalRank); 
+				iocompParams->colour = ioColour; 
+			} 
 
-      }
-    } 
+		}
+	} 
 } 
 
