@@ -20,40 +20,54 @@
 
 void highLowOrdering(struct iocomp_params *iocompParams) 
 {
+  int globalRank, globalSize; 
+  MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
+  MPI_Comm_size(iocompParams->globalComm, &globalSize); 
 
-  /*
-   * assume high low ordering of hyperthreads 
-   */ 
-  if(globalSize <= NODESIZE*2)
-  {
-    if (globalRank < globalSize/2) // comp server 
+  int numNodes = int(globalSize/(NODESIZE*2)) 
+    int lastwholeNode = numNodes *NODESIZE*2
+
+    if(globalSize <= NODESIZE*2)
     {
-      iocompParams->colour					= compColour;
+      if(globalRank < globalSize/2){
+        printf("comp", globalRank); 
+        iocompParams->colour = compColour; 
+      } 
+      else{
+        printf("io", globalRank)
+          iocompParams->colour = ioColour; 
+      }
     } 
 
-    else if(globalRank >= globalSize/2) // io server
-    {
-      iocompParams->colour					= ioColour; 
-    }
-  }
+  // size greater than 256 
+    else{           
 
-  /*
-   * If size is greater than a full node and its Hyperthreads
-   * eg. ARCHER2 nodesize is 128. If size > 128*2 
-   */ 
-  else if(globalSize > NODESIZE*2)
-  {
-    if (globalRank%(NODESIZE*2) < globalSize%(NODESIZE*2)/2) // comp server 
-    {
-      iocompParams->colour					= compColour;
+      if(globalRank < lastwholeNode){ // globalRank comes within full node? 
+        for(int x = 0; x <= numNodes; x+=2 ) 
+        {
+          if(globalRank <  (x+1)*NODESIZE && globalRank >= (x)*NODESIZE){
+            printf("comp", globalRank); 
+            iocompParams->colour = compColour; 
+          } 
+          if(globalRank >=  (x+1)*NODESIZE and globalRank < (x+2)*NODESIZE){
+            printf("io", globalRank); 
+            iocompParams->colour = ioColour; 
+          } 
+        }
+      } 
+
+
+      else if(globalRank >= lastwholeNode){ // globalRank is not within full node. 
+        if(globalRank  < (globalSize + lastwholeNode)/2){
+          printf("comp", globalRank);
+          iocompParams->colour = compColour; 
+        } 
+        else{
+          printf("io", globalRank);
+          iocompParams->colour = ioColour; 
+        } 
+
+      }
     } 
-
-    else if(globalRank >= globalSize%(NODESIZE*2)/2) // io server
-    {
-      iocompParams->colour					= ioColour; 
-    }
-  }
-
-}
-}
+} 
 
