@@ -1,7 +1,7 @@
 #!/bin/bash --login
 #SBATCH --job-name=iocomp
-#SBATCH --nodes=1
-#SBATCH --tasks-per-node=256
+#SBATCH --nodes=4
+#SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
 #SBATCH --time=00:03:00
 #SBATCH --account=e609
@@ -23,6 +23,7 @@ export OMP_NUM_THREADS=1
 export IOCOMP_DIR=/work/e609/e609/shr203/iocomp
 export ADIOS2_DIR=/work/e609/e609/shr203/opt/gnu/8.0.0/ADIOS2
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ADIOS2_DIR}/lib64:${IOCOMP_DIR}/lib
+export EXE=xthi  
 
 # Make new directory 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
@@ -31,6 +32,7 @@ SIZE=256
 i=0 
 HALF_CORES=$((${SLURM_NTASKS_PER_NODE}/2)) 
 FULL_CORES=$((${SLURM_NTASKS_PER_NODE})) 
+HALF_NODES=$((${SLURM_NNODES}/2))
 
 for m in {0..0}
 do 

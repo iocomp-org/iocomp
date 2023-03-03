@@ -6,11 +6,17 @@ mkdir -p ${RUNDIR}
 lfs setstripe -c -1  ${RUNDIR}
 cd ${RUNDIR} 
 
-if (( ${SLURM_NNODES} > 2  )); then 
-    srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${FULL_CORES} --nodes=${SLURM_NNODES} xthi > test.out
+end=$((${FULL_CORES}-1))
+vals=($(seq 0 1 $(eval echo ${end})))
+bar=$(IFS=, ; echo "${vals[*]}")
+
+if (( ${SLURM_NNODES} > 1  )); then
+    #srun  --hint=nomultithread  --distribution=block:block --ntasks=${FULL_CORES} --nodes=${SLURM_NNODES} ${EXE}
+    srun  --hint=nomultithread  --distribution=block:block  --nodes=${SLURM_NNODES} --cpu-bind=map_cpu:${bar[@]} ${EXE}
 else
-    srun --cpu-bind=verbose --hint=nomultithread  --distribution=block:block --ntasks=${FULL_CORES} --nodes=${SLURM_NNODES} --cpu-bind=map_cpu:${bar[@]} xthi > test.out
-fi 
+    #srun  --hint=nomultithread  --distribution=block:block --ntasks=${FULL_CORES} --nodes=${SLURM_NNODES} --cpu-bind=map_cpu:${bar[@]} ${EXE}
+    srun  --hint=nomultithread  --distribution=block:block --nodes=${SLURM_NNODES} --cpu-bind=map_cpu:${bar[@]} ${EXE}
+fi
 
 module list  2>&1 | tee -a test.out 
 echo "JOB ID"  $SLURM_JOBID >> test.out
