@@ -35,7 +35,7 @@ void triad_wait(struct iocomp_params *iocompParams, struct stream_params* stream
 
 // others. 
 void resultsOutput(struct stream_params* streamParams); 
-void init(struct stream_params* streamParams, double* a, double* b, double* c); 
+double* init(struct stream_params* streamParams, double* a); 
 void computeStep(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm);
 void stream(double* iodata, struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm); 
 void initData(double* iodata, struct iocomp_params *iocompParams);
