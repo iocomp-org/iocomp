@@ -6,15 +6,19 @@ rm -rf ${RUNDIR}
 mkdir -p ${RUNDIR}
 lfs setstripe -c -1  ${RUNDIR}
 cd ${RUNDIR} 
-end=$((${HALF_CORES}-1))
+
+# give sequence of cpu mappings 
+end=$((${FULL_CORES}-1))
 vals=($(seq 0 1 $(eval echo ${end})))
 bar=$(IFS=, ; echo "${vals[*]}")
-echo $bar
-if (( ${SLURM_NNODES} > 2  )); then 
-  srun  --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntasks=${FULL_CORES} --nodes=${HALF_NODES}  --cpu-bind=map_cpu:${bar[@]} --overcommit xthi > test.out 
+
+if (( ${SLURM_NNODES} > 1  )); then 
+  NUM_NODES=${HALF_NODES} 
 else
-  srun  --cpu-bind=verbose --hint=nomultithread --distribution=block:block --ntasks=${FULL_CORES} --nodes=${SLURM_NNODES} --cpu-bind=map_cpu:${bar[@]} --overcommit xthi > test.out
+  NUM_NODES=${SLURM_NNODES} 
 fi 
+
+srun   --hint=nomultithread --distribution=block:block --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} --overcommit ${EXE}
 
 module list  2>&1 | tee -a test.out 
 

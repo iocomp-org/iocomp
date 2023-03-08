@@ -7,21 +7,24 @@ lfs setstripe -c -1  ${RUNDIR}
 cd ${RUNDIR} 
 
 # seq 1
-end=$((${HALF_CORES}-1))
+end=$((${FULL_CORES}-1))
 vals=($(seq 0 1 $(eval echo ${end})))
 
 # seq 2 
-end=$((${HALF_CORES}+128-1))
+end=$((${FULL_CORES}+128-1))
 start=128
 vals_HT=($(seq $(eval echo ${start}) 1 $(eval echo ${end})))
 updated=("${vals[@]}" "${vals_HT[@]}")
 bar=$(IFS=, ; echo "${updated[*]}")
 
-if (( ${SLURM_NNODES} > 2  )); then 
-    srun  --cpu-bind=verbose --hint=multithread --distribution=block:block --ntasks=${FULL_CORES} --nodes=${HALF_NODES} --cpu-bind=map_cpu:${bar[@]} xthi > test.out    
+# if more than 1 node, then HT uses half the number of nodes. 
+if (( ${SLURM_NNODES} > 1  )); then 
+  NUM_NODES=${HALF_NODES} 
 else
-  srun  --cpu-bind=verbose --hint=multithread --distribution=block:block --ntasks=${FULL_CORES} --nodes=${SLURM_NNODES} --cpu-bind=map_cpu:${bar[@]} xthi > test.out
+  NUM_NODES=${SLURM_NNODES} 
 fi 
+
+srun  --hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} ${EXE}   
 
 module list  2>&1 | tee -a test.out 
 echo "JOB ID"  $SLURM_JOBID >> test.out
