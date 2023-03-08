@@ -30,6 +30,20 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	wallTime_start = MPI_Wtime(); 
 
 	/*
+	 * Initialise the timers 
+	 */ 
+	for(int i = 0; i < 4; i++)
+	{
+		for(int j = 0; j < LOOPCOUNT; j ++)
+		{	
+			streamParams->compTimer[i][j] = 0.0; 
+			streamParams->waitTimer[i][j] = 0.0; 
+			streamParams->sendTimer[i][j] = 0.0; 
+		}	
+	}
+
+
+	/*
 	 * STREAM kernels, add, copy, scale and triad 
 	 * loop till LOOPCOUNT to get an average 
 	 */
