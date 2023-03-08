@@ -15,11 +15,11 @@ ODIR = Object_files
 DEPS = ../include/iocomp.h
 
 # define library paths 
-LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi  -lm 
+LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 -L$(ADIOS2_DIR)/lib64 -ladios2_c -ladios2_c_mpi  -lm 
 
 # define C source files 
 #SRCS =  computeStep.c main.c  ioServer.c  computeServer.c intercomm.c initData.c  mpiWrite.c intercommInit.c intercommCreate.c commSplit.c dataOutput.c ioLibraries.c  #hdf5Write.c# hdf5_write.c adios_write.c mpi_write.c 
-SRCS =   arrayParamsInit.c ioServer.c ioServerInitialise.c highLowOrdering.c checks.c getPair.c dataSend.c dataWait.c dataSendTest.c mpiWrite.c iocompInit.c intercommCreate.c commSplit.c ioLibraries.c stopSend.c  hdf5Write.c adios2Write.c mpiWrite.c 
+SRCS =   arrayParamsInit.c ioServer.c ioServerInitialise.c highlowOrdering.c checks.c getPair.c dataSend.c dataWait.c dataSendTest.c mpiWrite.c iocompInit.c intercommCreate.c commSplit.c ioLibraries.c stopSend.c  hdf5Write.c adios2Write.c mpiWrite.c 
 
 # define executable file  
 MAIN = iocomp

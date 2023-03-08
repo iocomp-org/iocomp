@@ -49,7 +49,7 @@ int getPair(struct iocomp_params *iocompParams);
 void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);
 void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm); 
 void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm ); 
-void highLowOrdering(struct iocomp_params *iocompParams); 
+void highlowOrdering(struct iocomp_params *iocompParams); 
 //void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize, bool flag, int ioLibNum); // initialises the library 
 MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum); // initialises the library 
 void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum); // initialise ioServer if ioProcessor 
