@@ -85,7 +85,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 #endif
 
 	wallTime_end = MPI_Wtime(); 
-	streamParams->wallTimer=wallTime_start - wallTime_end; 
+	streamParams->wallTimer=wallTime_end - wallTime_start; 
 
 	free(a); 
 	free(b); 
