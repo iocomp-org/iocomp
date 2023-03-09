@@ -81,7 +81,7 @@ int main(int argc, char** argv)
   } 
 
   struct iocomp_params iocompParams; 
-  int ioLib = 1; 
+  int ioLib = 0; 
 
 	/*
 	 * iocomp - iocompInit initialises the ioServer 
@@ -101,7 +101,7 @@ int main(int argc, char** argv)
 	 * initialises the local array sizes 
 	 * and data size 
 	 */ 
-  int localArraySize[NDIM] = {16,16}; 
+  int localArraySize[NDIM] = {128,128}; 
 	streamParams.localDataSize = 1;  
 	for(int j = 0; j < NDIM; j++) 
 	{
