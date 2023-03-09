@@ -101,7 +101,7 @@ int main(int argc, char** argv)
 	 * initialises the local array sizes 
 	 * and data size 
 	 */ 
-  int localArraySize[NDIM] = {128,128}; 
+  int localArraySize[NDIM] = {100,100};
 	streamParams.localDataSize = 1;  
 	for(int j = 0; j < NDIM; j++) 
 	{
