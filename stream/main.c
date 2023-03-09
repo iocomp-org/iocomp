@@ -65,18 +65,20 @@ int main(int argc, char** argv)
     }
   }
 
-  // check for HT flag 
-  if (HT_flag)
-    puts ("HT flag is set to on");
-  else 
-    puts ("HT flag is switched off"); 
 
   MPI_Comm comm; 
   MPI_Comm_dup(MPI_COMM_WORLD,&comm); 
   int rank; 
   MPI_Comm_rank(comm, &rank); 
   // data parameters definitions 
-
+  
+  if(!rank){
+    // check for HT flag 
+    if (HT_flag)
+      puts ("HT flag is set to on");
+    else 
+      puts ("HT flag is switched off"); 
+  } 
 
   struct iocomp_params iocompParams; 
   int ioLib = 1; 
@@ -99,7 +101,7 @@ int main(int argc, char** argv)
 	 * initialises the local array sizes 
 	 * and data size 
 	 */ 
-  int localArraySize[NDIM] = {32,32}; 
+  int localArraySize[NDIM] = {16,16}; 
 	streamParams.localDataSize = 1;  
 	for(int j = 0; j < NDIM; j++) 
 	{

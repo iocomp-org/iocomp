@@ -14,7 +14,8 @@ double* init(struct stream_params* streamParams, double* a)
 	
 	for(int i = 0; i < streamParams->localDataSize; i++)
 	{
-		a[i] = streamParams->localDataSize  + i; 
+		//a[i] = streamParams->localDataSize  + i; 
+		a[i] = 1.00; 
 	}
 #ifndef NDEBUG
 	printf("stream -> a array defined \n"); 

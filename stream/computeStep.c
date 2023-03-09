@@ -52,25 +52,25 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 #ifndef NDEBUG
 		printf("stream -> stream loop starts\n"); 
 #endif
-		if(k>0) { add_wait(iocompParams, streamParams, k);} // wait for copy to be send its data 
+//		if(k>0) { add_wait(iocompParams, streamParams, k);} // wait for copy to be send its data 
 
 		/*
 		 * COPY
 		 */ 
 		copy(iocompParams, streamParams, k, c, a); // send copy data and get timers for send and compute  
-		if(k>0) { scale_wait(iocompParams, streamParams, k);} // wait for send to be finished sending its data  
+//		if(k>0) { scale_wait(iocompParams, streamParams, k);} // wait for send to be finished sending its data  
 
 		/*
 		 * SCALE
 		 */ 
 		scale(iocompParams, streamParams, k, c, b); // send scale data and get timers for send and compute  
-		copy_wait(iocompParams, streamParams, k); // wait for copy to be send its data 
+//		copy_wait(iocompParams, streamParams, k); // wait for copy to be send its data 
 
 		/*
 		 * ADD
 		 */ 
 		add(iocompParams, streamParams, k, c, a, b); // send copy data and get timers for send and compute  
-		if(k>0){triad_wait(iocompParams, streamParams, k);}  // wait for copy to be send its data 
+//		if(k>0){triad_wait(iocompParams, streamParams, k);}  // wait for copy to be send its data 
 
 		/*
 		 * TRIAD 
