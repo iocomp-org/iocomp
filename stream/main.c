@@ -9,6 +9,7 @@
 
 static int verbose_flag;
 static int HT_flag; 
+static int size; 
 
 int main(int argc, char** argv)
 {
@@ -33,12 +34,13 @@ int main(int argc, char** argv)
       {"HT",   no_argument,       &HT_flag, 1},
       /* These options don’t set a flag.
          We distinguish them by their indices. */
+			{"size",  required_argument, 0, 'd'}, 
       {0, 0, 0, 0}
     };
     /* getopt_long stores the option index here. */
     int option_index = 0;
 
-    c = getopt_long (argc, argv, "abc:d:f:",						long_options, &option_index);
+    c = getopt_long (argc, argv, "d:",						long_options, &option_index);
 
     /* Detect the end of the options. */
     if (c == -1)
@@ -55,6 +57,10 @@ int main(int argc, char** argv)
           printf (" with arg %s", optarg);
         printf ("\n");
         break;
+			
+			case 'd':
+				size = atoi(optarg); 
+				printf("size of array %i \n", size); 
 
       case '?':
         /* getopt_long already printed an error message. */
@@ -64,7 +70,6 @@ int main(int argc, char** argv)
         abort ();
     }
   }
-
 
   MPI_Comm comm; 
   MPI_Comm_dup(MPI_COMM_WORLD,&comm); 
@@ -101,7 +106,7 @@ int main(int argc, char** argv)
 	 * initialises the local array sizes 
 	 * and data size 
 	 */ 
-  int localArraySize[NDIM] = {100,100}; 
+  int localArraySize[NDIM] = {size,size}; 
 	streamParams.localDataSize = 1;  
 	for(int j = 0; j < NDIM; j++) 
 	{
