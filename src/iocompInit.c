@@ -50,8 +50,21 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 * if not then its a dead send 
 	 */ 
 	ioServerInitialise(iocompParams, ioLibNum); 
-	
-	return(iocompParams->compServerComm); 
+
+	/*
+	 * if HT flag is on, iocomp function returns the compute comm 
+	 * so that the user only works with the compute comm
+	 * but if HT flag is off, and there is no splitting, then the world comm 
+	 * is returned
+	 */ 
+	if(FLAG)
+	{
+		return(iocompParams->compServerComm); 
+	}
+	else
+	{
+		return(comm); 
+	}
 
 #ifndef NDEBUG
 	printf("iocomp_init -> end of function\n"); 
