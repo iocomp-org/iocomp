@@ -115,13 +115,30 @@ int main(int argc, char** argv)
 #ifndef NDEBUG
   printf("stream-> after computeStep \n"); 
 #endif
+
+  /*  
+   * if HT flag is on, then 0 of compute rank 
+   * writes results to csv file 
+   * else if HT flag is off, then 0 of global rank 
+   * write results to csv file 
+   */ 
+  int computeRank;
+  MPI_Comm comm_results; 
+  if(HT_flag)
+  {
+    comm_results = computeComm; 
+  }
+  else
+  {
+    comm_results = comm; 
+  }
+  MPI_Comm_rank(comm_results, &computeRank); 
+
+  if(computeRank == 0)
+  {
+    resultsOutput(&streamParams); // write to csv file for compute write 
+  }   
 	
-	int computeRank; 
-	MPI_Comm_rank(computeComm, &computeRank); 
-	if(computeRank == 0)
-	{
-		resultsOutput(&streamParams); // write to csv file for compute write 
-	} 
 #ifndef NDEBUG
   printf("stream-> after results output \n"); 
 #endif
