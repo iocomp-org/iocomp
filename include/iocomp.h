@@ -6,6 +6,7 @@
 #define compColour 1 
 #define NODESIZE 128
 #define ioLibCount 5
+#define NDIM 1 
 
 /*
 * structure passes around to most functions in program 
