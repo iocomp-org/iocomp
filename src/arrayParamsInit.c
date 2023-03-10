@@ -51,9 +51,9 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	iocompParams->globalSize[0]*= ioSize; // assumes outermost dimension gets expanded by each rank 
 
 #ifndef NDEBUG
-	printf("arrayParamsInit -> localsize initialised \n"); 
-	printf("arrayParamsInit -> globalsize initialised \n"); 
-	printf("arrayParamsInit -> NDIM initialised \n"); 
+	printf("arrayParamsInit -> localsize initialised with size %i \n", iocompParams->localSize[0]); 
+	printf("arrayParamsInit -> globalsize initialised with size %i \n", iocompParams->globalSize[0]); 
+	printf("arrayParamsInit -> NDIM initialised with size %i \n", iocompParams->NDIM); 
 #endif
 
 	/*
