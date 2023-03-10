@@ -16,7 +16,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #endif
 	int reorder = 0; 
 	int ioSize, ioRank;
-	iocompParams->NDIM = NDIM; 
+	iocompParams->NDIM = NUM_DIM; 
 	int coords[iocompParams->NDIM], periods[iocompParams->NDIM],dims_mpi[iocompParams->NDIM];
 	
 	MPI_Comm comm;
