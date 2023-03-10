@@ -19,9 +19,10 @@ int main(int argc, char** argv)
   mpi_error_check(ierr); 
 
   /*
-   * Command line arguments 
+   * Command line arguments using getoptlong 
+	 * HT option switches on comm splitting 
+	 * size option can set size of array during runtime 
    */ 
-  /* Flag set by ‘--verbose’. */
 
   int c;
 
