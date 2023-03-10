@@ -19,7 +19,7 @@ end=$((${END_CORES}-1))
 vals=($(seq 0 1 $(eval echo ${end})))
 bar=$(IFS=, ; echo "${vals[*]}")
 
-srun  --hint=nomultithread  --distribution=block:block --nodes=${SLURM_NNODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} 
+srun  --hint=nomultithread  --distribution=block:block --nodes=${SLURM_NNODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --size ${SIZE} > test.out
 
 module list  2>&1 | tee -a test.out 
 
