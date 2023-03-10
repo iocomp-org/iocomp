@@ -10,17 +10,19 @@ cp ${CONFIG} .
 
 
 # give sequence of cpu mappings 
-end=$((${FULL_CORES}-1))
+if (( ${SLURM_NNODES} > 1  )); then 
+  NUM_NODES=${HALF_NODES} 
+  END_CORES=${FULL_CORES} 
+else
+  NUM_NODES=${SLURM_NNODES} 
+  END_CORES=${HALF_CORES}
+fi 
+
+end=$((${END_CORES}-1))
 vals=($(seq 0 1 $(eval echo ${end})))
 bar=$(IFS=, ; echo "${vals[*]}")
 
-if (( ${SLURM_NNODES} > 1  )); then 
-  NUM_NODES=${HALF_NODES} 
-else
-  NUM_NODES=${SLURM_NNODES} 
-fi 
-
-srun   --hint=nomultithread --distribution=block:block --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} --overcommit ${EXE} --HT > test.out 
+srun --hint=nomultithread --distribution=block:block --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} --overcommit ${EXE} --HT 
 
 module list  2>&1 | tee -a test.out 
 
