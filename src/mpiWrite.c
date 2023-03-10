@@ -55,9 +55,9 @@ void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraysta
     
 #ifndef NDEBUG   
     printf("MPI cartcomm got ranks \n"); 
-    printf("arraygsize for rank %i : %i %i  \n",myrank, arraygsize[0],arraygsize[1]); 
-    printf("arraysubsize for rank %i : %i %i \n",myrank,arraysubsize[0],arraysubsize[1]); 
-    printf("arraystart for rank %i : %i %i \n",myrank,arraystart[0],arraystart[1]); 
+    printf("arraygsize for rank %i : %i  \n",myrank, arraygsize[0]); 
+    printf("arraysubsize for rank %i : %i \n",myrank,arraysubsize[0]); 
+    printf("arraystart for rank %i : %i \n",myrank,arraystart[0]); 
 #endif 
 
 
