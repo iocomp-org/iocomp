@@ -20,8 +20,8 @@ void scale(struct iocomp_params *iocompParams, struct stream_params* streamParam
 	dataSend(b,iocompParams, &streamParams->requestArray[SCALE],streamParams->localDataSize); // send data off using dataSend
 	streamParams->sendTimer[SCALE][k] = MPI_Wtime() - timerStart; // send time for SCALE 
 #ifndef NDEBUG
-	//for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
-	printf("After SCALE\n"); 
+	printf("STREAM -> SCALE finished with elements: \n"); 
+	for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
 #endif
 }
 

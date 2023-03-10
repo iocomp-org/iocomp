@@ -22,8 +22,8 @@ void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams
 	dataSend(c,iocompParams, &streamParams->requestArray[COPY],streamParams->localDataSize); // send data off using dataSend
 	streamParams->sendTimer[COPY][k] = MPI_Wtime() - timerStart; // send time for COPY 
 #ifndef NDEBUG
-//	for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
-	printf("stream -> After COPY\n"); 
+	printf("stream -> COPY finished with elements: \n"); 
+	for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
 #endif
 }
 
