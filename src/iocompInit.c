@@ -7,14 +7,6 @@
 
 #define fullNode 256 
 
-//void mpi_error_check(int ierr)
-//{
-//	if (ierr != MPI_SUCCESS)
-//	{
-//		printf("MPI call fails \n"); 
-//	}
-//}
-
 /*
  * Initialises the library 
  */
@@ -26,14 +18,6 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #endif
 
 	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
-	/*
-	 * arrayParamsInit initialises all the array datasize variables 
-	 */ 
-
-	//arrayParamsInit(iocompParams, comm, NDIM, localArraySize); 
-#ifndef NDEBUG
-	printf("iocompInit -> Array variables initialised\n"); 
-#endif
 
 	/*
 	 * comm split splits communicators in 2, assigns colour to ranks
@@ -68,6 +52,5 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #ifndef NDEBUG
 	printf("iocomp_init -> end of function\n"); 
 #endif
-
 } 
 
