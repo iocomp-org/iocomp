@@ -39,7 +39,6 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 * comm split splits communicators in 2, assigns colour to ranks
 	 * assigns communicators in struct for both cases  
 	 */ 
-
 	comm_split(iocompParams, comm); 
 #ifndef NDEBUG
 	printf("iocompInit -> communicator split up and colour assigned \n"); 

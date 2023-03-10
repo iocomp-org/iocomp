@@ -50,16 +50,6 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	 */ 
 	iocompParams->globalSize[0]*= ioSize; // assumes outermost dimension gets expanded by each rank 
 
-	/* 
-	if(iocompParams->hyperthreadFlag)
-	{
-		iocompParams->globalSize[0]*= globalSize/2; // assumes outermost dimension gets expanded by each rank  
-	}
-	else 
-	{
-		iocompParams->globalSize[0]*= globalSize; // assumes outermost dimension gets expanded by each rank  
-	}*/ 
-
 #ifndef NDEBUG
 	printf("arrayParamsInit -> localsize initialised \n"); 
 	printf("arrayParamsInit -> globalsize initialised \n"); 

@@ -44,6 +44,10 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 #ifndef NDEBUG
 		printf("dataSend -> Hyperthread flag deactivated, go to ioLibraries \n"); 
 #endif
+		/*
+		 * define array local size
+		 */ 
+		iocompParams->localDataSize = localDataSize; 
 		ioLibraries(data,iocompParams); // otherwise go straight to writing using ioLibraries 
 	}
 
