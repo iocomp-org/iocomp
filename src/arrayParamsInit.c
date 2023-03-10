@@ -39,8 +39,8 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	 */ 
 	for (i = 0; i < iocompParams->NDIM; i++)
 	{
-		iocompParams->localSize[i]	= iocompParams->localDataSize; 
-		iocompParams->globalSize[i] = iocompParams->localDataSize; 
+		iocompParams->localSize[i]	= (int)iocompParams->localDataSize/iocompParams->NDIM;  
+		iocompParams->globalSize[i] = (int)iocompParams->localDataSize/iocompParams->NDIM; 
 	}
 
 	/*
