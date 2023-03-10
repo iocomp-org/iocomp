@@ -23,7 +23,7 @@ void add(struct iocomp_params *iocompParams, struct stream_params* streamParams,
 	dataSend(c,iocompParams, &streamParams->requestArray[ADD],streamParams->localDataSize); // send data off using dataSend
 	streamParams->sendTimer[ADD][k] = MPI_Wtime() - timerStart; // send time for ADD 
 #ifndef NDEBUG
-	for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
+	//for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
 	printf("After ADD\n"); 
 #endif
 }
