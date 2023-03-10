@@ -26,8 +26,8 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	/*
 	 * Array size specs initialise
 	 */ 
-	iocompParams->localSize = malloc(sizeof(int)*iocompParams->NDIM);
-	iocompParams->globalSize = malloc(sizeof(int)*iocompParams->NDIM);
+	iocompParams->localSize = malloc(sizeof(size_t)*iocompParams->NDIM);
+	iocompParams->globalSize = malloc(sizeof(size_t)*iocompParams->NDIM);
 	iocompParams->dataType = MPI_DOUBLE; // data type of sent and recvd data 
 #ifndef NDEBUG
 	printf("arrayParamsInit -> local, global size initialised \n"); 
