@@ -35,7 +35,7 @@ void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraysta
                     disp = 0; // number of bytes to be skipped from the start. ex headers. 
 
 #ifndef NDEBUG   
-    printf("MPI variables init completed \n"); 
+    printf("MPI write -> MPI variables init completed \n"); 
 #endif 
     
 		// MPI initialisations
@@ -54,10 +54,13 @@ void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraysta
     MPI_Info info  = MPI_INFO_NULL; 
     
 #ifndef NDEBUG   
-    printf("MPI cartcomm got ranks \n"); 
-    printf("arraygsize for rank %i : %i  \n",myrank, arraygsize[0]); 
-    printf("arraysubsize for rank %i : %i \n",myrank,arraysubsize[0]); 
-    printf("arraystart for rank %i : %i \n",myrank,arraystart[0]); 
+    printf("MPI write -> arraygsize for rank %i \n",myrank); 
+		for (int i = 0; i < NDIM; i++){printf("%i ", arraygsize[i]); }
+    printf("\nMPI write -> arraysubsize for rank %i \n",myrank); 
+		for (int i = 0; i < NDIM; i++){printf("%i ", arraysubsize[i]); }
+    printf("\nMPI write -> arraystart for rank %i \n",myrank); 
+		for (int i = 0; i < NDIM; i++){printf("%i ", arraystart[i]); }
+		printf("\n"); 
 #endif 
 
 

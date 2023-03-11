@@ -34,12 +34,12 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 #endif
 
 	/*
-	 * Local and global sizes are initialised based on the assumption that NDIM = 1
-	 * and element count = total localDataSize as NDIM = 1 
+	 * Local and global sizes are initialised based on the assumption that 
+	 * localDataSize can be divisible by NDIM 
 	 */ 
 	for (i = 0; i < iocompParams->NDIM; i++)
 	{
-		iocompParams->localSize[i]	= (int)iocompParams->localDataSize/iocompParams->NDIM;  
+		iocompParams->localSize[i]	= (int)iocompParams->localDataSize/iocompParams->NDIM; 
 		iocompParams->globalSize[i] = (int)iocompParams->localDataSize/iocompParams->NDIM; 
 	}
 
@@ -51,9 +51,11 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	iocompParams->globalSize[0]*= ioSize; // assumes outermost dimension gets expanded by each rank 
 
 #ifndef NDEBUG
-	printf("arrayParamsInit -> localsize initialised with size %i \n", iocompParams->localSize[0]); 
-	printf("arrayParamsInit -> globalsize initialised with size %i \n", iocompParams->globalSize[0]); 
-	printf("arrayParamsInit -> NDIM initialised with size %i \n", iocompParams->NDIM); 
+	printf("arrayParamsInit -> localsize initialised \n"); 
+	for (int i = 0; i < iocompParams->NDIM; i++){printf("%i ", iocompParams->localSize[i]); }
+	printf("\narrayParamsInit -> globalsize initialised with size \n"); 
+	for (int i = 0; i < iocompParams->NDIM; i++){printf("%i ", iocompParams->globalSize[i]); }
+	printf("\narrayParamsInit -> NDIM initialised with size %i\n", iocompParams->NDIM); 
 #endif
 
 	/*
