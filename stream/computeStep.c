@@ -82,6 +82,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		triad(iocompParams, streamParams, k, c, a, b); // send copy data and get timers for send and compute  
 		mpiWaitFlag[ADD]=dataSendTest(iocompParams,&streamParams->requestArray[ADD]); // test if ADD data got sent  
 
+
 	} // end avg loop  
 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 

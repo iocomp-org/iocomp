@@ -10,6 +10,7 @@
 static int verbose_flag;
 static int HT_flag; 
 static int size; 
+static int io; 
 
 int main(int argc, char** argv)
 {
@@ -36,12 +37,13 @@ int main(int argc, char** argv)
       /* These options don’t set a flag.
          We distinguish them by their indices. */
 			{"size",  required_argument, 0, 'd'}, 
+			{"io",  required_argument, 0, 'e'}, 
       {0, 0, 0, 0}
     };
     /* getopt_long stores the option index here. */
     int option_index = 0;
 
-    c = getopt_long (argc, argv, "d:",						long_options, &option_index);
+    c = getopt_long (argc, argv, "d:e:",						long_options, &option_index);
 
     /* Detect the end of the options. */
     if (c == -1)
@@ -61,7 +63,9 @@ int main(int argc, char** argv)
 			
 			case 'd':
 				size = atoi(optarg); 
-				printf("size of array %i \n", size); 
+
+			case 'e':
+				io = atoi(optarg); 
 
       case '?':
         /* getopt_long already printed an error message. */
@@ -81,19 +85,24 @@ int main(int argc, char** argv)
   if(!rank){
     // check for HT flag 
     if (HT_flag)
+		{
       puts ("HT flag is set to on");
+			printf("size of array %i, IO num %i \n", size, io); 
+		} 
     else 
+		{
       puts ("HT flag is switched off"); 
+			printf("size of array %i, IO num %i \n", size, io); 
+		} 
   } 
 
   struct iocomp_params iocompParams; 
-  int ioLib = 0; 
 
 	/*
 	 * iocomp - iocompInit initialises the ioServer 
 	 * and initialises the compute comm 
 	 */ 
-  MPI_Comm computeComm = iocompInit(&iocompParams,comm, HT_flag, ioLib); 
+  MPI_Comm computeComm = iocompInit(&iocompParams,comm, HT_flag, io); 
 #ifndef NDEBUG
   printf("stream->After intercommInit\n"); 
 #endif
