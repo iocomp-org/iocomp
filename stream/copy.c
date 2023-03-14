@@ -16,7 +16,7 @@ void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams
 	for(int i = 0; i< streamParams->localDataSize; i++)
 	{
 		c[i] = a[i]; 
-		//if(k>0){mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&requestArray[TRIAD]);} // test if TRIAD data got sent
+		if(k>0){streamParams->mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]);} // test if TRIAD data got sent
 	}
 	streamParams->compTimer[COPY][k] = MPI_Wtime() - timerStart;  // computeTime for COPY 
 	dataSend(c,iocompParams, &streamParams->requestArray[COPY],streamParams->localDataSize); // send data off using dataSend
