@@ -1,12 +1,31 @@
 #include "mpi.h"
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 #define ioColour 0
 #define compColour 1 
 #define NODESIZE 128
 #define ioLibCount 5
-#define NUM_DIM 2
+#define NUM_DIM 1
+
+/*
+ * Header file for declaring the error_report_fn and macro error_report which simplifies calling.
+ */
+#ifndef _ERROR_REPORT_H_
+#define _ERROR_REPORT_H_
+
+
+/*
+ * error_report macro.
+ * Takes an error code as input, expanding to call the error_report_fn with the line number and file
+ * name values defined by the __LINE___ and __FILE__ macros.
+ */
+#define mpi_error_check(ierr) error_report_fn(ierr, __LINE__, __FILE__)
+
+void error_report_fn(int ierr, int line_no, char *file_name);
+
+#endif
 
 /*
 * structure passes around to most functions in program 
@@ -34,8 +53,8 @@ int NDIM;
 int* localSize; 
 int* arrayStart; 
 int* globalSize; 
-size_t globalDataSize; 
-size_t localDataSize; 
+int globalDataSize; 
+int localDataSize; 
 MPI_Datatype dataType; 
 // filenames 
 char *FILENAMES[5]; 
@@ -60,7 +79,7 @@ void dataWait(struct iocomp_params *iocompParams, MPI_Request *request); // wrap
 int dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request); // wrapper function to implement testing of send data IF HT flag is on 
 
 // checks 
-void mpi_error_check(int ierr);
+//void mpi_error_check(int ierr);
 void malloc_check(double* test); 
 void free_check(double* test); 
 
