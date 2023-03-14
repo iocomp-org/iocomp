@@ -1,12 +1,12 @@
 #!/bin/bash --login
 #SBATCH --job-name=iocomp
-#SBATCH --nodes=1
+#SBATCH --nodes=2
 #SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
-#SBATCH --time=01:00:00
+#SBATCH --time=00:02:00
 #SBATCH --account=e609
 #SBATCH --partition=standard 
-#SBATCH --qos=lowpriority
+#SBATCH --qos=standard 
 ##SBATCH --array=0-2
 
 module swap PrgEnv-cray/8.0.0 PrgEnv-gnu
@@ -23,21 +23,22 @@ export OMP_NUM_THREADS=1
 export IOCOMP_DIR=/work/e609/e609/shr203/iocomp
 export ADIOS2_DIR=/work/e609/e609/shr203/opt/gnu/8.0.0/ADIOS2
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ADIOS2_DIR}/lib64:${IOCOMP_DIR}/lib
-export EXE=${IOCOMP_DIR}/stream/test
+#export EXE=${IOCOMP_DIR}/stream/test
+export EXE=xthi
 export CONFIG=${SLURM_SUBMIT_DIR}/config.xml 
 
 # Make new directory 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
-SIZE=2048
+SIZE=256
 #i=${SLURM_ARRAY_TASK_ID} 
 i=0
 HALF_CORES=$((${SLURM_NTASKS_PER_NODE}/2)) 
 FULL_CORES=$((${SLURM_NTASKS_PER_NODE})) 
 HALF_NODES=$((${SLURM_NNODES}/2))
 
-for m in {0..4}
+for IO in {0..0}
 do 
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/13March/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${m}]}
+  export PARENT_DIR=${SLURM_SUBMIT_DIR}/TEST/14March/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
 
   # Case 1 
 	source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh

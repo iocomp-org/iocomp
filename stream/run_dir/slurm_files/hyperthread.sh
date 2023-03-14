@@ -28,7 +28,8 @@ vals_HT=($(seq $(eval echo ${start}) 1 $(eval echo ${end})))
 updated=("${vals[@]}" "${vals_HT[@]}")
 bar=$(IFS=, ; echo "${updated[*]}")
 
-srun  --hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --HT --size ${SIZE} > test.out 
+#srun  --hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --HT --size ${SIZE} --io ${IO} > test.out 
+srun  --hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} ${EXE}
 
 module list  2>&1 | tee -a test.out 
 echo "JOB ID"  $SLURM_JOBID >> test.out
