@@ -16,9 +16,9 @@ if (( ${SLURM_NNODES} > 1  )); then
   vals=($(seq 0 1 $(eval echo ${end})))
   bar=$(IFS=, ; echo "${vals[*]}")
 
-  HALF_TASKS=$((${SLURM_NNODES}*${SLURM_NTASKS_PER_NODE}/2))
+  HALF_TASKS=$((${SLURM_NNODES}*${SLURM_NTASKS_PER_NODE}/2)) # half the number of total tasks divided between the allocated nodes 
 
-  srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_TASKS}  --cpu-bind=map_cpu:${bar[@]} ${EXE}
+  srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_TASKS}  --cpu-bind=map_cpu:${bar[@]} ${EXE} --size ${SIZE} --io ${IO} > test.out
 
 else
   NUM_NODES=${SLURM_NNODES} 
@@ -29,12 +29,8 @@ else
   vals=($(seq 0 1 $(eval echo ${end})))
   bar=$(IFS=, ; echo "${vals[*]}")
  
-  srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]} ${EXE}
+  srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --size ${SIZE} --io ${IO} > test.out
 fi 
-
-
-#srun  --hint=nomultithread  --distribution=block:block --nodes=${SLURM_NNODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --size ${SIZE} --io ${IO} > test.out
-#srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${END_CORES} --cpu-bind=map_cpu:${bar[@]} ${EXE}
 
 module list  2>&1 | tee -a test.out 
 

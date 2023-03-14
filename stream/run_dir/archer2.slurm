@@ -23,8 +23,7 @@ export OMP_NUM_THREADS=1
 export IOCOMP_DIR=/work/e609/e609/shr203/iocomp
 export ADIOS2_DIR=/work/e609/e609/shr203/opt/gnu/8.0.0/ADIOS2
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ADIOS2_DIR}/lib64:${IOCOMP_DIR}/lib
-#export EXE=${IOCOMP_DIR}/stream/test
-export EXE=xthi
+export EXE=${IOCOMP_DIR}/stream/test
 export CONFIG=${SLURM_SUBMIT_DIR}/config.xml 
 
 # Make new directory 
