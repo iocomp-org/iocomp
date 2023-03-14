@@ -39,12 +39,16 @@ void ioServer(struct iocomp_params *iocompParams)
 #endif
 	int test_probe; 
 	int test_count = 1; 
+	int iter = 0; 
 
 	/*
 	 * Check for ghost messages, for ever loop activated
 	 */ 
 	for(;;) 
 	{
+#ifndef NDEBUG
+			printf("ioServer -> start of ioServer loop, iter %i ioRank %i \n", iter, ioRank ); 
+#endif
 		MPI_Probe(source, tag, iocompParams->globalComm, &status); // Probe for additional messages. 
 		MPI_Get_count(&status, MPI_DOUBLE, &test_count); // get count 
 
@@ -79,10 +83,8 @@ void ioServer(struct iocomp_params *iocompParams)
 				recv[i] = 0; // initialise recv array 
 			}
 #ifndef NDEBUG
-			printf("ioServer -> Initialisation of recv array with count %i \n", test_count); 
+			printf("ioServer -> Initialisation of recv array with count %i \n", iocompParams->localDataSize); 
 #endif
-			iocompParams->localDataSize = test_count; 
-			printf("ioServer -> localdatasize val for rank %i = %zu \n",ioRank, iocompParams->localDataSize); 
 			ierr = MPI_Recv(recv, test_count, MPI_DOUBLE, source, tag,
 					iocompParams->globalComm,&status);
 			mpi_error_check(ierr); 
@@ -105,6 +107,6 @@ void ioServer(struct iocomp_params *iocompParams)
 			free(recv);
 			recv = NULL; 
 		}  
-
+		iter++; 
 	} 
 } 
