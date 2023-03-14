@@ -15,6 +15,7 @@
 #include <getopt.h>
 #include <ftw.h>
 #include "bench_headerfiles.h" 
+#include "../include/iocomp.h"
 
 void data_position(int *local_size, int *global_size, int *arraystart, int *dims_mpi, int *coords, int rank, int n, int NDIM, double* total_size, int SCALING_FLAG)
 {

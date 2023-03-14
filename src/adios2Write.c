@@ -4,6 +4,7 @@
 #include <hdf5.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/iocomp.h"
 
 // #define FILE        "iodata-c-hdf5.h5"
 #define DATASETNAME "/Geometry/geometry/geometry"

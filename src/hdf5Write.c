@@ -8,6 +8,7 @@
 #include <H5FDmpio.h>
 #include <H5FDmpi.h> 
 #include <hdf5_hl.h> 
+#include "../include/iocomp.h"
 
 void phdf5write(double* iodata, int*arraysubsize, int* arraygsize, int* arraystart, int NDIM, MPI_Comm cartcomm, char* FILENAME) 
 {   

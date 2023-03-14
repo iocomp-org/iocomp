@@ -82,16 +82,14 @@ void ioServer(struct iocomp_params *iocompParams)
 			printf("ioServer -> Initialisation of recv array with count %i \n", test_count); 
 #endif
 			iocompParams->localDataSize = test_count; 
-			ierr = MPI_Recv(recv, iocompParams->localDataSize, MPI_DOUBLE, source, tag,
+			printf("ioServer -> localdatasize val for rank %i = %zu \n",ioRank, iocompParams->localDataSize); 
+			ierr = MPI_Recv(recv, test_count, MPI_DOUBLE, source, tag,
 					iocompParams->globalComm,&status);
 			mpi_error_check(ierr); 
 
 #ifndef NDEBUG
 			printf("ioServer -> Recv data coming from rank %i \n",source ); 
-			for(i = 0; i < (int)iocompParams->localDataSize; i++)
-			{
-				printf("%lf ",recv[i]); // init size in each dimension to be n. For ex. NDIM = 2 will reslt in n x n 
-			}
+			//for(i = 0; i < (int)iocompParams->localDataSize; i++) { printf("%lf ",recv[i]); }// init size in each dimension to be n. For ex. NDIM = 2 will reslt in n x n }
 			printf("\n"); 
 #endif
 
