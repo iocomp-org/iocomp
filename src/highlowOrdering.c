@@ -30,11 +30,15 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 	if(globalSize <= NODESIZE*2)
 	{
 		if(globalRank < globalSize/2){
+#ifndef NDEBUG
 			printf("comp %i \n", globalRank); 
+#endif
 			iocompParams->colour = compColour; 
 		} 
 		else{
+#ifndef NDEBUG
 			printf("io %i \n", globalRank); 
+#endif
 			iocompParams->colour = ioColour; 
 		}
 	} 
@@ -46,11 +50,15 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 			for(int x = 0; x <= numNodes; x+=2 ) 
 			{
 				if(globalRank <  (x+1)*NODESIZE && globalRank >= (x)*NODESIZE){
+#ifndef NDEBUG
 					printf("comp %i \n", globalRank); 
+#endif
 					iocompParams->colour = compColour; 
 				} 
 				if(globalRank >=  (x+1)*NODESIZE && globalRank < (x+2)*NODESIZE){
+#ifndef NDEBUG
 					printf("io %i \n", globalRank); 
+#endif
 					iocompParams->colour = ioColour; 
 				} 
 			}
@@ -59,11 +67,15 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 
 		else if(globalRank >= lastwholeNode){ // globalRank is not within full node. 
 			if(globalRank  < (globalSize + lastwholeNode)/2){
+#ifndef NDEBUG
 				printf("comp %i \n", globalRank); 
+#endif
 				iocompParams->colour = compColour; 
 			} 
 			else{
+#ifndef NDEBUG
 				printf("io %i \n", globalRank); 
+#endif
 				iocompParams->colour = ioColour; 
 			} 
 
