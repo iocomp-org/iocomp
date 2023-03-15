@@ -151,7 +151,8 @@ int main(int argc, char** argv)
 
   if(computeRank == 0)
   {
-    resultsOutput(&streamParams); // write to csv file for compute write 
+    resultsOutput(&streamParams); // output avg timers to csv file 
+    fullResultsOutput(&streamParams); // output all timers to csv files
   }   
 	
 #ifndef NDEBUG

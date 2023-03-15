@@ -9,7 +9,7 @@
 
 void avg(double sum[KERNELS], double data[KERNELS][LOOPCOUNT])
 {
-  int i,k;  
+	int i,k;  
 	for (i = 0; i<KERNELS; i++)
 	{
 		sum[i] = 0.0; 
@@ -25,8 +25,8 @@ void avg(double sum[KERNELS], double data[KERNELS][LOOPCOUNT])
 void resultsOutput(struct stream_params* streamParams)
 {
 	double avgCompTimer[KERNELS], 
-	avgSendTimer[KERNELS], 
-	avgWaitTimer[KERNELS]; 
+				 avgSendTimer[KERNELS], 
+				 avgWaitTimer[KERNELS]; 
 
 	// calculate the averages from the total time 
 	avg(avgCompTimer, streamParams->compTimer); 
@@ -61,3 +61,43 @@ void resultsOutput(struct stream_params* streamParams)
 	fprintf(out, "WallTimer,,,,%lf \n", streamParams->wallTimer); 
 } 
 
+// print out all the values, not just average values 
+void fullResultsOutput(struct stream_params* streamParams)
+{
+
+	int test; 
+	// define filenames 
+	streamParams->fullResults_filename[0] = 		"copy.csv" ; 
+	streamParams->fullResults_filename[1] = 		"scale.csv"; 
+	streamParams->fullResults_filename[2] = 		"add.csv"		; 
+	streamParams->fullResults_filename[3] = 		"triad.csv"; 
+
+	for (int i = 0; i< KERNELS; i++)
+	{
+		FILE* out; 
+#ifndef NDEBUG
+		printf("remove filename \n");
+#endif
+		test = remove(streamParams->fullResults_filename[i]);
+		if (test != 0)
+		{
+#ifndef NDEBUG
+			printf("Cant remove %s \n",streamParams->fullResults_filename[i]);
+#endif 
+		}
+		out = fopen(streamParams->fullResults_filename[i], "w+");
+		if (out == NULL)
+		{
+			printf("Error: No output file\n");
+			exit(1);
+		}
+
+		// write to file
+		fprintf(out, "Iter,CompTimer(s),SendTimer(s),WaitTimer(s)\n"); 
+		for (int j = 0; j < LOOPCOUNT; j++)
+		{
+			fprintf(out, "%i, %lf, %lf, %lf\n", j, streamParams->compTimer[i][j], streamParams->sendTimer[i][j],streamParams->waitTimer[i][j]); 
+		} 
+	} 
+
+}

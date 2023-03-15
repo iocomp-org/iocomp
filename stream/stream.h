@@ -2,7 +2,7 @@
 #include "iocomp.h"
 
 #define KERNELS 4
-#define LOOPCOUNT 1
+#define LOOPCOUNT 10
 #define COPY		0
 #define SCALE		1
 #define ADD			2
@@ -21,6 +21,7 @@ struct stream_params{
 	size_t globalDataSize; 
 	MPI_Request requestArray[KERNELS]; 
 	int mpiWaitFlag[KERNELS]; 
+	char* fullResults_filename[KERNELS]; 
 }; 
 extern struct stream_params streamParams; 
 // stream kernel functions 
@@ -35,6 +36,7 @@ void triad_wait(struct iocomp_params *iocompParams, struct stream_params* stream
 
 // others. 
 void resultsOutput(struct stream_params* streamParams); 
+void fullResultsOutput(struct stream_params* streamParams); 
 double* init(struct stream_params* streamParams, double* a); 
 void computeStep(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm);
 void stream(double* iodata, struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm); 
