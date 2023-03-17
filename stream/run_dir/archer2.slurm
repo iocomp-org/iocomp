@@ -3,11 +3,11 @@
 #SBATCH --nodes=2
 #SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
-#SBATCH --time=00:02:00
+#SBATCH --time=20:00:00
 #SBATCH --account=e609
 #SBATCH --partition=standard 
-#SBATCH --qos=standard 
-##SBATCH --array=0-2
+#SBATCH --qos=lowpriority
+#SBATCH --array=0-2
 
 module swap PrgEnv-cray/8.0.0 PrgEnv-gnu
 module load cmake 
@@ -28,16 +28,15 @@ export CONFIG=${SLURM_SUBMIT_DIR}/config.xml
 
 # Make new directory 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
-SIZE=256
-#i=${SLURM_ARRAY_TASK_ID} 
-i=0
+SIZE=1024
+i=${SLURM_ARRAY_TASK_ID} 
 HALF_CORES=$((${SLURM_NTASKS_PER_NODE}/2)) 
 FULL_CORES=$((${SLURM_NTASKS_PER_NODE})) 
 HALF_NODES=$((${SLURM_NNODES}/2))
 
-for IO in {0..0}
+for IO in {1..4}
 do 
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/TEST/14March/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
+  export PARENT_DIR=${SLURM_SUBMIT_DIR}/TEST/15March/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
 
   # Case 1 
 	source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
@@ -54,3 +53,6 @@ do
 
 done 
 
+module list  2>&1 | tee -a test.out 
+echo "JOB ID"  $SLURM_JOBID >> test.out
+echo "JOB NAME" ${SLURM_JOB_NAME} >> test.out

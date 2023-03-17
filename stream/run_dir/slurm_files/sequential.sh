@@ -1,6 +1,8 @@
 export CASE=Sequential
 export RUNDIR=${PARENT_DIR}/${CASE}/$i
 echo "**" $CASE 
+echo $RUNDIR 
+
 rm -rf ${RUNDIR}
 mkdir -p ${RUNDIR}
 lfs setstripe -c -1  ${RUNDIR}
@@ -32,7 +34,3 @@ else
   srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --size ${SIZE} --io ${IO} > test.out
 fi 
 
-module list  2>&1 | tee -a test.out 
-
-echo "JOB ID"  $SLURM_JOBID >> test.out
-echo "JOB NAME" ${SLURM_JOB_NAME} >> test.out
