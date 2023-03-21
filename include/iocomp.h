@@ -1,3 +1,9 @@
+#ifndef _IOCOMP_H_
+#define _IOCOMP_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mpi.h"
 #include <stdbool.h>
 #include <stddef.h>
@@ -90,4 +96,7 @@ void free_check(double* test);
 void phdf5write(double* iodata, int*local_size, int* global_size, int* arraystart, int NDIM, MPI_Comm cartcomm, char* FILENAME);  
 void mpiiowrite(double* iodata, int*local_size, int* global_size, int* arraystart, int NDIM, MPI_Comm cartcomm, char* FILENAME, MPI_Datatype dataType);  
 void adioswrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraystart, int NDIM, MPI_Comm cartcomm, char *IOENGINE, char* FILENAME); 
-
+#ifdef __cplusplus
+}
+#endif 
+#endif 
