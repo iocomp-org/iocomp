@@ -59,14 +59,14 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		/*
 		 * COPY
 		 */ 
-		if(k>0) { add_wait(iocompParams, streamParams, k);} // wait for C array to be sent, only after the first iteration of add wait 
+		if(k>0) { add_wait(iocompParams, streamParams, k-1);} // wait for C array to be sent, only after the first iteration of add wait 
 		copy(iocompParams, streamParams, k, c, a); // send copy data and get timers for send and compute  
 //		if(k>0){mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]);} // test if TRIAD data got sent
 
 		/*
 		 * SCALE
 		 */ 
-		if(k>0) { scale_wait(iocompParams, streamParams, k);} // wait for B to be sent 
+		if(k>0) { scale_wait(iocompParams, streamParams, k-1);} // wait for B to be sent 
 		scale(iocompParams, streamParams, k, c, b); // send scale data and get timers for send and compute  
 //		mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY]); // test if COPY data got sent 
 
@@ -80,19 +80,18 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		/*
 		 * TRIAD 
 		 */ 
-		if(k>0){triad_wait(iocompParams, streamParams, k);}  // wait for A to be sent 
+		if(k>0){triad_wait(iocompParams, streamParams, k-1);}  // wait for A to be sent 
 		triad(iocompParams, streamParams, k, c, a, b); // send copy data and get timers for send and compute  
 //		mpiWaitFlag[ADD]=dataSendTest(iocompParams,&streamParams->requestArray[ADD]); // test if ADD data got sent  
-
-
+	
 	} // end avg loop  
 	
 	/*
 	 * for the last iteration of K, wait for all data to be sent. 
 	 */ 
-	if(k>0) { add_wait(iocompParams, streamParams, k);} // wait for C array to be sent, only after the first iteration of add wait 
-	if(k>0) { scale_wait(iocompParams, streamParams, k);} // wait for B to be sent 
-	if(k>0)	{	triad_wait(iocompParams, streamParams, k);}  // wait for A to be sent 
+	if(k>0) { add_wait(iocompParams, streamParams, k-1);} // wait for C array to be sent, only after the first iteration of add wait 
+	if(k>0) { scale_wait(iocompParams, streamParams, k-1);} // wait for B to be sent 
+	if(k>0)	{	triad_wait(iocompParams, streamParams, k-1);}  // wait for A to be sent 
 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
 #ifndef NDEBUG
