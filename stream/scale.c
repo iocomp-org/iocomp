@@ -17,6 +17,8 @@ void scale(struct iocomp_params *iocompParams, struct stream_params* streamParam
 		streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY]); // test if COPY data got sent 
 	}
 	streamParams->compTimer[SCALE][k] = MPI_Wtime() - timerStart;  // computeTime for SCALE 
+
+	timerStart = MPI_Wtime(); // timer start for dataSend 
 	dataSend(b,iocompParams, &streamParams->requestArray[SCALE],streamParams->localDataSize); // send data off using dataSend
 	streamParams->sendTimer[SCALE][k] = MPI_Wtime() - timerStart; // send time for SCALE 
 #ifndef NDEBUG
