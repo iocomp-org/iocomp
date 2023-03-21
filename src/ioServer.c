@@ -78,10 +78,10 @@ void ioServer(struct iocomp_params *iocompParams)
 			recv = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 			malloc_check(recv); 
 
-			for ( i = 0; i < (int)iocompParams->localDataSize; i++)
-			{
-				recv[i] = 0; // initialise recv array 
-			}
+//			for ( i = 0; i < (int)iocompParams->localDataSize; i++)
+//			{
+//				recv[i] = 0; // initialise recv array 
+//			}
 #ifndef NDEBUG
 			printf("ioServer -> Initialisation of recv array with count %i \n", iocompParams->localDataSize); 
 #endif
