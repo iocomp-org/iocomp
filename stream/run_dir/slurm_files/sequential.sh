@@ -30,7 +30,11 @@ else
   end=$((${END_CORES}-1))
   vals=($(seq 0 1 $(eval echo ${end})))
   bar=$(IFS=, ; echo "${vals[*]}")
- 
-  srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --size ${SIZE} --io ${IO} > test.out
+  
+  TOTAL_RANKS=$((${NUM_NODES}*${END_CORES}))
+  #srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --size ${SIZE} --io ${IO} > test.out
+  map -n ${TOTAL_RANKS} --mpiargs="--hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]}" --profile  ${EXE} --size ${SIZE} --io ${IO}
 fi 
 
+echo "JOB ID"  $SLURM_JOBID >> test.out
+echo "JOB NAME" ${SLURM_JOB_NAME} >> test.out
