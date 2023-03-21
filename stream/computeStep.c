@@ -21,7 +21,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	double* a = NULL; // initialise data pointer  
 	double* b = NULL; // initialise data pointer  
 	double* c = NULL; // initialise data pointer  
-	printf("streamParams->localDataSize = %li \n", streamParams->localDataSize); 
+
 	a = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 	b = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 	c = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
