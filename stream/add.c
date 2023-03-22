@@ -17,9 +17,9 @@ void add(struct iocomp_params *iocompParams, struct stream_params* streamParams,
 	for(int i = 0; i< streamParams->localDataSize; i++)
 	{
 		c[i] = a[i] + b[i]; 
-		if(k>0)
+		streamParams->mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE]); 
+		if(k>0) // need to wait for at least one occurance of triad
 		{
-			streamParams->mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE]); 
 			streamParams->mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]);
 		} 
 	}

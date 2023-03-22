@@ -8,14 +8,16 @@
 void scale(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* b)
 {
 
-	// timerStart = timer_start(computeRank); // start timing 
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
 	for(int i = 0; i< streamParams->localDataSize; i++)
 	{
 		b[i] = constant * c[i]; 
 		streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY]); 
-		streamParams->mpiWaitFlag[TRIAD]=dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]); 
+		if(k > 0) // need to wait for at least 1 occurance of triad 
+		{ 	
+			streamParams->mpiWaitFlag[TRIAD]=dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]); 
+		} 
 	}
 	streamParams->compTimer[SCALE][k] = MPI_Wtime() - timerStart;  // computeTime for SCALE 
 
