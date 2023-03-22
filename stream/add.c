@@ -17,7 +17,11 @@ void add(struct iocomp_params *iocompParams, struct stream_params* streamParams,
 	for(int i = 0; i< streamParams->localDataSize; i++)
 	{
 		c[i] = a[i] + b[i]; 
-		streamParams->mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE]); // test if SCALE data got sent  
+		if(k>0)
+		{
+			streamParams->mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE]); 
+			streamParams->mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]);
+		} 
 	}
 	streamParams->compTimer[ADD][k] = MPI_Wtime() - timerStart;  // computeTime for ADD 
 

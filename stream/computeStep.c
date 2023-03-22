@@ -29,7 +29,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 
 	double wallTime_start, wallTime_end; 
 	wallTime_start = MPI_Wtime(); 
-	//int mpiWaitFlag[4] ; // mpiwaits array
 
 	/*
 	 * Initialise the timers 
@@ -44,9 +43,8 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		}	
 	}
 
-
 	/*
-	 * STREAM kernels, add, copy, scale and triad 
+	 * STREAM kernels ADD, COPY, SCALE and TRIAD
 	 * loop till LOOPCOUNT to get an average 
 	 */
 	int k; 
@@ -57,41 +55,47 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 #endif
 
 		/*
-		 * COPY
+		 * Wait for ADD(C) 
+		 * COPY(C) send
+		 * MPI Test for SCALE(B) and TRIAD(A)
 		 */ 
-		if(k>0) { add_wait(iocompParams, streamParams, k-1);} // wait for C array to be sent, only after the first iteration of add wait 
-		copy(iocompParams, streamParams, k, c, a); // send copy data and get timers for send and compute  
-//		if(k>0){mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]);} // test if TRIAD data got sent
+		if(k>0) { add_wait(iocompParams, streamParams, k-1);}
+		copy(iocompParams, streamParams, k, c, a); 
 
 		/*
-		 * SCALE
+		 * Wait for SCALE(B) 
+		 * SCALE(B) send 
+		 * MPI Test for COPY(C) and TRIAD(A)
 		 */ 
-		if(k>0) { scale_wait(iocompParams, streamParams, k-1);} // wait for B to be sent 
-		scale(iocompParams, streamParams, k, c, b); // send scale data and get timers for send and compute  
-//		mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY]); // test if COPY data got sent 
+		if(k>0) { scale_wait(iocompParams, streamParams, k-1);} 
+		scale(iocompParams, streamParams, k, c, b);
 
 		/*
-		 * ADD
+		 * Wait for COPY(C) 
+		 * ADD(C) send 
+		 * MPI Test for SCALE(B) and TRIAD(A)
 		 */ 
-		copy_wait(iocompParams, streamParams, k); // wait for C to be sent  
-		add(iocompParams, streamParams, k, c, a, b); // send add data and get timers for send and compute   
-//		mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE]); // test if SCALE data got sent  
+		copy_wait(iocompParams, streamParams, k);
+		add(iocompParams, streamParams, k, c, a, b);
 
 		/*
-		 * TRIAD 
+		 * Wait for TRIAD(A) 
+		 * TRIAD(A) send  
+		 * MPI Test for ADD(C) and SCALE(B)
 		 */ 
-		if(k>0){triad_wait(iocompParams, streamParams, k-1);}  // wait for A to be sent 
-		triad(iocompParams, streamParams, k, c, a, b); // send copy data and get timers for send and compute  
-//		mpiWaitFlag[ADD]=dataSendTest(iocompParams,&streamParams->requestArray[ADD]); // test if ADD data got sent  
+		if(k>0){triad_wait(iocompParams, streamParams, k-1);} 
+		triad(iocompParams, streamParams, k, c, a, b);
 	
 	} // end avg loop  
 	
 	/*
 	 * for the last iteration of K, wait for all data to be sent. 
 	 */ 
-	if(k>0) { add_wait(iocompParams, streamParams, k-1);} // wait for C array to be sent, only after the first iteration of add wait 
-	if(k>0) { scale_wait(iocompParams, streamParams, k-1);} // wait for B to be sent 
-	if(k>0)	{	triad_wait(iocompParams, streamParams, k-1);}  // wait for A to be sent 
+	if(k>0) { 
+		add_wait(iocompParams, streamParams, k-1); 
+		scale_wait(iocompParams, streamParams, k-1);
+		triad_wait(iocompParams, streamParams, k-1); 
+	} 
 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
 #ifndef NDEBUG
