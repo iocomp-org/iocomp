@@ -16,11 +16,11 @@ void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams
 	for(int i = 0; i< streamParams->localDataSize; i++)
 	{
 		c[i] = a[i]; 
-		if(k>0) // need to wait for at least 1 iteration
-		{
-			streamParams->mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]);
-			streamParams->mpiWaitFlag[SCALE] = dataSendTest(iocompParams,&streamParams->requestArray[SCALE]);
-		} 
+//		if(k>0) // need to wait for at least 1 iteration
+//		{
+//			streamParams->mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]);
+//			streamParams->mpiWaitFlag[SCALE] = dataSendTest(iocompParams,&streamParams->requestArray[SCALE]);
+//		} 
 	}
 	streamParams->compTimer[COPY][k] = MPI_Wtime() - timerStart;  // computeTime for COPY 
 
