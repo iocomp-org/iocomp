@@ -1,13 +1,13 @@
 #!/bin/bash --login
-#SBATCH --job-name=map
+#SBATCH --job-name=stream
 #SBATCH --nodes=1
 #SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
-#SBATCH --time=00:10:00
+#SBATCH --time=01:00:00
 #SBATCH --account=e609
 #SBATCH --partition=standard 
 #SBATCH --qos=lowpriority
-##SBATCH --array=0-2
+#SBATCH --array=0-2
 
 module swap PrgEnv-cray/8.0.0 PrgEnv-gnu
 module load cmake 
@@ -29,37 +29,34 @@ export CONFIG=${SLURM_SUBMIT_DIR}/config.xml
 
 # Make new directory 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
-SIZE=1024
+SIZE=512
 i=${SLURM_ARRAY_TASK_ID} 
 HALF_CORES=$((${SLURM_NTASKS_PER_NODE}/2)) 
 FULL_CORES=$((${SLURM_NTASKS_PER_NODE})) 
 HALF_NODES=$((${SLURM_NNODES}/2))
 TOTAL_RANKS=$(($SLURM_NNODES * $SLURM_NTASKS_PER_NODE))
-# start run time timer 
-start=`date +%s`
+
+echo "Job started " $(date +"%T") # start time
 
 for IO in {0..0}
 do 
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/ARM_MAP/15March/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
+  export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1/25March/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
 
   # Case 1 
-#  source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
-#	wait 
-#  # Case 2
-#	source ${SLURM_SUBMIT_DIR}/slurm_files/oversubscribe.sh 
-#	wait 
-#  # Case 3
-#	source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
-#	wait 
-#  # Case 4
-# source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
-#	wait 
+  source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
+	wait 
+  # Case 2
+	source ${SLURM_SUBMIT_DIR}/slurm_files/oversubscribe.sh 
+	wait 
+  # Case 3
+	source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
+	wait 
+  # Case 4
+  source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
+	wait 
 
 done 
 
 echo $(module list) 
 
-# runtime given by: 
-end=`date +%s`
-runtime=$((end-start))
-echo "Run time is :" $runtime "s"
+echo "Job ended " $(date +"%T") # end time 
