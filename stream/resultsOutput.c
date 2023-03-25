@@ -22,16 +22,32 @@ void avg(double sum[KERNELS], double data[KERNELS][LOOPCOUNT])
 	// return(sum); 
 }
 
-void resultsOutput(struct stream_params* streamParams)
+void reduceResults(struct stream_params* streamParams,MPI_Comm computeComm)
 {
+	// reduce and maximise timers from all stream kernels 
+	for(int i = 0; i < KERNELS; i++)
+	{
+		MPI_Reduce(&streamParams->compTimer[i],&streamParams->maxCompTimer[i],LOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
+		MPI_Reduce(&streamParams->waitTimer[i],&streamParams->maxWaitTimer[i],LOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
+		MPI_Reduce(&streamParams->sendTimer[i],&streamParams->maxSendTimer[i],LOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
+	} 
+} 
+
+
+void resultsOutput(struct stream_params* streamParams, MPI_Comm computeComm)
+{
+	
+	// reduce results across computeComm and get max timers
+	reduceResults(streamParams, computeComm); 
+
 	double avgCompTimer[KERNELS], 
 				 avgSendTimer[KERNELS], 
 				 avgWaitTimer[KERNELS]; 
 
-	// calculate the averages from the total time 
-	avg(avgCompTimer, streamParams->compTimer); 
-	avg(avgSendTimer, streamParams->sendTimer); 
-	avg(avgWaitTimer, streamParams->waitTimer); 
+	// calculate the averages from the max timers 
+	avg(avgCompTimer, streamParams->maxCompTimer); 
+	avg(avgSendTimer, streamParams->maxSendTimer); 
+	avg(avgWaitTimer, streamParams->maxWaitTimer); 
 
 	// initialise the file variables 
 	int test; 
@@ -96,7 +112,7 @@ void fullResultsOutput(struct stream_params* streamParams)
 		fprintf(out, "Iter,CompTimer(s),SendTimer(s),WaitTimer(s)\n"); 
 		for (int j = 0; j < LOOPCOUNT; j++)
 		{
-			fprintf(out, "%i, %lf, %lf, %lf\n", j, streamParams->compTimer[i][j], streamParams->sendTimer[i][j],streamParams->waitTimer[i][j]); 
+			fprintf(out, "%i, %lf, %lf, %lf\n", j, streamParams->maxCompTimer[i][j], streamParams->maxSendTimer[i][j],streamParams->maxWaitTimer[i][j]); 
 		} 
 	} 
 

@@ -126,7 +126,7 @@ int main(int argc, char** argv)
   printf("stream-> localdatasize initialised with %li \n", streamParams.localDataSize); 
 #endif
 
-  computeStep(&iocompParams, &streamParams, comm); // do compute 
+  computeStep(&iocompParams, &streamParams, computeComm); // do compute 
 #ifndef NDEBUG
   printf("stream-> after computeStep \n"); 
 #endif
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
 
   if(computeRank == 0)
   {
-    resultsOutput(&streamParams); // output avg timers to csv file 
+    resultsOutput(&streamParams, computeComm); // output avg timers to csv file 
     fullResultsOutput(&streamParams); // output all timers to csv files
   }   
 	

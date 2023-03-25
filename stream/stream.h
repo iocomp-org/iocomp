@@ -16,6 +16,9 @@ struct stream_params{
 	double compTimer[KERNELS][LOOPCOUNT]; 
 	double waitTimer[KERNELS][LOOPCOUNT]; 
 	double sendTimer[KERNELS][LOOPCOUNT]; 
+	double maxCompTimer[KERNELS][LOOPCOUNT]; 
+	double maxWaitTimer[KERNELS][LOOPCOUNT]; 
+	double maxSendTimer[KERNELS][LOOPCOUNT]; 
 	double wallTimer; 
 	size_t localDataSize; 
 	size_t globalDataSize; 
@@ -35,7 +38,8 @@ void triad(struct iocomp_params *iocompParams, struct stream_params* streamParam
 void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
 
 // others. 
-void resultsOutput(struct stream_params* streamParams); 
+void resultsOutput(struct stream_params* streamParams, MPI_Comm comm); 
+void reduceResults(struct stream_params* streamParams, MPI_Comm comm); 
 void fullResultsOutput(struct stream_params* streamParams); 
 double* init(struct stream_params* streamParams, double* a); 
 void computeStep(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm);
