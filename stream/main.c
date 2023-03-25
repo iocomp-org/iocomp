@@ -116,12 +116,8 @@ int main(int argc, char** argv)
 	 * initialises the local array sizes 
 	 * and data size 
 	 */ 
-  int localArraySize[NDIM] = {size,size}; 
-	streamParams.localDataSize = 1;  
-	for(int j = 0; j < NDIM; j++) 
-	{
-		streamParams.localDataSize *= localArraySize[j]; 
-	}
+	streamParams.localDataSize = pow(size,NDIM); 
+
 #ifndef NDEBUG
   printf("stream-> localdatasize initialised with %li \n", streamParams.localDataSize); 
 #endif
@@ -135,18 +131,9 @@ int main(int argc, char** argv)
    * if HT flag is on, then 0 of compute rank 
    * writes results to csv file 
    * else if HT flag is off, then 0 of global rank 
-   * write results to csv file 
+   * writes results to csv file 
    */ 
   int computeRank;
-//  MPI_Comm comm_results; 
-//  if(HT_flag)
-//  {
-//    comm_results = computeComm; 
-//  }
-//  else
-//  {
-//    comm_results = comm; 
-//  }
   MPI_Comm_rank(computeComm, &computeRank); 
 
 	// reduce results across computeComm and get max timers
