@@ -95,38 +95,58 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	switch(iocompParams->ioLibNum){
 
 		case 0:
+#ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
+#endif 
 			mpiiowrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum], iocompParams->dataType);
+#ifdef IOCOMP_TIMERS
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
+#endif 
 		break; 
 
 		case 1: 
+#ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
+#endif 
 			phdf5write(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum]);
+#ifdef IOCOMP_TIMERS
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
+#endif 
 		break; 
 	
 		case 2: 
+#ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
+#endif 
 			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "HDF5", iocompParams->FILENAMES[iocompParams->ioLibNum]);
+#ifdef IOCOMP_TIMERS
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
+#endif 
 		break; 
 	
 		case 3: 
+#ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
+#endif 
 			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP4", iocompParams->FILENAMES[iocompParams->ioLibNum]);
+#ifdef IOCOMP_TIMERS
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
+#endif 
 		break;
 
 		case 4: 
+#ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
+#endif 
 			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP5", iocompParams->FILENAMES[iocompParams->ioLibNum] );
+#ifdef IOCOMP_TIMERS
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
+#endif 
 		break; 
 
 		default:
@@ -137,11 +157,14 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 	printf("ioLibraries -> end of switch for IO libraries\n");
 #endif
+
+#ifdef IOCOMP_TIMERS
 	if (!ioRank) 
 	{
 		double fileSize = iocompParams->globalDataSize*sizeof(double)/(pow(10,9)); 
 		printf("** I/O write time=%lf filesize(GB)=%lf\n", writeTime,fileSize) ; 
 	} 
+#endif
 
 #ifndef NDEBUG
 	printf("ioLibraries -> Timing function ended  \n");

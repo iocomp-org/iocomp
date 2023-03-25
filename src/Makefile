@@ -3,7 +3,10 @@ CC = cc
 CFLAGS = -Wall -Wpedantic -Werror -Wextra -Wno-unused-variable -Wno-unused-but-set-variable -Werror=deprecated-declarations 
 
 # define compile time flags 
-CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared -g -Og -O2 #-DNDEBUG
+# DNDEBUG for not including error messages 
+# DIOCOMP_TIMERS for printing out time taken to write by ioLibraries.c 
+# DADIOS2_USE_MPI for adios2 
+CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared -g -Og -O2 -DNDEBUG #-DIOCOMP_TIMERS 
 
 # linker flags
 LFLAGS += -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
