@@ -13,11 +13,13 @@ void scale(struct iocomp_params *iocompParams, struct stream_params* streamParam
 	for(int i = 0; i< streamParams->localDataSize; i++)
 	{
 		b[i] = constant * c[i]; 
-//		streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY]); 
-//		if(k > 0) // need to wait for at least 1 occurance of triad 
-//		{ 	
-//			streamParams->mpiWaitFlag[TRIAD]=dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]); 
-//		} 
+#ifdef MPI_TESTS
+		streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY]); 
+		if(k > 0) // need to wait for at least 1 occurance of triad 
+		{ 	
+			streamParams->mpiWaitFlag[TRIAD]=dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]); 
+		} 
+#endif 
 	}
 	streamParams->compTimer[SCALE][k] = MPI_Wtime() - timerStart;  // computeTime for SCALE 
 
