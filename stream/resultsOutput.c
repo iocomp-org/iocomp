@@ -38,10 +38,6 @@ void reduceResults(struct stream_params* streamParams,MPI_Comm computeComm)
 
 void resultsOutput(struct stream_params* streamParams, MPI_Comm computeComm)
 {
-	
-	// reduce results across computeComm and get max timers
-	reduceResults(streamParams, computeComm); 
-
 	double avgCompTimer[KERNELS], 
 				 avgSendTimer[KERNELS], 
 				 avgWaitTimer[KERNELS]; 

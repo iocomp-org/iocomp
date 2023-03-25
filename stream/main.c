@@ -138,22 +138,25 @@ int main(int argc, char** argv)
    * write results to csv file 
    */ 
   int computeRank;
-  MPI_Comm comm_results; 
-  if(HT_flag)
-  {
-    comm_results = computeComm; 
-  }
-  else
-  {
-    comm_results = comm; 
-  }
-  MPI_Comm_rank(comm_results, &computeRank); 
+//  MPI_Comm comm_results; 
+//  if(HT_flag)
+//  {
+//    comm_results = computeComm; 
+//  }
+//  else
+//  {
+//    comm_results = comm; 
+//  }
+  MPI_Comm_rank(computeComm, &computeRank); 
 
-  if(computeRank == 0)
-  {
-    resultsOutput(&streamParams, computeComm); // output avg timers to csv file 
-    fullResultsOutput(&streamParams); // output all timers to csv files
-  }   
+	// reduce results across computeComm and get max timers
+	reduceResults(&streamParams, computeComm); 
+
+	if(computeRank == 0)
+	{
+			resultsOutput(&streamParams, computeComm); // output avg timers to csv file 
+			fullResultsOutput(&streamParams); // output all timers to csv files
+	}   
 	
 #ifndef NDEBUG
   printf("stream-> after results output \n"); 
