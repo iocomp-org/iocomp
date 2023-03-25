@@ -31,6 +31,8 @@ void reduceResults(struct stream_params* streamParams,MPI_Comm computeComm)
 		MPI_Reduce(&streamParams->waitTimer[i],&streamParams->maxWaitTimer[i],LOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
 		MPI_Reduce(&streamParams->sendTimer[i],&streamParams->maxSendTimer[i],LOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
 	} 
+
+	MPI_Reduce(&streamParams->wallTimer,&streamParams->maxWallTimer,1, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
 } 
 
 
@@ -74,7 +76,7 @@ void resultsOutput(struct stream_params* streamParams, MPI_Comm computeComm)
 	fprintf(out, "Compute,%lf,%lf,%lf,%lf \n", avgCompTimer[0], avgCompTimer[1], avgCompTimer[2], avgCompTimer[3]); 
 	fprintf(out, "Send,%lf,%lf,%lf,%lf \n", avgSendTimer[0], avgSendTimer[1], avgSendTimer[2], avgSendTimer[3]); 
 	fprintf(out, "Wait,%lf,%lf,%lf,%lf \n", avgWaitTimer[0], avgWaitTimer[1], avgWaitTimer[2], avgWaitTimer[3]); 
-	fprintf(out, "WallTimer,,,,%lf \n", streamParams->wallTimer); 
+	fprintf(out, "WallTimer,,,,,%lf \n", streamParams->maxWallTimer); 
 } 
 
 // print out all the values, not just average values 

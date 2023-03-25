@@ -20,6 +20,7 @@ struct stream_params{
 	double maxWaitTimer[KERNELS][LOOPCOUNT]; 
 	double maxSendTimer[KERNELS][LOOPCOUNT]; 
 	double wallTimer; 
+	double maxWallTimer; 
 	size_t localDataSize; 
 	size_t globalDataSize; 
 	MPI_Request requestArray[KERNELS]; 
