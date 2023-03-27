@@ -26,8 +26,8 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	/*
 	 * Array size specs initialise
 	 */ 
-	iocompParams->localSize = malloc(sizeof(size_t)*iocompParams->NDIM);
-	iocompParams->globalSize = malloc(sizeof(size_t)*iocompParams->NDIM);
+	iocompParams->localArray = malloc(sizeof(size_t)*iocompParams->NDIM);
+	iocompParams->globalArray = malloc(sizeof(size_t)*iocompParams->NDIM);
 	iocompParams->dataType = MPI_DOUBLE; // data type of sent and recvd data 
 #ifndef NDEBUG
 	printf("arrayParamsInit -> local, global size initialised \n"); 
@@ -40,24 +40,22 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	float power = (float)1/iocompParams->NDIM; 
 	for (i = 0; i < iocompParams->NDIM; i++)
 	{
-		//iocompParams->localSize[i]	= (int)sqrt(iocompParams->localDataSize); 
-		//iocompParams->globalSize[i]	= (int)sqrt(iocompParams->localDataSize); 
-		iocompParams->localSize[i]	= (int)pow(iocompParams->localDataSize,power); 
-		iocompParams->globalSize[i]	= iocompParams->localSize[i]; 
+		iocompParams->localArray[i]	= (int)pow(iocompParams->localDataSize,power); 
+		iocompParams->globalArray[i]	= iocompParams->localArray[i]; 
 	}
 
 	/*
-	 * globalSize is multiplied by total size of available processors 
+	 * globalArray is multiplied by total size of available processors 
 	 * since comm is dependant on hyperthread flag, if HT flag is ON, global size is half 
 	 * no need for if statements 
 	 */ 
-	iocompParams->globalSize[0]*= ioSize; // assumes outermost dimension gets expanded by each rank 
+	iocompParams->globalArray[0]*= ioSize; // assumes outermost dimension gets expanded by each rank 
 
 #ifndef NDEBUG
-	printf("arrayParamsInit -> localsize initialised \n"); 
-	for (int i = 0; i < iocompParams->NDIM; i++){printf("%i ", iocompParams->localSize[i]); }
-	printf("\narrayParamsInit -> globalsize initialised with size \n"); 
-	for (int i = 0; i < iocompParams->NDIM; i++){printf("%i ", iocompParams->globalSize[i]); }
+	printf("arrayParamsInit -> localArray initialised \n"); 
+	for (int i = 0; i < iocompParams->NDIM; i++){printf("%li ", iocompParams->localArray[i]); }
+	printf("\narrayParamsInit -> globalArray initialised with size \n"); 
+	for (int i = 0; i < iocompParams->NDIM; i++){printf("%li ", iocompParams->globalArray[i]); }
 	printf("\narrayParamsInit -> NDIM initialised with size %i\n", iocompParams->NDIM); 
 #endif
 
@@ -67,7 +65,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	iocompParams->globalDataSize = iocompParams->localDataSize * ioSize; 
 	
 #ifndef NDEBUG
-	printf("arrayParamsInit -> size definitions, localDataSize %i, globalDataSize %i\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
+	printf("arrayParamsInit -> size definitions, localDataSize %li, globalDataSize %li\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
 #endif
 
 	/*
@@ -82,7 +80,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	{
 		iocompParams->arrayStart[i] = 0; 
 	}
-	iocompParams->arrayStart[0] = ioRank * iocompParams->localSize[0]; // assuming ar_size has uniform dimensions. 
+	iocompParams->arrayStart[0] = ioRank * iocompParams->localArray[0]; // assuming ar_size has uniform dimensions. 
 #ifndef NDEBUG
 	printf("arrayParamsInit -> arrayStart initialised ioRank = %i\n",ioRank);
 #endif

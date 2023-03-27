@@ -70,7 +70,7 @@ void ioServer(struct iocomp_params *iocompParams)
 		/*
 		 * Else recieve message 
 		 */ 
-		else if(test_cout>0)
+		else if(test_count>0)
 		{
 			// initialise recv array 
 			double* recv = NULL; 
@@ -80,7 +80,7 @@ void ioServer(struct iocomp_params *iocompParams)
 			malloc_check(recv); 
 
 #ifndef NDEBUG
-			printf("ioServer -> Initialisation of recv array with count %i \n", iocompParams->localDataSize); 
+			printf("ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
 #endif
 			ierr = MPI_Recv(recv, test_count, MPI_DOUBLE, source, tag,
 					iocompParams->globalComm,&status);

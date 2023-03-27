@@ -5,7 +5,7 @@
 #include <memory.h>
 #include "../include/iocomp.h"
 
-void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraystart, int NDIM, MPI_Comm cartcomm, char* FILENAME, MPI_Datatype dataType)
+void mpiiowrite(double* iodata, size_t* localArraySize,	size_t* globalArraySize, size_t* arrayStartSize, int NDIM, MPI_Comm cartcomm, char* FILENAME, MPI_Datatype dataType)
 {   
 	int			i, j, k, initialized, finalized,ierr, size, comm, rank, argc, nprocs, myrank, nints; 
 
@@ -25,8 +25,6 @@ void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraysta
 	MPI_Status      status;
 	MPI_Datatype    filetype, mpi_subarray; 
 
-	// MPI_Errhandler_set(cartcomm,MPI_ERRORS_RETURN); /* return info about
-	//   errors */
 	MPI_Comm_size(cartcomm, &nprocs);
 	MPI_Comm_rank(cartcomm, &myrank);
 	MPI_Cart_get(cartcomm, NDIM, dims, periods, coords); 
@@ -36,17 +34,32 @@ void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraysta
 	// check_mpi_error(ierr, cartcomm); 
 	MPI_Info info  = MPI_INFO_NULL; 
 
+	// Initialise int arrays for MPIIO 
+	int localArray[NDIM]; 
+	int globalArray[NDIM]; 
+	int arrayStart[NDIM]; 
+	
+	for(i = 0; i < NDIM; i++)
+	{
+		localArray[i] = (int)localArraySize[i]; 
+		globalArray[i] = (int)globalArraySize[i]; 
+		arrayStart[i] = (int)arrayStartSize[i]; 
+		assert(localArray[i] > 0); 
+		assert(globalArray[i] > 0); 
+		assert(arrayStart[i] > 0); 
+	}
+
 #ifndef NDEBUG   
-	printf("mpiWrite -> arraygsize for rank %i \n",myrank); 
-	for (int i = 0; i < NDIM; i++){printf("%i ", arraygsize[i]); }
-	printf("\nmpiWrite -> arraysubsize for rank %i \n",myrank); 
-	for (int i = 0; i < NDIM; i++){printf("%i ", arraysubsize[i]); }
-	printf("\nmpiWrite -> arraystart for rank %i \n",myrank); 
-	for (int i = 0; i < NDIM; i++){printf("%i ", arraystart[i]); }
+	printf("mpiWrite -> globalArray for rank %i \n",myrank); 
+	for (int i = 0; i < NDIM; i++){printf("%i ", globalArray[i]); }
+	printf("\nmpiWrite -> localArray for rank %i \n",myrank); 
+	for (int i = 0; i < NDIM; i++){printf("%i ", localArray[i]); }
+	printf("\nmpiWrite -> arrayStart for rank %i \n",myrank); 
+	for (int i = 0; i < NDIM; i++){printf("%i ", arrayStart[i]); }
 	printf("\n"); 
 #endif 
 
-	ierr = MPI_Type_create_subarray(NDIM, arraygsize, arraysubsize, arraystart,
+	ierr = MPI_Type_create_subarray(NDIM, globalArray, localArray, arrayStart,
 			MPI_ORDER_C, dataType, &filetype); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   
@@ -79,7 +92,7 @@ void mpiiowrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraysta
 	int total_data = 1; 
 	for (i = 0; i< NDIM; i++)
 	{
-		total_data *= arraysubsize[i]; 
+		total_data *= localArray[i]; 
 	}
 	ierr = MPI_File_write_all(fh, iodata, total_data, dataType, &status);   
 	mpi_error_check(ierr); 

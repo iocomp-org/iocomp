@@ -99,7 +99,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
-			mpiiowrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum], iocompParams->dataType);
+			mpiiowrite(iodata, iocompParams->localArray, iocompParams->globalArray, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum], iocompParams->dataType);
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
@@ -110,7 +110,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
-			phdf5write(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum]);
+			phdf5write(iodata, iocompParams->localArray, iocompParams->globalArray, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum]);
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
@@ -121,7 +121,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
-			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "HDF5", iocompParams->FILENAMES[iocompParams->ioLibNum]);
+			adioswrite(iodata, iocompParams->localArray, iocompParams->globalArray, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "HDF5", iocompParams->FILENAMES[iocompParams->ioLibNum]);
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
@@ -132,7 +132,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
-			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP4", iocompParams->FILENAMES[iocompParams->ioLibNum]);
+			adioswrite(iodata, iocompParams->localArray, iocompParams->globalArray, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP4", iocompParams->FILENAMES[iocompParams->ioLibNum]);
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
@@ -143,7 +143,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
-			adioswrite(iodata, iocompParams->localSize, iocompParams->globalSize, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP5", iocompParams->FILENAMES[iocompParams->ioLibNum] );
+			adioswrite(iodata, iocompParams->localArray, iocompParams->globalArray, iocompParams->arrayStart, iocompParams->NDIM, cartcomm, "BP5", iocompParams->FILENAMES[iocompParams->ioLibNum] );
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
