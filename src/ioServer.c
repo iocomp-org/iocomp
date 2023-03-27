@@ -47,7 +47,7 @@ void ioServer(struct iocomp_params *iocompParams)
 	for(;;) 
 	{
 #ifndef NDEBUG
-			printf("ioServer -> start of ioServer loop, iter %i ioRank %i \n", iter, ioRank ); 
+		printf("ioServer -> start of ioServer loop, iter %i ioRank %i \n", iter, ioRank ); 
 #endif
 		MPI_Probe(source, tag, iocompParams->globalComm, &status); // Probe for additional messages. 
 		MPI_Get_count(&status, MPI_DOUBLE, &test_count); // get count 
@@ -70,11 +70,12 @@ void ioServer(struct iocomp_params *iocompParams)
 		/*
 		 * Else recieve message 
 		 */ 
-		else
+		else if(test_cout>0)
 		{
 			// initialise recv array 
 			double* recv = NULL; 
 			iocompParams->localDataSize = test_count; 
+			assert(iocompParams->localDataSize>0); // check for negative values 
 			recv = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 			malloc_check(recv); 
 
@@ -102,7 +103,7 @@ void ioServer(struct iocomp_params *iocompParams)
 			ioLibraries(recv, iocompParams); 
 			free(recv);
 			recv = NULL; 
-		}  
-		iter++; 
-	} 
+	}  
+	iter++; 
+} 
 } 
