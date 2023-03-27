@@ -8,12 +8,13 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <assert.h>  
 
 #define ioColour 0
 #define compColour 1 
 #define NODESIZE 128
 #define ioLibCount 5
-#define NUM_DIM 1
+#define NUM_DIM 2
 
 /*
  * Header file for declaring the error_report_fn and macro error_report which simplifies calling.
@@ -56,11 +57,11 @@ char ioLibs[ioLibCount][100];
 int ioLibNum; // select ioLib 
 // for io_libraries function 
 int NDIM; 
-int* localSize; 
-int* arrayStart; 
-int* globalSize; 
-int globalDataSize; 
-int localDataSize; 
+size_t* localArray; 
+size_t* arrayStart; 
+size_t* globalArray; 
+size_t globalDataSize; 
+size_t localDataSize; 
 MPI_Datatype dataType; 
 // filenames 
 char *FILENAMES[5]; 
@@ -76,7 +77,6 @@ void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);
 void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm); 
 void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm ); 
 void highlowOrdering(struct iocomp_params *iocompParams); 
-//void iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, int NDIM, int* localArraySize, bool flag, int ioLibNum); // initialises the library 
 MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum); // initialises the library 
 void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum); // initialise ioServer if ioProcessor 
 void testData(struct iocomp_params *iocompParams, int testFlag); // test data structures with flag to switch on/off  
@@ -92,10 +92,9 @@ void free_check(double* test);
 /*
 * IO libraries headers 
 */ 
-
-void phdf5write(double* iodata, int*local_size, int* global_size, int* arraystart, int NDIM, MPI_Comm cartcomm, char* FILENAME);  
-void mpiiowrite(double* iodata, int*local_size, int* global_size, int* arraystart, int NDIM, MPI_Comm cartcomm, char* FILENAME, MPI_Datatype dataType);  
-void adioswrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraystart, int NDIM, MPI_Comm cartcomm, char *IOENGINE, char* FILENAME); 
+void phdf5write(double* iodata, size_t* localArray,	size_t* globalArray, size_t* arrayStart, int NDIM, MPI_Comm cartcomm, char* FILENAME);  
+void mpiiowrite(double* iodata, size_t* localArray,	size_t* globalArray, size_t* arrayStart, int NDIM, MPI_Comm cartcomm, char* FILENAME, MPI_Datatype dataType);  
+void adioswrite(double* iodata, size_t* localArray,	size_t* globalArray, size_t* arrayStart, int NDIM, MPI_Comm cartcomm, char *IOENGINE, char* FILENAME); 
 #ifdef __cplusplus
 }
 #endif 
