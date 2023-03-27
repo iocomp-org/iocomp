@@ -10,7 +10,7 @@
 #include <hdf5_hl.h> 
 #include "../include/iocomp.h"
 
-void phdf5write(double* iodata, int*arraysubsize, int* arraygsize, int* arraystart, int NDIM, MPI_Comm cartcomm, char* FILENAME) 
+void phdf5write(double* iodata, size_t* localArray,	size_t* globalArray, size_t* arrayStart, int NDIM, MPI_Comm cartcomm, char* FILENAME)
 {   
     // Variable initialisation
     int             i, ierr, rank, size, initialized, 
@@ -50,9 +50,12 @@ void phdf5write(double* iodata, int*arraysubsize, int* arraygsize, int* arraysta
 
     for (i = 0; i < NDIM; i++)
     {
-        dimsf[i] = arraygsize[i]; 
-        count[i] = arraysubsize[i]; 
-        offset[i] = arraystart[i]; 
+        dimsf[i] = (int)globalArray[i]; 
+        count[i] = (int)localArray[i]; 
+        offset[i]= (int)arrayStart[i]; 
+
+        assert(dimsf[i] > 0); 
+        assert(count[i] > 0); 
     }
 
     /* 

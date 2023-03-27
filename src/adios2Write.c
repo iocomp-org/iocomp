@@ -22,50 +22,28 @@
 //     adios2_close(engine);
 // }
 
-void adioswrite(double* iodata, int*arraysubsize, int* arraygsize, int* arraystart, int NDIM, MPI_Comm cartcomm,  char* IO_ENGINE, char* FILENAME)
+
+void adioswrite(double* iodata, size_t* localArray,	size_t* globalArray, size_t* arrayStart, int NDIM, MPI_Comm cartcomm, char *IO_ENGINE, char* FILENAME)
 {   
-    // count and offset matrices for individual ranks.  
     int                     i, nprocs, myrank, div, remainder, initial, final; 
-    size_t                  shape[NDIM], 
-                            count[NDIM], 
-                            start[NDIM]; 
 
     /* 
-    * Initialisations 
+    * Assert tests to check for negative values 
     */ 
-    
     for (i = 0; i < NDIM; i++)
     {
-        shape[i] = arraygsize[i]; 
-        count[i] = arraysubsize[i]; 
-        start[i] = arraystart[i]; 
+			assert(localArray[i]  > 0); 
+			assert(globalArray[i] > 0); 
     }
+
     MPI_Comm_size(cartcomm, &nprocs);
     MPI_Comm_rank(cartcomm, &myrank);
 
-    /*
-    shape[0] is divided between different ranks, the 
-    rest of the dimensions are same for all ranks 
-    */
-
-
-    // shape[0] *= nprocs;
-    // start[0] = myrank * n1;
-
-    //adios2_adios *adios = adios2_init_config(config_file, 1); // cartcomm); // if using ADIOS2 MPI, need to include debugger. 
-    //adios2_adios *adios = adios2_init_config(config_file, cartcomm, 1); // cartcomm); // if using ADIOS2 MPI, need to include debugger. 
     adios2_adios *adios = adios2_init_config_mpi(config_file, cartcomm); // cartcomm); // if using ADIOS2 MPI, need to include debugger. 
     adios2_io *io = adios2_declare_io(adios, IO_ENGINE); //IO handler declaration
     
-    /*
-    * constant_dims true variables constant, false variables can change after definition. For every rank this should be true.
-    * shape is global dimension
-    * start is local offset 
-    * count is local dimension
-    */
-
     adios2_variable *var_iodata = adios2_define_variable(io, "iodata", adios2_type_double, NDIM,
-                                                         shape, start, count, adios2_constant_dims_true); 
+                                                         globalArray, arrayStart, localArray, adios2_constant_dims_true); 
 
     adios2_engine *engine = adios2_open(io, FILENAME, adios2_mode_write);
     adios2_step_status status; 

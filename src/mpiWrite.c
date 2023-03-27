@@ -46,7 +46,6 @@ void mpiiowrite(double* iodata, size_t* localArraySize,	size_t* globalArraySize,
 		arrayStart[i] = (int)arrayStartSize[i]; 
 		assert(localArray[i] > 0); 
 		assert(globalArray[i] > 0); 
-		assert(arrayStart[i] > 0); 
 	}
 
 #ifndef NDEBUG   
