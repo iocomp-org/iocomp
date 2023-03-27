@@ -7,7 +7,8 @@
 #include "../include/iocomp.h"
 
 /*
- * Purpose: 
+ * Purpose: define local, global, offsets for data for particular rank 
+ * Then send this to the different I/O libraries. 
  */ 
 void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 {

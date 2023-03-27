@@ -34,13 +34,16 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 #endif
 
 	/*
-	 * Local and global sizes are initialised based on the assumption that 
-	 * localDataSize can be divisible by NDIM 
+	 * Local and global sizes are initialised 
+	 * if NDIM = 2, then localDataSize 64 gives array of 8,8
 	 */ 
+	float power = (float)1/iocompParams->NDIM; 
 	for (i = 0; i < iocompParams->NDIM; i++)
 	{
-		iocompParams->localSize[i]	= (int)iocompParams->localDataSize/iocompParams->NDIM; 
-		iocompParams->globalSize[i] = (int)iocompParams->localDataSize/iocompParams->NDIM; 
+		//iocompParams->localSize[i]	= (int)sqrt(iocompParams->localDataSize); 
+		//iocompParams->globalSize[i]	= (int)sqrt(iocompParams->localDataSize); 
+		iocompParams->localSize[i]	= (int)pow(iocompParams->localDataSize,power); 
+		iocompParams->globalSize[i]	= iocompParams->localSize[i]; 
 	}
 
 	/*

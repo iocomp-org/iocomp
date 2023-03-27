@@ -7,14 +7,6 @@
 
 #define fullNode 256 
 
-//void mpi_error_check(int ierr)
-//{
-//	if (ierr != MPI_SUCCESS)
-//	{
-//		printf("MPI call fails \n"); 
-//	}
-//}
-
 /*
  * Initialises the library 
  */
