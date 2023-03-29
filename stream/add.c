@@ -18,7 +18,6 @@ void add(struct iocomp_params *iocompParams, struct stream_params* streamParams,
 	{
 		c[i] = a[i] + b[i]; 
 #ifdef MPI_TESTS
-		printf("mpi tests"); 
 		streamParams->mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE]); 
 		if(k>0) // need to wait for at least one occurance of triad
 		{

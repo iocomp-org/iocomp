@@ -19,7 +19,6 @@ void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams
 #ifdef MPI_TESTS
 		if(k>0) // need to wait for at least 1 iteration
 		{
-			printf("copy calling mpi tests \n"); 
 			streamParams->mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]);
 			streamParams->mpiWaitFlag[SCALE] = dataSendTest(iocompParams,&streamParams->requestArray[SCALE]);
 		} 
