@@ -65,6 +65,8 @@ size_t localDataSize;
 MPI_Datatype dataType; 
 // filenames 
 char *FILENAMES[5]; 
+// adios2 object 
+adios2_adios *adios;  
 }; 
 extern struct iocomp_params iocompParams; 
 

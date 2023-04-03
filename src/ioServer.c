@@ -41,9 +41,10 @@ void ioServer(struct iocomp_params *iocompParams)
 	/*
 	 * initialise recv array 
 	 * previousCount to prevent repeated mallocs 
+	 * set to -1 meaning no prior mallocing 
 	 */ 
 	double* recv = NULL; 
-	int previousCount = 0; 
+	int previousCount = -1; 
 
 	/*
 	 * Check for ghost messages, for ever loop activated
@@ -79,12 +80,19 @@ void ioServer(struct iocomp_params *iocompParams)
 		 */ 
 		else if(test_count>0)
 		{
-			// has it been initialised before?
 			if(test_count != previousCount) 
 			{
-				// initialise recv array 
 				iocompParams->localDataSize = test_count; 
 				assert(iocompParams->localDataSize>0); // check for negative values 
+				/*
+				 * if recv has been allocated previously 
+				 * clear memory then reallocate 
+				 */
+				if(previousCount == -1)
+				{
+					free(recv);
+					recv = NULL; 
+				} 
 				recv = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 				malloc_check(recv); 
 				previousCount = test_count;  
