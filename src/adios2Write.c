@@ -7,7 +7,7 @@
 #include "../include/iocomp.h"
 
 
-void adioswrite(double* iodata, size_t* localArray,	size_t* globalArray, size_t* arrayStart, int NDIM, MPI_Comm cartcomm, char *IO_ENGINE, char* FILENAME)
+void adioswrite(double* iodata, size_t* localArray,	size_t* globalArray, size_t* arrayStart, int NDIM, MPI_Comm cartcomm, char* FILENAME, struct iocomp_params *iocompParams)
 {   
     int                     i, nprocs, myrank, div, remainder, initial, final; 
 
@@ -24,9 +24,8 @@ void adioswrite(double* iodata, size_t* localArray,	size_t* globalArray, size_t*
     MPI_Comm_rank(cartcomm, &myrank);
 
     //adios2_adios *adios = adios2_init_config_mpi(config_file, cartcomm); // cartcomm); // if using ADIOS2 MPI, need to include debugger. 
-		
-    adios2_io *io = adios2_declare_io(iocompParams->adios, IO_ENGINE); //IO handler declaration
-    // adios2_io *io = adios2_at_io(adios, IO_ENGINE); //IO handler find
+			
+    adios2_io *io = adios2_at_io(iocompParams->adios, iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler find
     
     adios2_variable *var_iodata = adios2_define_variable(io, "iodata", adios2_type_double, NDIM,
                                                          globalArray, arrayStart, localArray, adios2_constant_dims_true); 
@@ -37,5 +36,4 @@ void adioswrite(double* iodata, size_t* localArray,	size_t* globalArray, size_t*
     adios2_put(engine, var_iodata, iodata, adios2_mode_deferred);
     adios2_end_step(engine);
     adios2_close(engine);
-    adios2_finalize(adios); 
 }

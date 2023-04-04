@@ -70,6 +70,8 @@ MPI_Datatype dataType;
 char *FILENAMES[5]; 
 // adios2 object 
 adios2_adios *adios;  
+// adios2 config file list 
+char *ADIOS2_IOENGINES[3]; 
 }; 
 extern struct iocomp_params iocompParams; 
 
@@ -99,7 +101,7 @@ void free_check(double* test);
 */ 
 void phdf5write(double* iodata, size_t* localArray,	size_t* globalArray, size_t* arrayStart, int NDIM, MPI_Comm cartcomm, char* FILENAME);  
 void mpiiowrite(double* iodata, size_t* localArray,	size_t* globalArray, size_t* arrayStart, int NDIM, MPI_Comm cartcomm, char* FILENAME, MPI_Datatype dataType);  
-void adioswrite(double* iodata, size_t* localArray,	size_t* globalArray, size_t* arrayStart, int NDIM, MPI_Comm cartcomm, char *IOENGINE, char* FILENAME); 
+void adioswrite(double* iodata, size_t* localArray,	size_t* globalArray, size_t* arrayStart, int NDIM, MPI_Comm cartcomm, char* FILENAME, struct iocomp_params *iocompParams); 
 #ifdef __cplusplus
 }
 #endif 

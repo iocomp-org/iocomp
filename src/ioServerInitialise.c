@@ -54,13 +54,21 @@ void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum)
 #endif
 
 	/*
+	 * Initialise adios2 engines list  
+	 */ 
+	iocompParams->ADIOS2_IOENGINES[0] = "HDF5"; 
+	iocompParams->ADIOS2_IOENGINES[1] = "BP4"; 
+	iocompParams->ADIOS2_IOENGINES[2] = "BP5";
+
+	/*
 	 * adios2 object declared before loop entered
 	 * only when ioLib chosen is adios2 and one of its engines 
 	 */ 
-	iocompParams->adios = adios2_init_config_mpi(config_file, cartcomm); // cartcomm); // if using ADIOS2 MPI, need to include debugger. 
+	//iocompParams->adios = adios2_init_config_mpi(config_file, cartcomm); // cartcomm); // if using ADIOS2 MPI, need to include debugger. 
 	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
 	{
 		iocompParams->adios = adios2_init_config_mpi(config_file, iocompParams->cartcomm); 
+    adios2_io *io = adios2_declare_io(iocompParams->adios, iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler declaration
 	} 
 
 	if(iocompParams->hyperthreadFlag)
@@ -74,6 +82,10 @@ void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum)
 #ifndef NDEBUG
 			printf("ioServerInitialise -> After ioServer\n"); 
 #endif
+			if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
+			{
+				adios2_finalize(iocompParams->adios); 
+			} 
 			MPI_Finalize(); 
 
 #ifndef NDEBUG

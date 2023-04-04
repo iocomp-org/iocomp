@@ -93,34 +93,34 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
-			adioswrite(iodata, iocompParams->localArray, iocompParams->globalArray, iocompParams->arrayStart, iocompParams->NDIM, iocompParams->cartcomm, "HDF5", iocompParams->FILENAMES[iocompParams->ioLibNum]);
+			adioswrite(iodata, iocompParams->localArray, iocompParams->globalArray, iocompParams->arrayStart, iocompParams->NDIM, iocompParams->cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum], iocompParams);
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 #endif 
 		break; 
 	
-		case 3: 
-#ifdef IOCOMP_TIMERS
-			if (!ioRank) {timerStart = MPI_Wtime();} 
-#endif 
-			adioswrite(iodata, iocompParams->localArray, iocompParams->globalArray, iocompParams->arrayStart, iocompParams->NDIM, iocompParams->cartcomm, "BP4", iocompParams->FILENAMES[iocompParams->ioLibNum]);
-#ifdef IOCOMP_TIMERS
-			MPI_Barrier(comm);
-			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
-#endif 
-		break;
-
-		case 4: 
-#ifdef IOCOMP_TIMERS
-			if (!ioRank) {timerStart = MPI_Wtime();} 
-#endif 
-			adioswrite(iodata, iocompParams->localArray, iocompParams->globalArray, iocompParams->arrayStart, iocompParams->NDIM, iocompParams->cartcomm, "BP5", iocompParams->FILENAMES[iocompParams->ioLibNum] );
-#ifdef IOCOMP_TIMERS
-			MPI_Barrier(comm);
-			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
-#endif 
-		break; 
+//		case 3: 
+//#ifdef IOCOMP_TIMERS
+//			if (!ioRank) {timerStart = MPI_Wtime();} 
+//#endif 
+//			adioswrite(iodata, iocompParams->localArray, iocompParams->globalArray, iocompParams->arrayStart, iocompParams->NDIM, iocompParams->cartcomm, "BP4", iocompParams->FILENAMES[iocompParams->ioLibNum]);
+//#ifdef IOCOMP_TIMERS
+//			MPI_Barrier(comm);
+//			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
+//#endif 
+//		break;
+//
+//		case 4: 
+//#ifdef IOCOMP_TIMERS
+//			if (!ioRank) {timerStart = MPI_Wtime();} 
+//#endif 
+//			adioswrite(iodata, iocompParams->localArray, iocompParams->globalArray, iocompParams->arrayStart, iocompParams->NDIM, iocompParams->cartcomm, "BP5", iocompParams->FILENAMES[iocompParams->ioLibNum] );
+//#ifdef IOCOMP_TIMERS
+//			MPI_Barrier(comm);
+//			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
+//#endif 
+//		break; 
 
 		default:
 			printf("Invalid I/O library number \n"); 
