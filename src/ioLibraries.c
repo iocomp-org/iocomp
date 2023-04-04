@@ -20,29 +20,13 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	iocompParams->NDIM = NUM_DIM; 
 	int coords[iocompParams->NDIM], periods[iocompParams->NDIM],dims_mpi[iocompParams->NDIM];
 	
-	MPI_Comm comm;
-	/* 
-	 * if hyperthread activated, only serverComm is used to calculate rank etc 
-	 */ 
-	if(iocompParams->hyperthreadFlag)
-	{
-		comm = iocompParams->ioServerComm; 
-	}
-	/* 
-	 * if hyperthread not activated, globalComm is used to calculate rank etc. 
-	 */ 
-	else
-	{
-		comm = iocompParams->globalComm; 
-	}
-
-	MPI_Comm_size(comm, &ioSize);
-	MPI_Comm_rank(comm, &ioRank);
+	MPI_Comm_size(iocompParams->ioServerComm, &ioSize);
+	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
 
 	/*
 	 * define local size, global size, array offsets for ioLibraries 
 	 */ 
-	arrayParamsInit(iocompParams,comm); 
+	arrayParamsInit(iocompParams,iocompParams->ioServerComm); 
 
 	/*	
 	 * Initiliase filename 
@@ -58,7 +42,9 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 
 	double start, end; // timer variables
 
-	MPI_Barrier(comm);
+#ifdef IOCOMP_TIMERS
+	MPI_Barrier(iocompParams->ioServerComm);
+#endif 
 	double timerStart = 0.0; 
 	
 #ifndef NDEBUG
