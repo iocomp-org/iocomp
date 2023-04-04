@@ -19,6 +19,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 
 	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
 	iocompParams->NDIM = NUM_DIM; // set number of dimensions
+	iocompParams->ioLibNum = ioLibNum; // set selection of I/O library 
 
 	/*
 	 * comm split splits communicators in 2, assigns colour to ranks
@@ -30,26 +31,46 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #endif
 
 	/*
-	 * iocomp function that sends data to ioServer if flag is true
-	 * if not then its a dead send 
+	 * If HT flag is on, then called by io server, if HT flag off then called by
+	 * every process. This is because only ioServers have access to ioServerComm.
+	 * ioServerInitialise initialises cartesian communicator and adios2 objects,
+	 * and sets up other I/O related variables.
 	 */ 
-	ioServerInitialise(iocompParams, ioLibNum); 
+	if(!iocompParams->hyperthreadFlag || iocompParams->colour==ioColour) 
+	{
+		ioServerInitialise(iocompParams); 
+	} 
+
+	if(iocompParams->hyperthreadFlag)
+	{
+		/*
+		 * ioServer recieves data if HT flag is true
+		 * and finalises adios2 object 
+		 * after finishing mpi finalizes and program exits. 
+		 */ 
+		if(iocompParams->colour == ioColour)
+		{
+#ifndef NDEBUG
+			printf("ioServerInitialise -> ioServer called\n"); 
+#endif
+			ioServer(iocompParams);
+#ifndef NDEBUG
+			printf("ioServerInitialise -> After ioServer\n"); 
+#endif
+			MPI_Finalize(); 
+#ifndef NDEBUG
+			printf("ioServerInitialise -> After finalize\n"); 
+#endif
+			exit(0); 
+		} 
+	}
 
 	/*
-	 * if HT flag is on, iocomp function returns the compute comm 
-	 * so that the user only works with the compute comm
+	 * Return comp server comm to compute processes if HT flag is on
 	 * but if HT flag is off, and there is no splitting, then the world comm 
 	 * is returned
 	 */ 
-	if(FLAG)
-	{
-		return(iocompParams->compServerComm); 
-	}
-	else
-	{
-		return(comm); 
-	}
-
+	return(iocompParams->compServerComm); 
 #ifndef NDEBUG
 	printf("iocomp_init -> end of function\n"); 
 #endif

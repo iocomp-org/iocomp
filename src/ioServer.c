@@ -40,7 +40,7 @@ void ioServer(struct iocomp_params *iocompParams)
 
 	/*
 	 * initialise recv array 
-	 * previousCount to prevent repeated mallocs 
+	 * check previousCount to prevent repeated mallocs 
 	 * set to -1 meaning no prior mallocing 
 	 */ 
 	double* recv = NULL; 
@@ -69,9 +69,16 @@ void ioServer(struct iocomp_params *iocompParams)
 			ierr = MPI_Recv(&ghost, 0, MPI_INT, source, tag,
 					iocompParams->globalComm,&status);
 			mpi_error_check(ierr); 
-			// free recv array 
+			/*
+			 * Stop send reached, so recv array will be freed
+			 * and adios2 object is finalised. 
+			 */ 
 			free(recv);
 			recv = NULL; 
+			if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
+			{
+				adios2_finalize(iocompParams->adios); 
+			} 
 			break; 
 		}
 
