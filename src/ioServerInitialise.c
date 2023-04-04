@@ -69,6 +69,19 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 #endif
 
 	/*
+	 * define local size, global size, array offsets for ioLibraries 
+	 */ 
+	arrayParamsInit(iocompParams,iocompParams->ioServerComm); 
+
+	/*	
+	 * Initiliase filename 
+	 */ 
+	iocompParams->FILENAMES[0] = "mpiio.dat"; 
+	iocompParams->FILENAMES[1] = "hdf5.h5"; 
+	iocompParams->FILENAMES[2] = "adios2.h5";
+	iocompParams->FILENAMES[3] = "adios2.bp4";
+	iocompParams->FILENAMES[4] = "adios2.bp5"; 
+	/*
 	 * Initialise adios2 engines list  
 	 */ 
 	iocompParams->ADIOS2_IOENGINES[0] = "HDF5"; 
