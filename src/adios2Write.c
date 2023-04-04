@@ -17,6 +17,7 @@ void adioswrite(double* iodata, struct iocomp_params *iocompParams)
 		assert(localArray[i]  > 0); 
 		assert(globalArray[i] > 0); 
 	}
+	adios2_error errio; 
 
 	if(!iocompParams->previousInit) // check if declared before so that adios2 variable is not defined again. 
 	{
@@ -34,22 +35,31 @@ void adioswrite(double* iodata, struct iocomp_params *iocompParams)
 #endif
 
 	adios2_step_status status; 
-	adios2_begin_step(engine, adios2_step_mode_update, 10.0, &status);   
+	errio = adios2_begin_step(engine, adios2_step_mode_update, 10.0, &status);   
 #ifndef NDEBUG
 	printf("adios2Write->begin step \n");
 #endif
 
-	adios2_put(engine,iocompParams->var_iodata, iodata, adios2_mode_deferred);
+	errio = adios2_put(engine,iocompParams->var_iodata, iodata, adios2_mode_deferred);
+	mpi_error_check(errio); 
 #ifndef NDEBUG
 	printf("adios2Write->writing completed \n");
 #endif
 
-	adios2_end_step(engine);
+	errio = adios2_end_step(engine);
+	mpi_error_check(errio); 
 #ifndef NDEBUG
 	printf("adios2Write->end step\n");
-#endif
+#endif	
 
-	adios2_close(engine);
+	errio = adios2_flush_all(iocompParams->adios); 
+	mpi_error_check(errio); 
+#ifndef NDEBUG
+	printf("adios2Write->flush I/O engine\n");
+#endif	
+
+	errio = adios2_close(engine);
+	mpi_error_check(errio); 
 #ifndef NDEBUG
 	printf("adios2Write->engine closed \n");
 #endif
