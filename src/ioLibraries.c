@@ -39,11 +39,6 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	printf("ioLibraries -> initialise filenames \n");
 #endif
 
-	double start, end; // timer variables
-
-#ifdef IOCOMP_TIMERS
-	MPI_Barrier(iocompParams->ioServerComm);
-#endif 
 	double timerStart = 0.0; 
 	
 #ifndef NDEBUG
@@ -111,7 +106,6 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 			printf("Invalid I/O library number \n"); 
 			break; 
 	} 
-		
 #ifndef NDEBUG
 	printf("ioLibraries -> end of switch for IO libraries\n");
 #endif
@@ -122,10 +116,6 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 		double fileSize = iocompParams->globalDataSize*sizeof(double)/(pow(10,9)); 
 		printf("** I/O write time=%lf filesize(GB)=%lf\n", writeTime,fileSize) ; 
 	} 
-#endif
-
-#ifndef NDEBUG
-	printf("ioLibraries -> Timing function ended  \n");
 #endif
 }
 

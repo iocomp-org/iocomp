@@ -115,7 +115,6 @@ void ioServer(struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 			printf("ioServer -> Recv data coming from rank %i \n",source ); 
 			//for(i = 0; i < (int)iocompParams->localDataSize; i++) { printf("%lf ",recv[i]); }
-			// init size in each dimension to be n. For ex. NDIM = 2 will reslt in n x n }
 #endif
 
 			/*
