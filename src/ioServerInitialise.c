@@ -83,8 +83,13 @@ void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum)
 	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
 	{
 		iocompParams->adios = adios2_init_config_mpi(config_file, iocompParams->cartcomm); 
-    adios2_io *io = adios2_declare_io(iocompParams->adios, iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler declaration
+    iocompParams->io = adios2_declare_io(iocompParams->adios, iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler declaration
 	} 
+
+	/*
+	 * Initialise previous flag
+	 */ 
+	iocompParams->previousInit = 0;  
 
 	if(iocompParams->hyperthreadFlag)
 	{
