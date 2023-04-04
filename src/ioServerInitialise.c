@@ -21,34 +21,49 @@ void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum)
 #endif
 
 	/*
-	 * Single initialisation of I/O things 
+	 * Initialisations for MPI cartesian communicator 
 	 */ 
 	int dims_mpi[iocompParams->NDIM]; 		
 	int periods[iocompParams->NDIM]; 		
 	int coords[iocompParams->NDIM]; 		
 	double writeTime = 0.0; 
+	for (int j = 0; j < iocompParams->NDIM; j++)
+	{
+		dims_mpi[j] = 0;
+		periods[j] = 0;
+		coords[j] = 0;
+	}
 	
-	int ioSize, ioRank; 
+	/*
+	 * MPI ranks and size 
+	 */ 
+	int ioSize, ioRank, ierr; 
 	int reorder = 0; 
-	MPI_Comm_size(iocompParams->ioServerComm, &ioSize); 
-	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
-	/* new communicator to which topology information is added */
-	// MPI_Comm cartcomm;
+	ierr = MPI_Comm_size(iocompParams->ioServerComm, &ioSize); 
+	mpi_error_check(ierr); 
+	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
+	mpi_error_check(ierr); 
 #ifndef NDEBUG
-	printf("ioLibraries -> MPI new cartcomm \n");
+	printf("ioServerInitialise -> MPI size and rank \n");
 #endif
 
-	MPI_Dims_create(ioSize, iocompParams->NDIM, dims_mpi);
+	/* 
+	 * new communicator to which topology information is added 
+	 */ 
+	ierr = MPI_Dims_create(ioSize, iocompParams->NDIM, dims_mpi);
+	mpi_error_check(ierr); 
 #ifndef NDEBUG
 	printf("ioLibraries -> MPI dims create \n");
 #endif
 
-	MPI_Cart_create(iocompParams->ioServerComm, iocompParams->NDIM, dims_mpi, periods, reorder, &iocompParams->cartcomm); // comm;
+	ierr = MPI_Cart_create(iocompParams->ioServerComm, iocompParams->NDIM, dims_mpi, periods, reorder, &iocompParams->cartcomm); // comm;
+	mpi_error_check(ierr); 
 #ifndef NDEBUG
 	printf("ioLibraries -> MPI cart create  \n");
 #endif
 
-	MPI_Cart_coords(iocompParams->cartcomm, ioRank, iocompParams->NDIM, coords);
+	ierr = MPI_Cart_coords(iocompParams->cartcomm, ioRank, iocompParams->NDIM, coords);
+	mpi_error_check(ierr); 
 #ifndef NDEBUG
 	printf("ioLibraries -> MPI cart coords \n");
 #endif
