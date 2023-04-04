@@ -72,6 +72,12 @@ char *FILENAMES[5];
 adios2_adios *adios;  
 // adios2 config file list 
 char *ADIOS2_IOENGINES[3]; 
+// adios2 io object 
+adios2_io* io; 
+// adios2 variable object 
+adios2_variable *var_iodata; 
+// previously initialised counter 
+int previousInit; 
 }; 
 extern struct iocomp_params iocompParams; 
 
