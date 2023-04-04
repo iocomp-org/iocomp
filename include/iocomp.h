@@ -9,6 +9,8 @@ extern "C" {
 #include <stddef.h>
 #include <stdlib.h>
 #include <assert.h>  
+#include <adios2_c.h>
+#include <adios2/c/adios2_c_types.h>
 
 #define ioColour 0
 #define compColour 1 
@@ -44,6 +46,7 @@ MPI_Comm globalComm;
 MPI_Comm ioServerComm; 
 MPI_Comm compServerComm; 
 MPI_Comm interComm; 
+MPI_Comm cartcomm; 
 // sizes and ranks
 bool hyperthreadFlag;  
 int colour; 
