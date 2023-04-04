@@ -17,11 +17,11 @@ void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum)
 {
 	iocompParams->ioLibNum = ioLibNum; 
 #ifndef NDEBUG
-			printf("ioServerInitialise -> start with flag %i \n", iocompParams->hyperthreadFlag); 
+	printf("ioServerInitialise -> start with flag %i \n", iocompParams->hyperthreadFlag); 
 #endif
-	
+
 	/*
-	 * if HT flag is on, cartcomm only created by ioServer as only they have
+	 * if HT flag is on, cartcomm should be created by ioServer as only they have
 	 * access to ioServerComm 
 	 * if HT flag is off, then cartcomm created by every rank 
 	 */ 
@@ -40,7 +40,7 @@ void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum)
 			periods[j] = 0;
 			coords[j] = 0;
 		}
-			
+
 		/*
 		 * MPI ranks and size 
 		 */ 
@@ -50,30 +50,30 @@ void ioServerInitialise(struct iocomp_params *iocompParams, int ioLibNum)
 		mpi_error_check(ierr); 
 		ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 		mpi_error_check(ierr); 
-	#ifndef NDEBUG
+#ifndef NDEBUG
 		printf("ioServerInitialise -> MPI size %i and rank %i \n", ioSize, ioRank);
-	#endif
+#endif
 
 		/* 
 		 * new communicator to which topology information is added 
 		 */ 
 		ierr = MPI_Dims_create(ioSize, iocompParams->NDIM, dims_mpi);
 		mpi_error_check(ierr); 
-	#ifndef NDEBUG
+#ifndef NDEBUG
 		printf("ioServerInitialise-> MPI dims create \n");
-	#endif
+#endif
 
 		ierr = MPI_Cart_create(iocompParams->ioServerComm, iocompParams->NDIM, dims_mpi, periods, reorder, &iocompParams->cartcomm); // comm;
 		mpi_error_check(ierr); 
-	#ifndef NDEBUG
+#ifndef NDEBUG
 		printf("ioServerInitialise -> MPI cart create  \n");
-	#endif
+#endif
 
 		ierr = MPI_Cart_coords(iocompParams->cartcomm, ioRank, iocompParams->NDIM, coords);
 		mpi_error_check(ierr); 
-	#ifndef NDEBUG
+#ifndef NDEBUG
 		printf("ioServerInitialise -> MPI cart coords \n");
-	#endif
+#endif
 
 		/*
 		 * Initialise adios2 engines list  

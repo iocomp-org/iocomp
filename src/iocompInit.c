@@ -18,6 +18,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #endif
 
 	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
+	iocompParams->NDIM = NUM_DIM; // set number of dimensions
 
 	/*
 	 * comm split splits communicators in 2, assigns colour to ranks
