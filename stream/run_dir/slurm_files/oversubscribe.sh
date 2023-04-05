@@ -23,7 +23,11 @@ end=$((${END_CORES}-1))
 vals=($(seq 0 1 $(eval echo ${end})))
 bar=$(IFS=, ; echo "${vals[*]}")
 
+if (( ${MAP} == 1  )); then 
 srun --hint=nomultithread --distribution=block:block --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} --overcommit ${EXE} --HT --size ${SIZE} --io ${IO} > test.out
+else 
+srun --hint=nomultithread --distribution=block:block --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} --overcommit ${EXE} --HT --size ${SIZE} --io ${IO} > test.out
+fi 
 
 echo "JOB ID"  $SLURM_JOBID >> test.out
 echo "JOB NAME" ${SLURM_JOB_NAME} >> test.out

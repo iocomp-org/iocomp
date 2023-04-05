@@ -7,7 +7,7 @@
 #SBATCH --account=e609
 #SBATCH --partition=standard 
 #SBATCH --qos=lowpriority
-#SBATCH --array=0-2
+##SBATCH --array=0-2
 
 module swap PrgEnv-cray/8.0.0 PrgEnv-gnu
 module load cmake 
@@ -26,6 +26,7 @@ export ADIOS2_DIR=/work/e609/e609/shr203/opt/gnu/8.0.0/ADIOS2
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ADIOS2_DIR}/lib64:${IOCOMP_DIR}/lib
 export EXE=${IOCOMP_DIR}/stream/test
 export CONFIG=${SLURM_SUBMIT_DIR}/config.xml 
+export MAP=0
 
 # Make new directory 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
@@ -40,7 +41,7 @@ echo "Job started " $(date +"%T") # start time
 
 for IO in {0..0}
 do 
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1/25March/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
+  export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1.1/noMPITest/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
 
   # Case 1 
   source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
