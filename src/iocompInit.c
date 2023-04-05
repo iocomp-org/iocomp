@@ -44,15 +44,12 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 		ioServerInitialise(iocompParams); 
 	} 
 
-	if(iocompParams->hyperthreadFlag)
+	/*
+	 * If HT flag is on and process is ioserver then ioServer recieves data
+	 * and finalises adios2 object & mpi finalizes and program exits. 
+	 */ 
+	if(iocompParams->hyperthreadFlag && iocompParams->colour == ioColour)
 	{
-		/*
-		 * ioServer recieves data if HT flag is true
-		 * and finalises adios2 object 
-		 * after finishing mpi finalizes and program exits. 
-		 */ 
-		if(iocompParams->colour == ioColour)
-		{
 #ifndef NDEBUG
 			printf("ioServerInitialise -> ioServer called\n"); 
 #endif
@@ -65,7 +62,6 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 			printf("ioServerInitialise -> After finalize\n"); 
 #endif
 			exit(0); 
-		} 
 	}
 
 	/*
