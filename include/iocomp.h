@@ -55,10 +55,12 @@ int ioServerRank;
 int compServerRank;
 int ioServerSize; 
 int compServerSize;
+
 // for data_output function 
 double writeTime; 
 char ioLibs[ioLibCount][100]; 
 int ioLibNum; // select ioLib 
+
 // for io_libraries function 
 int NDIM; 
 size_t* localArray; 
@@ -67,6 +69,7 @@ size_t* globalArray;
 size_t globalDataSize; 
 size_t localDataSize; 
 MPI_Datatype dataType; 
+
 // filenames 
 char *FILENAMES[5]; 
 // adios2 object 
@@ -77,8 +80,8 @@ char *ADIOS2_IOENGINES[3];
 adios2_io* io; 
 // adios2 variable object 
 adios2_variable *var_iodata; 
-// previously initialised counter 
-int previousInit; 
+int previousInit; // previously initialised counter 
+int previousCount; // previous element count 
 }; 
 extern struct iocomp_params iocompParams; 
 

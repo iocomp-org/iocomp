@@ -12,7 +12,15 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 	int			dims[iocompParams->NDIM],
 					coords[iocompParams->NDIM], 
 					periods[iocompParams->NDIM]; 
-#ifndef NDEBUG   
+	
+	// initialise dims, periods and coords
+	for(i = 0; i < iocompParams->NDIM; i++)
+	{
+		dims[i] = 0; 
+		coords[i] = 0; 
+		periods[i] = 0; 
+	}
+#ifndef NDEBUG  
 	printf("mpiWrite -> MPI variables init completed with NDIM %i\n", iocompParams->NDIM); 
 #endif 
 
@@ -25,13 +33,19 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 	mpi_error_check(ierr); 
 	ierr = MPI_Comm_rank(iocompParams->cartcomm, &myrank);
 	mpi_error_check(ierr); 
+#ifndef NDEBUG   
+	printf("mpiWrite -> MPI rank %i and size %i \n", myrank, nprocs); 
+#endif 
 	ierr = MPI_Cart_get(iocompParams->cartcomm, iocompParams->NDIM, dims, periods, coords); 
 	mpi_error_check(ierr); 
+#ifndef NDEBUG   
+	printf("mpiWrite -> MPI cartget \n"); 
+#endif 
 	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum],
 			MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   
-	printf("mpiWrite -> MPI communicator information to fill dims, periods and coords\n"); 
+	printf("mpiWrite -> MPI file open\n"); 
 #endif 
 
 	// Initialise int arrays for MPIIO 

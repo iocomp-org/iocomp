@@ -42,9 +42,17 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 	else
 	{
 		/*
-		 * define array local size
+		 * For HT off, IF not previously initialised OR if element count is different than 
+		 * last time, then define array local size and other I/O parameters such as array 
+		 * start, local size, global size using arrayParamsInit 
 		 */ 
-		iocompParams->localDataSize = localDataSize; 
+		iocompParams->localDataSize = localDataSize;
+		if(!iocompParams->previousInit || iocompParams->previousCount!=(int)localDataSize)
+		{
+			arrayParamsInit(iocompParams,iocompParams->ioServerComm); 
+			iocompParams->previousInit = 1; 
+			iocompParams->previousCount = localDataSize; 
+		}
 #ifndef NDEBUG
 		printf("dataSend -> Hyperthread flag deactivated, go to ioLibraries with localDataSize %ld \n", localDataSize); 
 #endif
