@@ -9,20 +9,19 @@
 void stopSend(struct iocomp_params *iocompParams)
 {
 
-	int i, ierr; 
 #ifndef NDEBUG
 	printf("stopSend -> starts \n"); 
 #endif
 
 	if(iocompParams->hyperthreadFlag) // check if flag is true? 
 	{
+		int ierr; 
 #ifndef NDEBUG
 		printf("stopSend -> HT flag \n"); 
 #endif
 		int globalRank; 
 		ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank);
 		mpi_error_check(ierr); 
-		MPI_Request request;
 
 #ifndef NDEBUG
 		printf("stopSend -> globalRank \n"); 

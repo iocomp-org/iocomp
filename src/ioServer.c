@@ -11,16 +11,12 @@ void ioServer(struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 	printf("ioServer -> started\n"); 
 #endif
-	int i, ierr, ioRank; 
-	double timerStart, timerEnd; 
-	timerStart = timerEnd = 0.0; 
+	int ierr, ioRank; 
 
 	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 	mpi_error_check(ierr); 
 
 	MPI_Status status;
-	MPI_Request request; 
-	MPI_Info info;  
 
 	/*
 	 * Recieving data starts using interComm
@@ -34,7 +30,6 @@ void ioServer(struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 	printf("ioServer -> Recieving data starts from source rank %i \n", source); 
 #endif
-	int test_probe; 
 	int test_count = 1; 
 	int iter = 0; 
 

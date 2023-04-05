@@ -13,31 +13,23 @@
 void phdf5write(double* iodata, struct iocomp_params *iocompParams)
 {   
     // Variable initialisation
-    int             i, ierr, rank, size, initialized, 
-                    dims[iocompParams->NDIM],
-                    coords[iocompParams->NDIM], 
-                    periods[iocompParams->NDIM]; 
     char            dsetname[100] = "IntArray";
-
     // HDF5 initialisations
     hid_t           file_id, // file identifier
                     dset_id, // dataset identifier 
                     filespace, // dataspace identifier in file 
                     memspace, // dataspace identifier in memory
-                    plist_id, // property list identifier 
-                    xf_id; 
+                    plist_id;  // property list identifier 
     hsize_t         count[iocompParams->NDIM], 
                     offset[iocompParams->NDIM],
-                    dimsf[iocompParams->NDIM],   // specifies the dimensions of dataset, dimsf[0] number of rows, dimsf[1] number of columns, dimsf[2] so on..
-                    maxdims[iocompParams->NDIM], // to specify maximum dimensions. 
-                    block[iocompParams->NDIM]; // block array determines size of element blcok selected from dataspace. 
-    herr_t          status;
+                    dimsf[iocompParams->NDIM];   // specifies the dimensions of dataset, dimsf[0] number of rows, dimsf[1] number of columns, dimsf[2] so on..
 
 #ifndef NDEBUG
     printf("inits \n"); 
 #endif
 
-    status = H5open();
+    herr_t status = H5open();
+		mpi_error_check(status); 
 
 #ifndef NDEBUG
     printf("After H5open\n"); 
@@ -48,7 +40,7 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams)
     * Initialisations from arrays passed in the function 
     */ 
 
-    for (i = 0; i < iocompParams->NDIM; i++)
+    for (int i = 0; i < iocompParams->NDIM; i++)
     {
         dimsf[i] = (int)iocompParams->globalArray[i]; 
         count[i] = (int)iocompParams->localArray[i]; 

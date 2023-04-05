@@ -8,11 +8,10 @@
 void dataWait(struct iocomp_params *iocompParams,MPI_Request *request)
 {
 
-	int i, ierr; 
-
 	if(iocompParams->hyperthreadFlag) // only implement if HT flag switched on 
 	{
-		MPI_Wait(request, MPI_STATUS_IGNORE); // wait for the data to be sent from previous dataSend  
+		int ierr = MPI_Wait(request, MPI_STATUS_IGNORE); // wait for the data to be sent from previous dataSend 
+		mpi_error_check(ierr); 
 #ifndef NDEBUG
 		printf("dataWait -> MPI wait activated\n"); 
 #endif

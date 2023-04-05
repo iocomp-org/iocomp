@@ -30,7 +30,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 	{
 		int ordering; // defines how IO and compute threads are going to organised 
 		ordering = HIGH_LOW; 
-		int globalRank, globalSize, i;
+		int globalRank, globalSize; 
 		MPI_Comm splitComm; 
 		ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
 		mpi_error_check(ierr); 

@@ -25,7 +25,6 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	int dims_mpi[iocompParams->NDIM]; 		
 	int periods[iocompParams->NDIM]; 		
 	int coords[iocompParams->NDIM]; 		
-	double writeTime = 0.0; 
 	for (int j = 0; j < iocompParams->NDIM; j++)
 	{
 		dims_mpi[j] = 0;

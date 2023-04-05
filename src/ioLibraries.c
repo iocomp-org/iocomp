@@ -15,19 +15,14 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 	printf("ioLibraries -> start\n");
 #endif
-	int reorder = 0; 
 	int ioSize, ioRank;
-	int coords[iocompParams->NDIM], periods[iocompParams->NDIM],dims_mpi[iocompParams->NDIM];
 	
 	MPI_Comm_size(iocompParams->ioServerComm, &ioSize);
 	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
-
 #ifndef NDEBUG
 	printf("ioLibraries -> initialise filenames \n");
 #endif
 
-	double timerStart = 0.0; 
-	
 #ifndef NDEBUG
 	printf("ioLibraries -> Pass off to I/O libraries with ioLibNum %i  \n", iocompParams->ioLibNum);
 #endif
@@ -36,6 +31,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 
 		case 0:
 #ifdef IOCOMP_TIMERS
+			double timerStart; 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
 			mpiiowrite(iodata, iocompParams);

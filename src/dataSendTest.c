@@ -8,12 +8,12 @@
 int dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request)
 {
 
-	int i, ierr; 
-	int mpiWaitFlag; 
 
 	if(iocompParams->hyperthreadFlag) // only implement if HT flag switched on 
 	{
-			MPI_Test(request,&mpiWaitFlag,MPI_STATUS_IGNORE); // MPI test 
+			int mpiWaitFlag; 
+			int ierr = MPI_Test(request,&mpiWaitFlag,MPI_STATUS_IGNORE); // MPI test 
+			mpi_error_check(ierr); 
 #ifndef NDEBUG
 		printf("MPI test\n"); 
 #endif

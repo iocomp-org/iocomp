@@ -7,36 +7,40 @@
 
 void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 {   
-	int			i, j, k, initialized, finalized,ierr, size, comm, rank, argc, nprocs, myrank, nints; 
+	int			i, ierr, nprocs, myrank; 
 
-	int			count[iocompParams->NDIM],
-					dims[iocompParams->NDIM],
+	int			dims[iocompParams->NDIM],
 					coords[iocompParams->NDIM], 
-					periods[iocompParams->NDIM],
-					order = 0, 
-					disp = 0; // number of bytes to be skipped from the start. ex headers. 
-
+					periods[iocompParams->NDIM]; 
 #ifndef NDEBUG   
-	printf("mpiWrite -> MPI variables init completed\n"); 
+	printf("mpiWrite -> MPI variables init completed with NDIM %i\n", iocompParams->NDIM); 
 #endif 
 
 	// MPI initialisations
 	MPI_File        fh; 
 	MPI_Status      status;
-	MPI_Datatype    filetype, mpi_subarray; 
+	MPI_Datatype    filetype; 
 
-	MPI_Comm_size(iocompParams->cartcomm, &nprocs);
-	MPI_Comm_rank(iocompParams->cartcomm, &myrank);
-	MPI_Cart_get(iocompParams->cartcomm, iocompParams->NDIM, dims, periods, coords); 
+	ierr = MPI_Comm_size(iocompParams->cartcomm, &nprocs);
+	mpi_error_check(ierr); 
+	ierr = MPI_Comm_rank(iocompParams->cartcomm, &myrank);
+	mpi_error_check(ierr); 
+	ierr = MPI_Cart_get(iocompParams->cartcomm, iocompParams->NDIM, dims, periods, coords); 
+	mpi_error_check(ierr); 
 	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum],
 			MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh); 
 	mpi_error_check(ierr); 
-	MPI_Info info  = MPI_INFO_NULL; 
+#ifndef NDEBUG   
+	printf("mpiWrite -> MPI communicator information to fill dims, periods and coords\n"); 
+#endif 
 
 	// Initialise int arrays for MPIIO 
 	int localArray[iocompParams->NDIM]; 
 	int globalArray[iocompParams->NDIM]; 
 	int arrayStart[iocompParams->NDIM]; 
+#ifndef NDEBUG   
+	printf("mpiWrite -> declare arrays in integers\n"); 
+#endif 
 	
 	for(i = 0; i < iocompParams->NDIM; i++)
 	{

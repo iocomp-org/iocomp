@@ -8,7 +8,7 @@
 void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize)
 {
 
-	int i, ierr; 
+	int ierr; 
 
 	iocompParams->localDataSize = localDataSize; // assign size of local array 
 

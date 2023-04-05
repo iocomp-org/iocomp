@@ -19,7 +19,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	printf("arrayParamsInit -> start \n"); 
 #endif
 
-	int ioSize,ioRank, ierr, i;
+	int ioSize,ioRank, i; 
 	MPI_Comm_size(comm, &ioSize);
 	MPI_Comm_rank(comm, &ioRank);
 	
