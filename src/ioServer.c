@@ -87,6 +87,13 @@ void ioServer(struct iocomp_params *iocompParams)
 		 */ 
 		else if(test_count>0)
 		{
+			/*
+			 * if the message length is different from last sending OR 
+			 * this is the first time message is sent.
+			 * in first case free the recv array and reinitialise with new
+			 * dimensions.
+			 * in second case, only initialise with new dimensions
+			 */ 
 			if(test_count != previousCount) 
 			{
 				iocompParams->localDataSize = test_count; 
@@ -95,11 +102,15 @@ void ioServer(struct iocomp_params *iocompParams)
 				 * if recv has been allocated previously 
 				 * clear memory then reallocate 
 				 */
-				if(previousCount == -1)
+				if(iocompParams->previousInit) 
 				{
 					free(recv);
 					recv = NULL; 
 				} 
+				else
+				{
+					iocompParams->previousInit = 1; 
+				}	
 				recv = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 				malloc_check(recv); 
 				previousCount = test_count;  
