@@ -21,9 +21,11 @@ if (( ${SLURM_NNODES} > 1  )); then
   HALF_TASKS=$((${SLURM_NNODES}*${SLURM_NTASKS_PER_NODE}/2)) # half the number of total tasks divided between the allocated nodes 
  
   if (( ${MAP} == 1  )); then 
-   srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_TASKS}  --cpu-bind=map_cpu:${bar[@]} ${EXE} --size ${SIZE} --io ${IO} > test.out
+    TOTAL_RANKS=$((${NUM_NODES}*${END_CORES}))
+    map -n ${TOTAL_RANKS} --mpiargs="--hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_TASKS}  --cpu-bind=map_cpu:${bar[@]}" ${EXE} --size ${SIZE} --io ${IO}
   else 
-   srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_TASKS}  --cpu-bind=map_cpu:${bar[@]} ${EXE} --size ${SIZE} --io ${IO} > test.out  fi 
+   srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_TASKS}  --cpu-bind=map_cpu:${bar[@]} ${EXE} --size ${SIZE} --io ${IO} > test.out  
+ fi 
 
 else
   NUM_NODES=${SLURM_NNODES} 

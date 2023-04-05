@@ -31,7 +31,7 @@ updated=("${vals[@]}" "${vals_HT[@]}")
 bar=$(IFS=, ; echo "${updated[*]}")
 
 if (( ${MAP} == 1  )); then 
-map -n $TOTAL_RANKS --mpiargs="--hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]}" --profile ${EXE} --HT --size ${SIZE} --io ${IO} > test.out a
+map -n $TOTAL_RANKS --mpiargs="--hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]}" --profile ${EXE} --HT --size ${SIZE} --io ${IO} > test.out
 else
 srun  --hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --HT --size ${SIZE} --io ${IO} > test.out 
 fi 
