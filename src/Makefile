@@ -1,12 +1,12 @@
 # define c compiler 
 CC = cc 
-CFLAGS = -Wall -Wpedantic -Werror -Wextra -Wno-unused-variable -Wno-unused-but-set-variable -Werror=deprecated-declarations 
+CFLAGS = -Wall -Wpedantic -Werror -Wextra #-Wno-unused-variable -Wno-unused-but-set-variable -Werror=deprecated-declarations 
 
 # define compile time flags 
 # DNDEBUG for not including error messages 
 # DIOCOMP_TIMERS for printing out time taken to write by ioLibraries.c 
 # DADIOS2_USE_MPI for adios2 
-CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared -g -Og -O2 -DNDEBUG #-DIOCOMP_TIMERS 
+CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared -g -Og -O2 #-DNDEBUG #-DIOCOMP_TIMERS 
 
 # linker flags
 LFLAGS += -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
@@ -22,7 +22,7 @@ LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 -L$(ADIO
 
 # define C source files 
 #SRCS =  computeStep.c main.c  ioServer.c  computeServer.c intercomm.c initData.c  mpiWrite.c intercommInit.c intercommCreate.c commSplit.c dataOutput.c ioLibraries.c  #hdf5Write.c# hdf5_write.c adios_write.c mpi_write.c 
-SRCS =   arrayParamsInit.c ioServer.c ioServerInitialise.c highlowOrdering.c checks.c getPair.c dataSend.c dataWait.c dataSendTest.c mpiWrite.c iocompInit.c intercommCreate.c commSplit.c ioLibraries.c stopSend.c  hdf5Write.c adios2Write.c mpiWrite.c 
+SRCS =   arrayParamsInit.c ioServer.c ioServerInitialise.c highlowOrdering.c checks.c getPair.c dataSend.c dataWait.c dataSendTest.c mpiWrite.c iocompInit.c commSplit.c ioLibraries.c stopSend.c  hdf5Write.c adios2Write.c mpiWrite.c 
 
 # define executable file  
 MAIN = iocomp
