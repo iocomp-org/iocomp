@@ -17,7 +17,7 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 					disp = 0; // number of bytes to be skipped from the start. ex headers. 
 
 #ifndef NDEBUG   
-	printf("mpiWrite -> MPI variables init completed \n"); 
+	printf("mpiWrite -> MPI variables init completed\n"); 
 #endif 
 
 	// MPI initialisations

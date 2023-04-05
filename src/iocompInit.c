@@ -21,6 +21,9 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	iocompParams->NDIM = NUM_DIM; // set number of dimensions
 	iocompParams->ioLibNum = ioLibNum; // set selection of I/O library 
 
+#ifndef NDEBUG
+	printf("iocompInit -> variables declared flag %i, ndim %i, iolib %i\n", iocompParams->hyperthreadFlag, iocompParams->NDIM, iocompParams->ioLibNum); 
+#endif
 	/*
 	 * comm split splits communicators in 2, assigns colour to ranks
 	 * assigns communicators in struct for both cases  

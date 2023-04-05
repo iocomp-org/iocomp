@@ -14,8 +14,8 @@ void adioswrite(double* iodata, struct iocomp_params *iocompParams)
 	 */ 
 	for (int i = 0; i <iocompParams->NDIM; i++)
 	{
-		assert(localArray[i]  > 0); 
-		assert(globalArray[i] > 0); 
+		assert(iocompParams->localArray[i]  > 0); 
+		assert(iocompParams->globalArray[i] > 0); 
 	}
 	adios2_error errio; 
 

@@ -68,11 +68,6 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	printf("ioServerInitialise -> MPI cart coords \n");
 #endif
 
-	/*
-	 * define local size, global size, array offsets for ioLibraries 
-	 */ 
-	arrayParamsInit(iocompParams,iocompParams->ioServerComm); 
-
 	/*	
 	 * Initiliase filename 
 	 */ 

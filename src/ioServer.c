@@ -98,6 +98,7 @@ void ioServer(struct iocomp_params *iocompParams)
 			{
 				iocompParams->localDataSize = test_count; 
 				assert(iocompParams->localDataSize>0); // check for negative values 
+
 				/*
 				 * if recv has been allocated previously 
 				 * clear memory then reallocate 
@@ -107,9 +108,15 @@ void ioServer(struct iocomp_params *iocompParams)
 					free(recv);
 					recv = NULL; 
 				} 
+				/*
+				 * sets local size, global size, array offsets for ioLibraries
+				 * only IF message recvd, and has not been initialised with the same
+				 * count as before. 
+				 */ 
 				else
 				{
 					iocompParams->previousInit = 1; 
+					arrayParamsInit(iocompParams,iocompParams->ioServerComm); 
 				}	
 				recv = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 				malloc_check(recv); 
