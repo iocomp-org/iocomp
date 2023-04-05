@@ -52,11 +52,11 @@ void adioswrite(double* iodata, struct iocomp_params *iocompParams)
 	printf("adios2Write->end step\n");
 #endif	
 
-	errio = adios2_flush_all(iocompParams->adios); 
-	mpi_error_check(errio); 
-#ifndef NDEBUG
-	printf("adios2Write->flush I/O engine\n");
-#endif	
+//	errio = adios2_flush_all(iocompParams->adios); 
+//	mpi_error_check(errio); 
+//#ifndef NDEBUG
+//	printf("adios2Write->flush I/O engine\n");
+//#endif	
 
 	errio = adios2_close(engine);
 	mpi_error_check(errio); 
