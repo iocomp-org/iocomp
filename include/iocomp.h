@@ -47,6 +47,7 @@ MPI_Comm ioServerComm;
 MPI_Comm compServerComm; 
 MPI_Comm interComm; 
 MPI_Comm cartcomm; 
+
 // sizes and ranks
 bool hyperthreadFlag;  
 int colour; 
