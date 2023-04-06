@@ -11,17 +11,17 @@ void rmfile(char* filename)
 		printf("Error: unable to delete the file");
 	}
 }
-void deleteFile(struct test_variables* testParams)
+void deleteFile(struct test_variables* testParams, int ioLibNum)
 {
 	// remove file 
-	if(testParams->ioLibNum<3) // if not adios2, then its a file. 
+	if(ioLibNum<3) // if not adios2, then its a file. 
 	{
-		rmfile(testParams->FILENAMES[testParams->ioLibNum]); 
+		rmfile(testParams->FILENAMES[ioLibNum]); 
 	} 
 	else // if its adios2, then its a directory
 	{
 		int test; 
-		test = rmdir(testParams->FILENAMES[testParams->ioLibNum]); 
+		test = rmdir(testParams->FILENAMES[ioLibNum]); 
 	}
 
 #ifndef NDEBUG

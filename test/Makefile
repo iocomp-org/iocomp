@@ -4,7 +4,7 @@ CC = cc
 CFLAGS = -Wall -Wpedantic -Werror -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
-CFLAGS += -fPIC -g -Og -DADIOS2_USE_MPI # -DNDEBUG
+CFLAGS += -fPIC -g -Og -DADIOS2_USE_MPI #-DNDEBUG 
 
 # linker flags
 LFLAGS += -I$(IOCOMP_DIR)/include -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
@@ -16,7 +16,7 @@ ODIR = Object_files
 LIBS +=  -L$(IOCOMP_DIR)/lib -liocomp -L$(OMPI_DIR)/lib -lmpi -lm -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi  -lm 
 
 # define C source files 
-SRCS = main.c initialise.c deleteFile.c rmdir.c stats.c 
+SRCS = main.c initialise.c deleteFile.c rmdir.c checkData.c mpiRead.c hdf5Read.c
 
 
 # define executable file  
