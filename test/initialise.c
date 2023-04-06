@@ -20,7 +20,8 @@ double* initialise(struct test_variables* testParams)
 	for(int j=0; j < testParams->localDataSize; j++)
 	{
 		//data[j] = (double)j*2; 
-		data[j] = 23; 
+		//data[j] = testParams->CONSTANT; 
+		data[j] = testParams->computeRank + 1;
 	}
 
 	return data; 

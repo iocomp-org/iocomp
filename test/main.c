@@ -86,11 +86,13 @@ int main(int argc, char** argv)
 
 	// initialise array sizes
 	testParams.localDataSize = pow(size,2); 
+	testParams.CONSTANT = 3; 
 	MPI_Comm computeComm = iocompInit(&iocompParams, comm,  HT_flag, io); 
 #ifndef NDEBUG
 	printf("iocomp initialised \n"); 
 #endif 
 	MPI_Comm_rank(computeComm, &computeRank); 
+	testParams.computeRank = computeRank; 
 	MPI_Comm_size(computeComm, &computeSize); 
 	testParams.globalDataSize = testParams.localDataSize * computeSize; 
 

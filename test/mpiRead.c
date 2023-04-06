@@ -23,16 +23,8 @@ bool mpiRead(struct test_variables* testParams)
 
 	num = fread(iodata_test, sizeof(double), testParams->globalDataSize, fp);
 
-	printf("Testing for array values ... \n"); 
-	for ( int i = 0; i < testParams->globalDataSize; i++)
-	{
-		if(iodata_test[i]!=1.0)
-		{
-			printf("Error: value at index %i not matching. Exiting \n", i); 
-			exit(1); 
-		}
-	}
-	printf("Testing for array values passed \n"); 
+	arrayVerification(testParams, iodata_test); // element wise checking 
+
 	fclose(fp);
 #ifndef NDEBUG
 		printf("file object closed\n"); 
