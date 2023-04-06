@@ -2,7 +2,7 @@
 #include "iocomp.h"
 
 #define KERNELS 4
-#define LOOPCOUNT 1
+#define LOOPCOUNT 10
 #define COPY		0
 #define SCALE		1
 #define ADD			2
