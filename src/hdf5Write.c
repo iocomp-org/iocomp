@@ -30,7 +30,6 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams)
 
     herr_t status = H5open();
 		mpi_error_check(status); 
-
 #ifndef NDEBUG
     printf("After H5open\n"); 
 #endif
@@ -42,12 +41,14 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams)
 
     for (int i = 0; i < iocompParams->NDIM; i++)
     {
-        dimsf[i] = (int)iocompParams->globalArray[i]; 
-        count[i] = (int)iocompParams->localArray[i]; 
-        offset[i]= (int)iocompParams->arrayStart[i]; 
-
+        dimsf[i] = iocompParams->globalArray[i]; 
+        count[i] = iocompParams->localArray[i]; 
+        offset[i]= iocompParams->arrayStart[i]; 
+			
+#ifndef NDEBUG
         assert(dimsf[i] > 0); 
         assert(count[i] > 0); 
+#endif
     }
 
     /* 
@@ -99,7 +100,16 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams)
 
     plist_id = H5Pcreate(H5P_DATASET_XFER); // sets data transfer mode.
     H5Pset_dxpl_mpio(plist_id, H5FD_MPIO_COLLECTIVE); // sets data transfer mode.
-
+		
+#ifndef NDEBUG
+    printf("print values for iodata written by HDF5 \n"); 
+		for(int i = 0; i < (int)iocompParams->localArray[0]; i++)
+		{
+			for(int j = 0; j < (int)iocompParams->localArray[1]; j++)
+				printf("%lf,",iodata[i*(int)iocompParams->localArray[0] + j]); 
+			printf("\n"); 
+		}
+#endif
     status = H5Dwrite (dset_id, H5T_NATIVE_DOUBLE, memspace, filespace, 
             plist_id, iodata);
 #ifndef NDEBUG
