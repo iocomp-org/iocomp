@@ -9,6 +9,8 @@ struct test_variables{
 	size_t globalDataSize; 
 	char* FILENAMES[5];  
 	int computeRank; 
+	char* adios2Engine[3]; 
+	int CONSTANT; 
 }; 
 extern struct test_variables testParams; 
 double* initialise(struct test_variables* testParams); 
@@ -20,3 +22,5 @@ bool checkData(int io, struct test_variables* testParams); // function to check 
 bool mpiRead(struct test_variables* testParams); 
 bool hdf5Read(struct test_variables* testParams); 
 //int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf); 
+void arrayVerification(struct test_variables* testParams, double* iodata); 
+bool adios2Read(struct test_variables* testParams, int io); 
