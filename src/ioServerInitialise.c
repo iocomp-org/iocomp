@@ -94,9 +94,11 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	} 
 
 	/*
-	 * Initialise previous initialisation flag. 
+	 * Initialise previous initialisation and element counter flag
 	 */ 
 	iocompParams->previousInit = 0;  
+	iocompParams->previousCount = 0;  
+	iocompParams->adios2Init = 0;  
 
 } 
 

@@ -80,8 +80,11 @@ char *ADIOS2_IOENGINES[3];
 adios2_io* io; 
 // adios2 variable object 
 adios2_variable *var_iodata; 
+
+// initialisation flags 
 int previousInit; // previously initialised counter 
 int previousCount; // previous element count 
+int adios2Init; // previous element count 
 }; 
 extern struct iocomp_params iocompParams; 
 
