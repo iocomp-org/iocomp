@@ -1,6 +1,8 @@
 #include "mpi.h"
 #include "iocomp.h"
 
+#define NDIM 2  // power to size
+#define FREQ 10 // compute steps per writing 
 #define KERNELS 4
 #define LOOPCOUNT 10
 #define COPY		0
