@@ -27,13 +27,17 @@ void add(struct iocomp_params *iocompParams, struct stream_params* streamParams,
 	}
 	streamParams->compTimer[ADD][k] = MPI_Wtime() - timerStart;  // computeTime for ADD 
 
-	timerStart = MPI_Wtime(); // timer start for dataSend 
-	dataSend(c,iocompParams, &streamParams->requestArray[ADD],streamParams->localDataSize); // send data off using dataSend
-	streamParams->sendTimer[ADD][k] = MPI_Wtime() - timerStart; // send time for ADD 
+	if(k%streamParams->writeFreq == 0)
+	{
+		timerStart = MPI_Wtime(); // timer start for dataSend 
+		dataSend(c,iocompParams, &streamParams->requestArray[ADD],streamParams->localDataSize); // send data off using dataSend
+		int counter = (int)k/streamParams->writeFreq; // counter for timers  
+		streamParams->sendTimer[ADD][counter] = MPI_Wtime() - timerStart; // send time for ADD 
 #ifndef NDEBUG
-	printf("ADD finished with elements: \n"); 
-	for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
+		printf("ADD finished with elements: \n"); 
+		for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
 #endif
+	} 
 }
 
 void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k)

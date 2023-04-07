@@ -8,6 +8,7 @@
 #define ADD			2
 #define TRIAD		3
 
+
 // number of iterations for averaging the stream tests 
 
 struct stream_params{
@@ -26,6 +27,8 @@ struct stream_params{
 	MPI_Request requestArray[KERNELS]; 
 	int mpiWaitFlag[KERNELS]; 
 	char* fullResults_filename[KERNELS]; 
+	int writeFreq; // compute steps per writing
+	int numWrites; // max number of writes  
 }; 
 extern struct stream_params streamParams; 
 // stream kernel functions 
@@ -46,6 +49,6 @@ double* init(struct stream_params* streamParams, double* a);
 void computeStep(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm);
 void stream(double* iodata, struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm); 
 void initData(double* iodata, struct iocomp_params *iocompParams);
-void avg(double sum[KERNELS], double data[KERNELS][LOOPCOUNT]); 
+double* avg(double data[KERNELS][10], struct stream_params* streamParams); 
 double timer_start(int computeRank); 
 double timer_end(double timerStart, int computeRank ); 

@@ -7,19 +7,20 @@
 #include "stream.h"
 #define filename "compute_write_time.csv"
 
-void avg(double sum[KERNELS], double data[KERNELS][LOOPCOUNT])
+double* avg(double data[KERNELS][10], struct stream_params* streamParams)
 {
 	int i,k;  
+	double* sum = (double*)malloc(KERNELS*sizeof(double)); // one rank only sends to one rank
 	for (i = 0; i<KERNELS; i++)
 	{
 		sum[i] = 0.0; 
-		for (k = 0; k < LOOPCOUNT; k++)
+		for (k = 0; k < streamParams->numWrites ; k++)
 		{
 			sum[i] += data[i][k]; 
 		}
-		sum[i] = sum[i]/LOOPCOUNT; 
+		sum[i] = sum[i]/streamParams->numWrites; 
 	}
-	// return(sum); 
+	return(sum); 
 }
 
 void reduceResults(struct stream_params* streamParams,MPI_Comm computeComm)
@@ -38,14 +39,18 @@ void reduceResults(struct stream_params* streamParams,MPI_Comm computeComm)
 
 void resultsOutput(struct stream_params* streamParams, MPI_Comm computeComm)
 {
-	double avgCompTimer[KERNELS], 
-				 avgSendTimer[KERNELS], 
-				 avgWaitTimer[KERNELS]; 
+//	double avgCompTimer[KERNELS], 
+//				 avgSendTimer[KERNELS], 
+//				 avgWaitTimer[KERNELS]; 
+	
+	double* avgCompTimer = NULL; 
+	double* avgSendTimer = NULL; 
+	double* avgWaitTimer = NULL; 
 
 	// calculate the averages from the max timers 
-	avg(avgCompTimer, streamParams->maxCompTimer); 
-	avg(avgSendTimer, streamParams->maxSendTimer); 
-	avg(avgWaitTimer, streamParams->maxWaitTimer); 
+	avgCompTimer = avg(streamParams->maxCompTimer,streamParams); 
+	avgSendTimer = avg(streamParams->maxSendTimer,streamParams); 
+	avgWaitTimer = avg(streamParams->maxWaitTimer,streamParams); 
 
 	// initialise the file variables 
 	int test; 
@@ -108,7 +113,7 @@ void fullResultsOutput(struct stream_params* streamParams)
 
 		// write to file
 		fprintf(out, "Iter,CompTimer(s),SendTimer(s),WaitTimer(s)\n"); 
-		for (int j = 0; j < LOOPCOUNT; j++)
+		for (int j = 0; j < LOOPCOUNT/streamParams->writeFreq; j++)
 		{
 			fprintf(out, "%i, %lf, %lf, %lf\n", j, streamParams->maxCompTimer[i][j], streamParams->maxSendTimer[i][j],streamParams->maxWaitTimer[i][j]); 
 		} 

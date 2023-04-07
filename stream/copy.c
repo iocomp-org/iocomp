@@ -26,13 +26,17 @@ void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams
 	}
 	streamParams->compTimer[COPY][k] = MPI_Wtime() - timerStart;  // computeTime for COPY 
 
-	timerStart = MPI_Wtime(); // timer start for dataSend 
-	dataSend(c,iocompParams, &streamParams->requestArray[COPY],streamParams->localDataSize); // send data off using dataSend
-	streamParams->sendTimer[COPY][k] = MPI_Wtime() - timerStart; // send time for COPY 
+	if(k%streamParams->writeFreq == 0)
+	{
+		timerStart = MPI_Wtime(); // timer start for dataSend 
+		dataSend(c,iocompParams, &streamParams->requestArray[COPY],streamParams->localDataSize); // send data off using dataSend
+		int counter = (int)k/streamParams->writeFreq; // counter for timers  
+		streamParams->sendTimer[COPY][counter] = MPI_Wtime() - timerStart; // send time for COPY 
 #ifndef NDEBUG
-	printf("stream -> COPY finished with elements: \n"); 
-	for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
+		printf("stream -> COPY finished with elements: \n"); 
+		for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
 #endif
+	} 
 }
 
 void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k)

@@ -23,13 +23,17 @@ void scale(struct iocomp_params *iocompParams, struct stream_params* streamParam
 	}
 	streamParams->compTimer[SCALE][k] = MPI_Wtime() - timerStart;  // computeTime for SCALE 
 
-	timerStart = MPI_Wtime(); // timer start for dataSend 
-	dataSend(b,iocompParams, &streamParams->requestArray[SCALE],streamParams->localDataSize); // send data off using dataSend
-	streamParams->sendTimer[SCALE][k] = MPI_Wtime() - timerStart; // send time for SCALE 
+	if(k%streamParams->writeFreq == 0)
+	{
+		timerStart = MPI_Wtime(); // timer start for dataSend 
+		dataSend(b,iocompParams, &streamParams->requestArray[SCALE],streamParams->localDataSize); // send data off using dataSend
+		int counter = (int)k/streamParams->writeFreq; // counter for timers  
+		streamParams->sendTimer[SCALE][counter] = MPI_Wtime() - timerStart; // send time for SCALE 
 #ifndef NDEBUG
-	printf("STREAM -> SCALE finished with elements: \n"); 
-	for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
+		printf("STREAM -> SCALE finished with elements: \n"); 
+		for(int i = 0; i< iocompParams->localDataSize; i++) { printf("%lf,",c[i]); }
 #endif
+	} 
 }
 
 void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k)

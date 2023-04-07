@@ -5,7 +5,8 @@
 #include "mpi.h"
 #include "stream.h"
 #include "getopt.h"
-#define NDIM 2
+#define NDIM 2  // power to size
+#define FREQ 10 // compute steps per writing 
 
 static int verbose_flag;
 static int HT_flag; 
@@ -117,6 +118,8 @@ int main(int argc, char** argv)
 	 * and data size 
 	 */ 
 	streamParams.localDataSize = pow(size,NDIM); 
+	streamParams.writeFreq = FREQ; 
+	streamParams.numWrites = (int)LOOPCOUNT/streamParams.writeFreq;  
 #ifndef NDEBUG
   printf("stream-> localdatasize initialised with %li \n", streamParams.localDataSize); 
 #endif
