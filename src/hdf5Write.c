@@ -44,10 +44,12 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams)
         dimsf[i] = iocompParams->globalArray[i]; 
         count[i] = iocompParams->localArray[i]; 
         offset[i]= iocompParams->arrayStart[i]; 
-			
 #ifndef NDEBUG
         assert(dimsf[i] > 0); 
         assert(count[i] > 0); 
+				printf("dimsf %llu %llu \n", dimsf[0], dimsf[1]); 
+				printf("count %llu %llu \n", count[0], count[1]); 
+				printf("offset %llu %llu \n", offset[0], offset[1]); 
 #endif
     }
 
