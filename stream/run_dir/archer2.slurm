@@ -1,9 +1,9 @@
 #!/bin/bash --login
-#SBATCH --job-name=stream
+#SBATCH --job-name=str_frq
 #SBATCH --nodes=1
 #SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
-#SBATCH --time=01:00:00
+#SBATCH --time=00:10:00
 #SBATCH --account=e609
 #SBATCH --partition=standard 
 #SBATCH --qos=lowpriority
@@ -24,13 +24,14 @@ export OMP_NUM_THREADS=1
 export IOCOMP_DIR=/work/e609/e609/shr203/iocomp
 export ADIOS2_DIR=/work/e609/e609/shr203/opt/gnu/8.0.0/ADIOS2
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ADIOS2_DIR}/lib64:${IOCOMP_DIR}/lib
-export EXE=${IOCOMP_DIR}/stream/test
 export CONFIG=${SLURM_SUBMIT_DIR}/config.xml 
 export MAP=0
+export STREAM_DIR=$(cd ${SLURM_SUBMIT_DIR}/../../ && pwd) 
+export EXE=${STREAM_DIR}/stream/test
 
 # Make new directory 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
-SIZE=512
+SIZE=256
 i=${SLURM_ARRAY_TASK_ID} 
 HALF_CORES=$((${SLURM_NTASKS_PER_NODE}/2)) 
 FULL_CORES=$((${SLURM_NTASKS_PER_NODE})) 
@@ -39,9 +40,9 @@ TOTAL_RANKS=$(($SLURM_NNODES * $SLURM_NTASKS_PER_NODE))
 
 echo "Job started " $(date +"%T") # start time
 
-for IO in {0..0}
+for IO in {0..4}
 do 
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1.1/noMPITest/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
+  export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1.1/LOOP100/MPITest/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
 
   # Case 1 
   source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
