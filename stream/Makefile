@@ -6,7 +6,7 @@ CFLAGS = -Wall -Wpedantic -Werror -Wno-unused-variable -Wno-unused-but-set-varia
 # DNDEBUG for not including error messages 
 # DMPI_TESTS for including MPI tests in stream kernels 
 # DADIOS2_USE_MPI for adios2 
-CFLAGS += -fPIC -g -Og -O2 -DADIOS2_USE_MPI -DNDEBUG #-DMPI_TESTS
+CFLAGS += -fPIC -g -Og -O2 -DADIOS2_USE_MPI -DNDEBUG -DMPI_TESTS
 
 # linker flags
 LFLAGS += -I$(OMPI_DIR)/include -I$(IOCOMP_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
