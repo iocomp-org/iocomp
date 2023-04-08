@@ -1,6 +1,6 @@
 # define c compiler 
 CC = cc 
-CFLAGS = -Wall -Wpedantic -Werror -Wno-unused-variable -Wno-unused-but-set-variable
+CFLAGS = -Wall -Wpedantic -Werror  -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
 # DNDEBUG for not including error messages 
