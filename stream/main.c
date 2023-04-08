@@ -25,7 +25,8 @@ int main(int argc, char** argv)
    */ 
 
   int c;
-
+	size = 10; 
+	io = 0; 
   while (1)
   {
     static struct option long_options[] =

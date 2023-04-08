@@ -15,17 +15,18 @@ void averages(struct stream_params* streamParams)
 		sum_comp = 0.0; 
 		sum_wait = 0.0; 
 		sum_send = 0.0; 
-		// wait and comp run for LOOPCOUNT times 
+		// waits and comps run for LOOPCOUNT times 
 		for (int k = 0; k < LOOPCOUNT; k++)
 		{
-			sum_comp += (double)(streamParams->maxCompTimer[i][k]/(double)LOOPCOUNT); 
-			sum_wait += (double)streamParams->maxWaitTimer[i][k]/(double)LOOPCOUNT; 
+			sum_comp += (double)(streamParams->maxCompTimer[i][k]/(double)MAXWRITES); 
+			sum_wait += (double)(streamParams->maxWaitTimer[i][k]/(double)MAXWRITES); 
 		}
-		// send run for MAXWRITES times 
+		// sends run for MAXWRITES times only
 		for (int k = 0; k < MAXWRITES; k++)
 		{
 			sum_send += (double)streamParams->maxSendTimer[i][k]/(double)MAXWRITES; 
 		}
+	
 		streamParams->avgWaitTimer[i] = sum_wait; 
 		streamParams->avgCompTimer[i] = sum_comp; 
 		streamParams->avgSendTimer[i] = sum_send; 
