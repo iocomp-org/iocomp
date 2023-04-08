@@ -23,7 +23,6 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	assert(iocompParams->ioLibNum < ioLibCount); // test for illegal values
 	assert(iocompParams->ioLibNum >= 0); // test for illegal values
 
-
 #ifndef NDEBUG
 	printf("iocompInit -> variables declared flag %i, ndim %i, iolib %i\n", iocompParams->hyperthreadFlag, iocompParams->NDIM, iocompParams->ioLibNum); 
 #endif
