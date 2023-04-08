@@ -9,6 +9,10 @@
 #define compColour 1 
 #define HIGH_LOW 1 
 
+#ifndef MAXSPACE
+#define MAXSPACE 20 // to set space limit for printing ordering statements 
+#endif
+
 /*
  * Divides the particular rank into comp server and io server 
  */
@@ -22,8 +26,20 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 
 	int ierr = MPI_Comm_dup(comm, &iocompParams->globalComm); // comm is assigned to globalComm
 	mpi_error_check(ierr); 
+	int globalRank; 
+	MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
+
 #ifndef NDEBUG
 		printf("commSplit -> comm duplicate \n"); 
+#endif
+	
+	// header file for printing ordering 
+#ifdef PRINT_ORDERING
+		if(!globalRank) // header file by global rank 0 
+		{
+			printf("%*s | %*s | %*s | %*s | %*s | %*s \n", 10, "TYPE", MAXSPACE, "MPI RANK", 
+				MAXSPACE, "MPI SIZE", MAXSPACE,"CPU-ID", MAXSPACE, "NODE-ID", MAXSPACE, "PAIR");
+		} 
 #endif
 
 	if(iocompParams->hyperthreadFlag) // check if flag is true? 

@@ -43,8 +43,7 @@ int getPair(struct iocomp_params *iocompParams)
 #ifdef PRINT_ORDERING
 		if(!iocompParams->pairPrintCounter) // only print message first time? 
 		{
-			printf("IO colour rank %i out of %i size on cpu_id %02d of node %s gets data from COMP rank %i\n", 
-				globalRank, globalSize,sched_getcpu(),nodeName, source); 
+			printf("%10s | %20i | %20i | %20i | %20s | %20i \n", "IO", globalRank, globalSize, sched_getcpu(), nodeName, source); 
 			iocompParams->pairPrintCounter = 1; 
 		} 
 #endif
@@ -70,8 +69,7 @@ int getPair(struct iocomp_params *iocompParams)
 #ifdef PRINT_ORDERING
 		if(!iocompParams->pairPrintCounter) // only print message first time? 
 			{
-				printf("COMP colour rank %i out of %i size on cpu_id %02d of node %s gets data from COMP rank %i\n", 
-					globalRank, globalSize,sched_getcpu(),nodeName, dest); 
+			printf("%10s | %20i | %20i | %20i | %20s | %20i \n", "COMP", globalRank, globalSize, sched_getcpu(), nodeName, dest); 
 				iocompParams->pairPrintCounter = 1; 
 			} 
 #endif
