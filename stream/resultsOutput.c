@@ -109,18 +109,18 @@ void fullResultsOutput(struct stream_params* streamParams)
 		}
 
 		// write to file
-		fprintf(out, "Iter,CompTimer(s),SendTimer(s),WaitTimer(s)\n"); 
+		fprintf(out, "Iter,CompTimer(s),WaitTimer(s),SendTimer(s)\n"); 
+		int writeCounter = 0; // reset for every kernel 
 		for (int j = 0; j < LOOPCOUNT; j++)
 		{
-			int writeCounter = 0; 
-			if(!j%streamParams->writeFreq)
+			if(j%streamParams->writeFreq==0) // if writing then write out send timer 
 			{
-				fprintf(out, "%i, %lf, %lf, %lf\n", j, streamParams->maxCompTimer[i][j], streamParams->maxSendTimer[i][writeCounter],streamParams->maxWaitTimer[i][j]); 
+				fprintf(out, "%i, %lf, %lf, %lf\n", j, streamParams->maxCompTimer[i][j], streamParams->maxWaitTimer[i][j], streamParams->maxSendTimer[i][writeCounter]); 
 				writeCounter ++; 
 			}
-			else 
+			else //else leave blank
 			{
-				fprintf(out, "%i, %lf,, %lf\n", j, streamParams->maxCompTimer[i][j],streamParams->maxWaitTimer[i][j]); 
+				fprintf(out, "%i, %lf,%lf,\n", j, streamParams->maxCompTimer[i][j],streamParams->maxWaitTimer[i][j]); 
 			} 
 		} 
 	} 

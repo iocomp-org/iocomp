@@ -3,8 +3,8 @@
 
 #define NDIM 2  // power to size
 #define KERNELS 4
-#define LOOPCOUNT 10 // number of compute steps 
-#define MAXWRITES 1 // max number of writes
+#define LOOPCOUNT 100 // number of compute steps 
+#define MAXWRITES 10 // max number of writes
 #define COPY		0
 #define SCALE		1
 #define ADD			2
