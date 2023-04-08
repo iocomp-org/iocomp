@@ -35,7 +35,8 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 	
 	// header file for printing ordering 
 #ifdef PRINT_ORDERING
-		if(!globalRank) // header file by global rank 0 
+		MPI_Barrier(iocompParams->globalComm); // so that the header is written first.
+		if(!globalRank) // header file by global rank 0
 		{
 			printf("%*s | %*s | %*s | %*s | %*s | %*s \n", 10, "TYPE", MAXSPACE, "MPI RANK", 
 				MAXSPACE, "MPI SIZE", MAXSPACE,"CPU-ID", MAXSPACE, "NODE-ID", MAXSPACE, "PAIR");
