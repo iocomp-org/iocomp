@@ -117,7 +117,6 @@ int main(int argc, char** argv)
 	 */ 
 	streamParams.localDataSize = pow(size,NDIM); 
 	streamParams.writeFreq = (int)LOOPCOUNT/MAXWRITES; 
-  printf("stream-> write freq %i \n", streamParams.writeFreq); 
 #ifndef NDEBUG
   printf("stream-> localdatasize initialised with %li \n", streamParams.localDataSize); 
 #endif
