@@ -54,6 +54,9 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		if(ordering == HIGH_LOW)
 		{	   
       highlowOrdering(iocompParams); 
+#ifdef PRINT_ORDERING
+			iocompParams->pairPrintCounter = 0; // so that io and comm processes dont print too many messages. 
+#endif 
 		}
 #ifndef NDEBUG
 		printf("commSplit -> colour assigned based on HIGH LOW ordering \n"); 
@@ -84,6 +87,8 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 #ifndef NDEBUG
 		printf("commSplit -> MPI ioServerComm initialised \n"); 
 #endif
+
+
 		} 
 	
 

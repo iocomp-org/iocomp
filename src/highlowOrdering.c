@@ -66,14 +66,14 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 	{
 		if(globalRank < globalSize/2){
 #ifdef PRINT_ORDERING
-			printf("MPI process %i out of %i size on cpu_id %02d of node %s COMP colour\n", 
+			printf("COMP colour rank %i out of %i size on cpu_id %02d of node %s\n", 
 				globalRank, globalSize,sched_getcpu(),nodeName); 
 #endif
 			iocompParams->colour = compColour; 
 		} 
 		else{
 #ifdef PRINT_ORDERING
-			printf("MPI process %i out of %i size on cpu_id %02d of node %s IO colour\n", 
+			printf("IO colour rank %i out of %i size on cpu_id %02d of node %s\n", 
 				globalRank, globalSize,sched_getcpu(),nodeName); 
 #endif
 			iocompParams->colour = ioColour; 
@@ -88,14 +88,14 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 			{
 				if(globalRank <  (x+1)*NODESIZE && globalRank >= (x)*NODESIZE){
 #ifdef PRINT_ORDERING
-					printf("MPI process %i out of %i size on cpu_id %02d of node %s COMP colour\n", 
+					printf("COMP colour rank %i out of %i size on cpu_id %02d of node %s\n", 
 						globalRank, globalSize,sched_getcpu(),nodeName); 
 #endif
 					iocompParams->colour = compColour; 
 				} 
 				if(globalRank >=  (x+1)*NODESIZE && globalRank < (x+2)*NODESIZE){
 #ifdef PRINT_ORDERING
-					printf("MPI process %i out of %i size on cpu_id %02d of node %s IO colour\n", 
+					printf("IO colour rank %i out of %i size on cpu_id %02d of node %s\n", 
 						globalRank, globalSize,sched_getcpu(),nodeName); 
 #endif
 					iocompParams->colour = ioColour; 
@@ -106,14 +106,14 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 		else if(globalRank >= lastwholeNode){ // globalRank is not within full node. 
 			if(globalRank  < (globalSize + lastwholeNode)/2){
 #ifdef PRINT_ORDERING
-					printf("MPI process %i out of %i size on cpu_id %02d of node %s COMP colour\n", 
+					printf("COMP colour rank %i out of %i size on cpu_id %02d of node %s\n", 
 						globalRank, globalSize,sched_getcpu(),nodeName); 
 #endif
 				iocompParams->colour = compColour; 
 			} 
 			else{
 #ifdef PRINT_ORDERING
-					printf("MPI process %i out of %i size on cpu_id %02d of node %s IO colour\n", 
+					printf("IO colour rank %i out of %i size on cpu_id %02d of node %s\n", 
 						globalRank, globalSize,sched_getcpu(),nodeName); 
 #endif
 				iocompParams->colour = ioColour; 

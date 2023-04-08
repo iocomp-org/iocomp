@@ -4,7 +4,13 @@
 #include "stdio.h"
 #include "mpi.h"
 #include "../include/iocomp.h"
-#define filename "write_time.csv"
+
+/*
+ * PRINT_ORDERING flag prints the node id and the core id of different 
+ * processes 
+ */ 
+int sched_getcpu();
+
 
 int getPair(struct iocomp_params *iocompParams)
 {
@@ -14,15 +20,17 @@ int getPair(struct iocomp_params *iocompParams)
 	 */ 
 	int ierr; 
 	int globalRank, globalSize; 
+  char nodeName[MPI_MAX_PROCESSOR_NAME];
+	int namelen; 
 
 	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
 	mpi_error_check(ierr); 
 	ierr = MPI_Comm_size(iocompParams->globalComm, &globalSize); 
 	mpi_error_check(ierr);
+  MPI_Get_processor_name (nodeName, &namelen);
 
 	if(iocompParams->colour == ioColour) 
 	{
-
 		int source; 
 		if(globalSize > NODESIZE*2)
 		{
@@ -32,6 +40,14 @@ int getPair(struct iocomp_params *iocompParams)
 		{
 			source = globalRank - globalSize/2; 
 		} 
+#ifdef PRINT_ORDERING
+		if(!iocompParams->pairPrintCounter) // only print message first time? 
+		{
+			printf("IO colour rank %i out of %i size on cpu_id %02d of node %s gets data from COMP rank %i\n", 
+				globalRank, globalSize,sched_getcpu(),nodeName, source); 
+			iocompParams->pairPrintCounter = 1; 
+		} 
+#endif
 		return(source); 
 	}
 
@@ -51,6 +67,14 @@ int getPair(struct iocomp_params *iocompParams)
 		{
 			dest = globalRank + globalSize/2; 
 		} 
+#ifdef PRINT_ORDERING
+		if(!iocompParams->pairPrintCounter) // only print message first time? 
+			{
+				printf("COMP colour rank %i out of %i size on cpu_id %02d of node %s gets data from COMP rank %i\n", 
+					globalRank, globalSize,sched_getcpu(),nodeName, dest); 
+				iocompParams->pairPrintCounter = 1; 
+			} 
+#endif
 		return(dest); 
 	}
 

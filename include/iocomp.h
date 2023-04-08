@@ -85,6 +85,10 @@ adios2_variable *var_iodata;
 int previousInit; // previously initialised counter 
 int previousCount; // previous element count 
 int adios2Init; // previous element count 
+
+#ifdef PRINT_ORDERING
+	int pairPrintCounter; // so that getPair messages are not printed more than once.
+#endif 
 }; 
 extern struct iocomp_params iocompParams; 
 
