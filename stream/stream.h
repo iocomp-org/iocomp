@@ -2,9 +2,9 @@
 #include "iocomp.h"
 
 #define NDIM 2  // power to size
-#define FREQ 10 // compute steps per writing 
 #define KERNELS 4
-#define LOOPCOUNT 10
+#define LOOPCOUNT 10 // number of compute steps 
+#define MAXWRITES 1 // max number of writes
 #define COPY		0
 #define SCALE		1
 #define ADD			2
@@ -16,14 +16,22 @@
 struct stream_params{
 	int LOOP_COUNT; 
 	double timer_start; 
+	// timer arrays
 	double compTimer[KERNELS][LOOPCOUNT]; 
 	double waitTimer[KERNELS][LOOPCOUNT]; 
-	double sendTimer[KERNELS][LOOPCOUNT]; 
+	double sendTimer[KERNELS][MAXWRITES]; // num writes could be different to num compute
+	// reduced arrays to obtain max values 
 	double maxCompTimer[KERNELS][LOOPCOUNT]; 
 	double maxWaitTimer[KERNELS][LOOPCOUNT]; 
-	double maxSendTimer[KERNELS][LOOPCOUNT]; 
+	double maxSendTimer[KERNELS][MAXWRITES]; 
+	// average of those reduced arrays
+	double avgCompTimer[KERNELS]; 
+	double avgWaitTimer[KERNELS]; 
+	double avgSendTimer[KERNELS]; 
+	// wall time	
 	double wallTimer; 
 	double maxWallTimer; 
+	// sizes
 	size_t localDataSize; 
 	size_t globalDataSize; 
 	MPI_Request requestArray[KERNELS]; 
@@ -51,6 +59,6 @@ double* init(struct stream_params* streamParams, double* a);
 void computeStep(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm);
 void stream(double* iodata, struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm); 
 void initData(double* iodata, struct iocomp_params *iocompParams);
-double* avg(double data[KERNELS][10], struct stream_params* streamParams); 
+void averages(struct stream_params* streamParams); 
 double timer_start(int computeRank); 
 double timer_end(double timerStart, int computeRank ); 

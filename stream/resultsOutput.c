@@ -7,51 +7,48 @@
 #include "stream.h"
 #define filename "compute_write_time.csv"
 
-double* avg(double data[KERNELS][10], struct stream_params* streamParams)
+void averages(struct stream_params* streamParams)
 {
-	int i,k;  
-	double* sum = (double*)malloc(KERNELS*sizeof(double)); // one rank only sends to one rank
-	for (i = 0; i<KERNELS; i++)
+	for (int i = 0; i<KERNELS; i++)
 	{
-		sum[i] = 0.0; 
-		for (k = 0; k < streamParams->numWrites ; k++)
+		double sum_comp, sum_wait, sum_send; 
+		sum_comp = 0.0; 
+		sum_wait = 0.0; 
+		sum_send = 0.0; 
+		// wait and comp run for LOOPCOUNT times 
+		for (int k = 0; k < LOOPCOUNT; k++)
 		{
-			sum[i] += data[i][k]; 
+			sum_comp += (double)(streamParams->maxCompTimer[i][k]/(double)LOOPCOUNT); 
+			sum_wait += (double)streamParams->maxWaitTimer[i][k]/(double)LOOPCOUNT; 
 		}
-		sum[i] = sum[i]/streamParams->numWrites; 
+		// send run for MAXWRITES times 
+		for (int k = 0; k < MAXWRITES; k++)
+		{
+			sum_send += (double)streamParams->maxSendTimer[i][k]/(double)MAXWRITES; 
+		}
+		streamParams->avgWaitTimer[i] = sum_wait; 
+		streamParams->avgCompTimer[i] = sum_comp; 
+		streamParams->avgSendTimer[i] = sum_send; 
 	}
-	return(sum); 
-}
+} 
 
+// reduce and maximise timers from all stream kernels 
 void reduceResults(struct stream_params* streamParams,MPI_Comm computeComm)
 {
-	// reduce and maximise timers from all stream kernels 
 	for(int i = 0; i < KERNELS; i++)
 	{
 		MPI_Reduce(&streamParams->compTimer[i],&streamParams->maxCompTimer[i],LOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
 		MPI_Reduce(&streamParams->waitTimer[i],&streamParams->maxWaitTimer[i],LOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
-		MPI_Reduce(&streamParams->sendTimer[i],&streamParams->maxSendTimer[i],LOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
+		MPI_Reduce(&streamParams->sendTimer[i],&streamParams->maxSendTimer[i],MAXWRITES, MPI_DOUBLE, MPI_MAX, 0,computeComm); // max writes could differ from loop count
 	} 
 
 	MPI_Reduce(&streamParams->wallTimer,&streamParams->maxWallTimer,1, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
 } 
 
-
 void resultsOutput(struct stream_params* streamParams, MPI_Comm computeComm)
 {
-//	double avgCompTimer[KERNELS], 
-//				 avgSendTimer[KERNELS], 
-//				 avgWaitTimer[KERNELS]; 
-	
-	double* avgCompTimer = NULL; 
-	double* avgSendTimer = NULL; 
-	double* avgWaitTimer = NULL; 
-
-	// calculate the averages from the max timers 
-	avgCompTimer = avg(streamParams->maxCompTimer,streamParams); 
-	avgSendTimer = avg(streamParams->maxSendTimer,streamParams); 
-	avgWaitTimer = avg(streamParams->maxWaitTimer,streamParams); 
-
+		
+	averages(streamParams); // get average timings from the reduced times 
 	// initialise the file variables 
 	int test; 
 	FILE* out; 
@@ -74,9 +71,9 @@ void resultsOutput(struct stream_params* streamParams, MPI_Comm computeComm)
 
 	// write to file
 	fprintf(out, "Timer,Copy(s),Scalar(s),Add(s),Triad(s),Total(s)\n"); 
-	fprintf(out, "Compute,%lf,%lf,%lf,%lf \n", avgCompTimer[0], avgCompTimer[1], avgCompTimer[2], avgCompTimer[3]); 
-	fprintf(out, "Send,%lf,%lf,%lf,%lf \n", avgSendTimer[0], avgSendTimer[1], avgSendTimer[2], avgSendTimer[3]); 
-	fprintf(out, "Wait,%lf,%lf,%lf,%lf \n", avgWaitTimer[0], avgWaitTimer[1], avgWaitTimer[2], avgWaitTimer[3]); 
+	fprintf(out, "Compute,%lf,%lf,%lf,%lf \n", streamParams->avgCompTimer[0], streamParams->avgCompTimer[1], streamParams->avgCompTimer[2], streamParams->avgCompTimer[3]); 
+	fprintf(out, "Send,%lf,%lf,%lf,%lf \n", streamParams->avgSendTimer[0], streamParams->avgSendTimer[1], streamParams->avgSendTimer[2], streamParams->avgSendTimer[3]); 
+	fprintf(out, "Wait,%lf,%lf,%lf,%lf \n", streamParams->avgWaitTimer[0], streamParams->avgWaitTimer[1], streamParams->avgWaitTimer[2], streamParams->avgWaitTimer[3]); 
 	fprintf(out, "WallTimer,,,,,%lf \n", streamParams->maxWallTimer); 
 } 
 
@@ -113,9 +110,18 @@ void fullResultsOutput(struct stream_params* streamParams)
 
 		// write to file
 		fprintf(out, "Iter,CompTimer(s),SendTimer(s),WaitTimer(s)\n"); 
-		for (int j = 0; j < LOOPCOUNT/streamParams->writeFreq; j++)
+		for (int j = 0; j < LOOPCOUNT; j++)
 		{
-			fprintf(out, "%i, %lf, %lf, %lf\n", j, streamParams->maxCompTimer[i][j], streamParams->maxSendTimer[i][j],streamParams->maxWaitTimer[i][j]); 
+			int writeCounter = 0; 
+			if(!j%streamParams->writeFreq)
+			{
+				fprintf(out, "%i, %lf, %lf, %lf\n", j, streamParams->maxCompTimer[i][j], streamParams->maxSendTimer[i][writeCounter],streamParams->maxWaitTimer[i][j]); 
+				writeCounter ++; 
+			}
+			else 
+			{
+				fprintf(out, "%i, %lf,, %lf\n", j, streamParams->maxCompTimer[i][j],streamParams->maxWaitTimer[i][j]); 
+			} 
 		} 
 	} 
 

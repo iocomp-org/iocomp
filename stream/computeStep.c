@@ -35,11 +35,15 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	 */ 
 	for(int i = 0; i < 4; i++)
 	{
+		int writeCounter = 0; 
 		for(int j = 0; j < LOOPCOUNT; j ++)
 		{	
 			streamParams->compTimer[i][j] = 0.0; 
 			streamParams->waitTimer[i][j] = 0.0; 
-			streamParams->sendTimer[i][j] = 0.0; 
+			if(!j%streamParams->writeFreq){ // as write timer will have a different range 
+				streamParams->sendTimer[i][writeCounter] = 0.0; 
+				writeCounter++; 
+			} 
 		}	
 	}
 
