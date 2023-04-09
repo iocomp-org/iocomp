@@ -32,9 +32,9 @@ int getPair(struct iocomp_params *iocompParams)
 	if(iocompParams->colour == ioColour) 
 	{
 		int source; 
-		if(globalSize > NODESIZE*2)
+		if(globalSize > iocompParams->NODESIZE*2)
 		{
-			source = globalRank - NODESIZE; 
+			source = globalRank - iocompParams->NODESIZE; 
 		}
 		else
 		{
@@ -58,9 +58,9 @@ int getPair(struct iocomp_params *iocompParams)
 	{
 		int dest; 
 
-		if(globalSize > NODESIZE*2)
+		if(globalSize > iocompParams->NODESIZE*2)
 		{
-			dest = globalRank + NODESIZE; 
+			dest = globalRank + iocompParams->NODESIZE; 
 		}
 		else
 		{

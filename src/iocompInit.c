@@ -5,12 +5,10 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
-#define fullNode 256 
-
 /*
  * Initialises the library 
  */
-MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum)
+MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum, int fullNode)
 {
 
 #ifndef NDEBUG
@@ -20,8 +18,14 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
 	iocompParams->NDIM = NUM_DIM; // set number of dimensions
 	iocompParams->ioLibNum = ioLibNum; // set selection of I/O library 
-	assert(iocompParams->ioLibNum < ioLibCount); // test for illegal values
-	assert(iocompParams->ioLibNum >= 0); // test for illegal values
+	iocompParams->NODESIZE = fullNode; // set size of node for comm splitting 
+
+	/*
+	 * assert tests for input parameters 
+	 */ 
+	assert(iocompParams->ioLibNum < ioLibCount); 
+	assert(iocompParams->ioLibNum >= 0);
+	assert(iocompParams->fullNode > 0); 
 
 #ifndef NDEBUG
 	printf("iocompInit -> variables declared flag %i, ndim %i, iolib %i\n", iocompParams->hyperthreadFlag, iocompParams->NDIM, iocompParams->ioLibNum); 

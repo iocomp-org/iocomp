@@ -1,12 +1,14 @@
 # define c compiler 
 CC = cc 
-CFLAGS = -Wall -Wpedantic -Werror -Wextra #-Wno-unused-variable -Wno-unused-but-set-variable -Werror=deprecated-declarations 
+CFLAGS = -Wall -Wpedantic -Werror -Wextra  
 
 # define compile time flags 
 # DNDEBUG for not including error messages 
 # DIOCOMP_TIMERS for printing out time taken to write by ioLibraries.c 
 # DADIOS2_USE_MPI for adios2 
-CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared -g -Og -O2 -DNDEBUG -DPRINT_ORDERING #-DIOCOMP_TIMERS 
+# DPRINT_ORDERING for printing out orders of splitting between compute and I/O
+# processes
+CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared -g -Og -O2 -DNDEBUG #-DPRINT_ORDERING #-DIOCOMP_TIMERS 
 
 # linker flags
 LFLAGS += -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
@@ -18,7 +20,7 @@ ODIR = Object_files
 DEPS = ../include/iocomp.h
 
 # define C source files 
-SRCS =   arrayParamsInit.c ioServer.c ioServerInitialise.c highlowOrdering.c checks.c getPair.c dataSend.c dataWait.c dataSendTest.c mpiWrite.c iocompInit.c commSplit.c ioLibraries.c stopSend.c  hdf5Write.c adios2Write.c mpiWrite.c 
+SRCS = $(wildcard *.c)
 
 # define executable file  
 MAIN = iocomp

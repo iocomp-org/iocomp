@@ -8,8 +8,6 @@
 #include "../include/iocomp.h"
 #define config_file "config.xml"
 
-#define fullNode 256 
-
 /*
  * Initialises the library 
  */

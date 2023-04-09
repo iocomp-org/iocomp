@@ -32,10 +32,10 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 	MPI_Comm_size(iocompParams->globalComm, &globalSize); 
   MPI_Get_processor_name (nodeName, &namelen);
 
-	int numNodes = (int)(globalSize/(NODESIZE*2)); 
-	int lastwholeNode = numNodes *NODESIZE*2; 
+	int numNodes = (int)(globalSize/(iocompParams->NODESIZE*2)); 
+	int lastwholeNode = numNodes *iocompParams->NODESIZE*2; 
 
-	if(globalSize <= NODESIZE*2)
+	if(globalSize <= iocompParams->NODESIZE*2)
 	{
 		if(globalRank < globalSize/2){
 			iocompParams->colour = compColour; 
@@ -51,10 +51,10 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 		if(globalRank < lastwholeNode){ // globalRank comes within full node? 
 			for(int x = 0; x <= numNodes; x+=2 ) 
 			{
-				if(globalRank <  (x+1)*NODESIZE && globalRank >= (x)*NODESIZE){
+				if(globalRank <  (x+1)*iocompParams->NODESIZE && globalRank >= (x)*iocompParams->NODESIZE){
 					iocompParams->colour = compColour; 
 				} 
-				if(globalRank >=  (x+1)*NODESIZE && globalRank < (x+2)*NODESIZE){
+				if(globalRank >=  (x+1)*iocompParams->NODESIZE && globalRank < (x+2)*iocompParams->NODESIZE){
 					iocompParams->colour = ioColour; 
 				} 
 			}

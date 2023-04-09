@@ -5,7 +5,6 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
-#define fullNode 256 
 #define HIGH_LOW 1
 #define FIXED_IO_RANK 0
 

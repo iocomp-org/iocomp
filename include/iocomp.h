@@ -14,7 +14,6 @@ extern "C" {
 
 #define ioColour 0
 #define compColour 1 
-#define NODESIZE 128
 #define ioLibCount 5
 #define NUM_DIM 2
 
@@ -41,50 +40,51 @@ void error_report_fn(int ierr, int line_no, char *file_name);
 */ 
 struct iocomp_params 
 {
-// setting up of interComms 
-MPI_Comm globalComm; 
-MPI_Comm ioServerComm; 
-MPI_Comm compServerComm; 
-MPI_Comm interComm; 
-MPI_Comm cartcomm; 
+	// setting up of interComms 
+	MPI_Comm globalComm; 
+	MPI_Comm ioServerComm; 
+	MPI_Comm compServerComm; 
+	MPI_Comm interComm; 
+	MPI_Comm cartcomm; 
 
-// sizes and ranks
-bool hyperthreadFlag;  
-int colour; 
-int ioServerRank; 
-int compServerRank;
-int ioServerSize; 
-int compServerSize;
+	// process parameters 
+	bool hyperthreadFlag;  
+	int colour; 
+	int ioServerRank; 
+	int compServerRank;
+	int ioServerSize; 
+	int compServerSize;
+	int NODESIZE; 
 
-// for data_output function 
-double writeTime; 
-char ioLibs[ioLibCount][100]; 
-int ioLibNum; // select ioLib 
+	// for data_output function 
+	double writeTime; 
+	char ioLibs[ioLibCount][100]; 
+	int ioLibNum; // select ioLib 
 
-// for io_libraries function 
-int NDIM; 
-size_t* localArray; 
-size_t* arrayStart; 
-size_t* globalArray; 
-size_t globalDataSize; 
-size_t localDataSize; 
-MPI_Datatype dataType; 
+	// for io_libraries function 
+	int NDIM; 
+	size_t* localArray; 
+	size_t* arrayStart; 
+	size_t* globalArray; 
+	size_t globalDataSize; 
+	size_t localDataSize; 
+	MPI_Datatype dataType; 
 
-// filenames 
-char *FILENAMES[5]; 
-// adios2 object 
-adios2_adios *adios;  
-// adios2 config file list 
-char *ADIOS2_IOENGINES[3]; 
-// adios2 io object 
-adios2_io* io; 
-// adios2 variable object 
-adios2_variable *var_iodata; 
+	// filenames 
+	char *FILENAMES[5]; 
+	// adios2 object 
+	adios2_adios *adios;  
+	// adios2 config file list 
+	char *ADIOS2_IOENGINES[3]; 
+	// adios2 io object 
+	adios2_io* io; 
+	// adios2 variable object 
+	adios2_variable *var_iodata; 
 
-// initialisation flags 
-int previousInit; // previously initialised counter 
-int previousCount; // previous element count 
-int adios2Init; // previous element count 
+	// initialisation flags 
+	int previousInit; // previously initialised counter 
+	int previousCount; // previous element count 
+	int adios2Init; // previous element count 
 
 #ifdef PRINT_ORDERING
 	int pairPrintCounter; // so that getPair messages are not printed more than once.
@@ -101,7 +101,7 @@ void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);
 void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm); 
 void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm ); 
 void highlowOrdering(struct iocomp_params *iocompParams); 
-MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum); // initialises the library 
+MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum, int NODESIZE); // initialises the library 
 void ioServerInitialise(struct iocomp_params *iocompParams); // initialise ioServer if ioProcessor 
 void testData(struct iocomp_params *iocompParams, int testFlag); // test data structures with flag to switch on/off  
 void stopSend(struct iocomp_params *iocompParams); // ghost send function that signals MPI_Sends are stopping
