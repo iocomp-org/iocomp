@@ -27,8 +27,7 @@ int main(int argc, char** argv)
    */ 
 
   int c;
-	nx = 10; 
-	ny = 10; 
+	size = 10; 
 	io = 0; 
   while (1)
   {
@@ -39,15 +38,14 @@ int main(int argc, char** argv)
       {"HT",   no_argument,       &HT_flag, 1},
       /* These options don’t set a flag.
          We distinguish them by their indices. */
-			{"nx",  required_argument, 0, 'd'}, 
-			{"ny",  required_argument, 0, 'e'}, 
-			{"io",  required_argument, 0, 'f'}, 
+			{"size",  required_argument, 0, 'd'}, 
+			{"io",  required_argument, 0, 'e'}, 
       {0, 0, 0, 0}
     };
     /* getopt_long stores the option index here. */
     int option_index = 0;
 
-    c = getopt_long (argc, argv, "d:e:f:",						long_options, &option_index);
+    c = getopt_long (argc, argv, "d:e:",						long_options, &option_index);
 
     /* Detect the end of the options. */
     if (c == -1)
@@ -66,12 +64,9 @@ int main(int argc, char** argv)
         break;
 			
 			case 'd':
-				nx = atoi(optarg); 
+				size = atoi(optarg); 
 
 			case 'e':
-				ny = atoi(optarg); 
-
-			case 'f':
 				io = atoi(optarg); 
 
       case '?':
@@ -94,12 +89,12 @@ int main(int argc, char** argv)
     if (HT_flag)
 		{
       puts ("HT flag is set to on");
-			printf("size of array %i x %i, IO num %i \n", nx, ny, io); 
+			printf("size of array %i IO num %i \n", size, io); 
 		} 
     else 
 		{
       puts ("HT flag is switched off"); 
-			printf("size of array %i x %i, IO num %i \n", nx, ny, io); 
+			printf("size of array %i IO num %i \n", size, io); 
 		} 
   } 
 
@@ -109,7 +104,7 @@ int main(int argc, char** argv)
 	 * iocomp - iocompInit initialises the ioServer 
 	 * and initialises the compute comm 
 	 */ 
-  MPI_Comm computeComm = iocompInit(&iocompParams,comm, HT_flag, io); 
+  MPI_Comm computeComm = iocompInit(&iocompParams,comm, HT_flag, io, NODESIZE); 
 #ifndef NDEBUG
   printf("stream->After intercommInit\n"); 
 #endif
@@ -123,8 +118,7 @@ int main(int argc, char** argv)
 	 * initialises the local array sizes 
 	 * and data size 
 	 */ 
-	// streamParams.localDataSize = pow(size,NDIM); 
-	streamParams.localDataSize = nx * ny;
+	streamParams.localDataSize = pow(size,NDIM); 
 	streamParams.writeFreq = (int)LOOPCOUNT/MAXWRITES; 
 #ifndef NDEBUG
   printf("stream-> localdatasize initialised with %li \n", streamParams.localDataSize); 
