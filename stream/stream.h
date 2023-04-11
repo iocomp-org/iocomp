@@ -9,6 +9,7 @@
 #define SCALE		1
 #define ADD			2
 #define TRIAD		3
+#define NODESIZE 128
 
 
 // number of iterations for averaging the stream tests 
