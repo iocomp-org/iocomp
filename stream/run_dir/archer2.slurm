@@ -1,5 +1,5 @@
 #!/bin/bash --login
-#SBATCH --job-name=str_frq
+#SBATCH --job-name=stream
 #SBATCH --nodes=1
 #SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
@@ -16,7 +16,7 @@ module load xthi
 module swap craype-network-ofi craype-network-ucx 
 module swap cray-mpich cray-mpich-ucx 
 module load cray-hdf5-parallel
-module load arm/forge
+#module load arm/forge
 
 # Setup environment
 export PPN=${SLURM_NTASKS_PER_NODE}
@@ -29,9 +29,7 @@ export MAP=0
 export STREAM_DIR=$(cd ${SLURM_SUBMIT_DIR}/../../ && pwd) 
 export EXE=${STREAM_DIR}/stream/test
 
-# Make new directory 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
-SIZE=256
 i=${SLURM_ARRAY_TASK_ID} 
 HALF_CORES=$((${SLURM_NTASKS_PER_NODE}/2)) 
 FULL_CORES=$((${SLURM_NTASKS_PER_NODE})) 
@@ -40,19 +38,19 @@ TOTAL_RANKS=$(($SLURM_NNODES * $SLURM_NTASKS_PER_NODE))
 
 echo "Job started " $(date +"%T") # start time
 
-for IO in {0..4}
+for IO in {0..3}
 do 
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1.1/LOOP100/MPITest/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
+  export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1.1/GLOBAL/LOOP100/WRITE10/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
 
   # Case 1 
   source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
-	wait 
-  # Case 2
-	source ${SLURM_SUBMIT_DIR}/slurm_files/oversubscribe.sh 
-	wait 
+  wait 
+#  # Case 2
+#	source ${SLURM_SUBMIT_DIR}/slurm_files/oversubscribe.sh 
+#	wait 
   # Case 3
-	source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
-	wait 
+  source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
+  wait 
   # Case 4
   source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
 	wait 

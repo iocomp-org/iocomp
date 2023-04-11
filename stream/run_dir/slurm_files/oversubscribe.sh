@@ -26,7 +26,7 @@ bar=$(IFS=, ; echo "${vals[*]}")
 if (( ${MAP} == 1  )); then 
 map -n $TOTAL_RANKS --mpiargs="--hint=nomultithread --distribution=block:block --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} --overcommit" ${EXE} --HT --size ${SIZE} --io ${IO}
 else 
-srun --hint=nomultithread --distribution=block:block --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} --overcommit ${EXE} --HT --size ${SIZE} --io ${IO} > test.out
+srun --hint=nomultithread --distribution=block:block --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} --overcommit ${EXE} --HT --size ${SIZE}  --io ${IO} > test.out
 fi 
 
 echo "JOB ID"  $SLURM_JOBID >> test.out
