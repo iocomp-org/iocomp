@@ -5,7 +5,6 @@
 #include "mpi.h"
 #include "stream.h"
 #include "getopt.h"
-#define NODESIZE 128
 
 static int verbose_flag;
 static int HT_flag; 
@@ -103,7 +102,7 @@ int main(int argc, char** argv)
 	 * iocomp - iocompInit initialises the ioServer 
 	 * and initialises the compute comm 
 	 */ 
-  MPI_Comm computeComm = iocompInit(&iocompParams,comm, HT_flag, io, NODESIZE); 
+  MPI_Comm computeComm = iocompInit(&iocompParams,comm, HT_flag, io); 
 #ifndef NDEBUG
   printf("stream->After intercommInit\n"); 
 #endif
