@@ -3,8 +3,8 @@
 
 #define NDIM 2  // power to size
 #define KERNELS 4
-#define LOOPCOUNT 100 // number of compute steps 
-#define MAXWRITES 10 // max number of writes
+#define AVGLOOPCOUNT 1 // number of average cycles 
+#define COMPLOOPCOUNT 1 // number of compute cycles
 #define COPY		0
 #define SCALE		1
 #define ADD			2
@@ -18,13 +18,13 @@ struct stream_params{
 	int LOOP_COUNT; 
 	double timer_start; 
 	// timer arrays
-	double compTimer[KERNELS][LOOPCOUNT]; 
-	double waitTimer[KERNELS][LOOPCOUNT]; 
-	double sendTimer[KERNELS][MAXWRITES]; // num writes could be different to num compute
+	double compTimer[KERNELS][AVGLOOPCOUNT]; 
+	double waitTimer[KERNELS][AVGLOOPCOUNT]; 
+	double sendTimer[KERNELS][AVGLOOPCOUNT]; // num writes could be different to num compute
 	// reduced arrays to obtain max values 
-	double maxCompTimer[KERNELS][LOOPCOUNT]; 
-	double maxWaitTimer[KERNELS][LOOPCOUNT]; 
-	double maxSendTimer[KERNELS][MAXWRITES]; 
+	double maxCompTimer[KERNELS][AVGLOOPCOUNT]; 
+	double maxWaitTimer[KERNELS][AVGLOOPCOUNT]; 
+	double maxSendTimer[KERNELS][AVGLOOPCOUNT]; 
 	// average of those reduced arrays
 	double avgCompTimer[KERNELS]; 
 	double avgWaitTimer[KERNELS]; 
@@ -44,13 +44,22 @@ struct stream_params{
 extern struct stream_params streamParams; 
 // stream kernel functions 
 void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a); 
-void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
-void add(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a, double* b); 
-void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
 void scale(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* b); 
-void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
+void add(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a, double* b); 
 void triad(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a, double* b ); 
+// waiting functions 
+void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
+void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
+void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
 void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
+// sending functions 
+void copy_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c); 
+void scale_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* b); 
+void add_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c); 
+void triad_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* a); 
+//values check function 
+void test_vals(struct iocomp_params *iocompParams, struct stream_params* streamParams, double *testArray, char* KERNEL); 
+void checkArray(struct stream_params* streamParams, double *readData, double* testData); 
 
 // others. 
 void resultsOutput(struct stream_params* streamParams, MPI_Comm comm); 

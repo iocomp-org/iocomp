@@ -30,76 +30,107 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	double wallTime_start, wallTime_end; 
 	wallTime_start = MPI_Wtime(); 
 
+	int myrank, mysize;  
+	MPI_Comm_rank(comm, &myrank); 
+	MPI_Comm_size(comm, &mysize); 
+	streamParams->globalDataSize = mysize * streamParams->localDataSize; 
+
 	/*
 	 * Initialise the timers 
 	 */ 
-	for(int i = 0; i < 4; i++)
+	for(int i = 0; i < KERNELS; i++)
 	{
 		int writeCounter = 0; 
-		for(int j = 0; j < LOOPCOUNT; j ++)
+		for(int j = 0; j < AVGLOOPCOUNT; j ++)
 		{	
 			streamParams->compTimer[i][j] = 0.0; 
 			streamParams->waitTimer[i][j] = 0.0; 
-			if(!j%streamParams->writeFreq){ // as write timer will have a different range 
-				streamParams->sendTimer[i][writeCounter] = 0.0; 
-				writeCounter++; 
-			} 
+			streamParams->sendTimer[i][j] = 0.0; 
 		}	
 	}
 
 	/*
 	 * STREAM kernels ADD, COPY, SCALE and TRIAD
-	 * loop till LOOPCOUNT to get an average 
+	 * loop till AVGLOOPCOUNT to get an average 
 	 */
 	int k; 
-	for(k = 0; k< LOOPCOUNT; k++) // averaging 
+	for(k = 0; k< AVGLOOPCOUNT; k++) // averaging 
 	{
 #ifndef NDEBUG
 		printf("stream -> stream loop starts\n"); 
 #endif
 
 		/*
-		 * Wait for ADD(C) 
-		 * COPY(C) send
-		 * MPI Test for SCALE(B) and TRIAD(A)
+		 * COPY(C) + MPITEST(A)
+		 * WAIT(A)
+		 * SEND(C) 
 		 */ 
-		if(k>0) { add_wait(iocompParams, streamParams, k-1);}
-		copy(iocompParams, streamParams, k, c, a); 
+		copy(iocompParams, streamParams, k, c, a); // loop
+		if(k > 0) // wait for at least 1 iteration before A gets sent
+		{
+			triad_wait(iocompParams, streamParams, k-1);
+#ifdef TEST_VALS
+			if(!myrank)
+			{
+				test_vals(iocompParams, streamParams, a, "TRIAD"); 	
+			} 
+#endif 
+		} 
+		copy_send(iocompParams, streamParams, k,c);
 
 		/*
-		 * Wait for SCALE(B) 
-		 * SCALE(B) send 
-		 * MPI Test for COPY(C) and TRIAD(A)
+		 * SCALE(B) + MPITEST(C)
+		 * WAIT(C)
+		 * SEND(B)
 		 */ 
-		if(k>0) { scale_wait(iocompParams, streamParams, k-1);} 
 		scale(iocompParams, streamParams, k, c, b);
-
-		/*
-		 * Wait for COPY(C) 
-		 * ADD(C) send 
-		 * MPI Test for SCALE(B) and TRIAD(A)
-		 */ 
 		copy_wait(iocompParams, streamParams, k);
-		add(iocompParams, streamParams, k, c, a, b);
+#ifdef TEST_VALS
+		if(!myrank)
+		{
+			test_vals(iocompParams, streamParams, c, "COPY"); 	
+		} 
+#endif 
+		scale_send(iocompParams, streamParams, k, b );
 
 		/*
-		 * Wait for TRIAD(A) 
-		 * TRIAD(A) send  
-		 * MPI Test for ADD(C) and SCALE(B)
+		 * ADD(C) + MPITEST(B)
+		 * WAIT(B) 
+		 * SEND(C) 
 		 */ 
-		if(k>0){triad_wait(iocompParams, streamParams, k-1);} 
+		add(iocompParams, streamParams, k, c, a, b);
+		scale_wait(iocompParams, streamParams, k);
+#ifdef TEST_VALS
+		if(!myrank)
+		{
+			test_vals(iocompParams, streamParams, b, "SCALE"); 	
+		} 
+#endif 
+		add_send(iocompParams, streamParams, k, c );
+
+		/*
+		 * TRIAD(A) + MPITEST(C)
+		 * WAIT(C)
+		 * SEND(A)
+		 */ 
 		triad(iocompParams, streamParams, k, c, a, b);
-	
-	} // end avg loop  
-	
-	/*
-	 * for the last iteration of K, wait for all data to be sent. 
-	 */ 
-	if(k>0) { 
-		add_wait(iocompParams, streamParams, k-1); 
-		scale_wait(iocompParams, streamParams, k-1);
-		triad_wait(iocompParams, streamParams, k-1); 
+		add_wait(iocompParams, streamParams, k);
+#ifdef TEST_VALS
+		if(!myrank)
+		{
+			test_vals(iocompParams, streamParams, c, "ADD"); 
+		} 
+#endif 
+		triad_send(iocompParams, streamParams, k, a);
+	} // end avg loop 
+
+	triad_wait(iocompParams, streamParams, k-1); // catch any triad sending after loop ends 
+#ifdef TEST_VALS
+	if(!myrank)
+	{
+		test_vals(iocompParams, streamParams, a, "TRIAD"); 	
 	} 
+#endif 
 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
 #ifndef NDEBUG

@@ -11,25 +11,18 @@ void averages(struct stream_params* streamParams)
 {
 	for (int i = 0; i<KERNELS; i++)
 	{
-		double sum_comp, sum_wait, sum_send; 
-		sum_comp = 0.0; 
-		sum_wait = 0.0; 
-		sum_send = 0.0; 
-		// waits and comps run for LOOPCOUNT times 
-		for (int k = 0; k < LOOPCOUNT; k++)
+		// initialise timers 
+		streamParams->avgCompTimer[i]=0.0; 
+		streamParams->avgWaitTimer[i]=0.0; 
+		streamParams->avgSendTimer[i]=0.0; 
+		
+		// average out the values from compue values 
+		for (int k = 0; k < AVGLOOPCOUNT; k++)
 		{
-			sum_comp += (double)(streamParams->maxCompTimer[i][k]/(double)MAXWRITES); 
-			sum_wait += (double)(streamParams->maxWaitTimer[i][k]/(double)MAXWRITES); 
+			streamParams->avgCompTimer[i] += (double)(streamParams->maxCompTimer[i][k]/(double)AVGLOOPCOUNT); 
+			streamParams->avgWaitTimer[i] += (double)(streamParams->maxWaitTimer[i][k]/(double)AVGLOOPCOUNT); 
+			streamParams->avgSendTimer[i] += (double)streamParams->maxSendTimer[i][k]/(double)AVGLOOPCOUNT; 
 		}
-		// sends run for MAXWRITES times only
-		for (int k = 0; k < MAXWRITES; k++)
-		{
-			sum_send += (double)streamParams->maxSendTimer[i][k]/(double)MAXWRITES; 
-		}
-	
-		streamParams->avgWaitTimer[i] = sum_wait; 
-		streamParams->avgCompTimer[i] = sum_comp; 
-		streamParams->avgSendTimer[i] = sum_send; 
 	}
 } 
 
@@ -38,12 +31,11 @@ void reduceResults(struct stream_params* streamParams,MPI_Comm computeComm)
 {
 	for(int i = 0; i < KERNELS; i++)
 	{
-		MPI_Reduce(&streamParams->compTimer[i],&streamParams->maxCompTimer[i],LOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
-		MPI_Reduce(&streamParams->waitTimer[i],&streamParams->maxWaitTimer[i],LOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
-		MPI_Reduce(&streamParams->sendTimer[i],&streamParams->maxSendTimer[i],MAXWRITES, MPI_DOUBLE, MPI_MAX, 0,computeComm); // max writes could differ from loop count
+		MPI_Reduce(&streamParams->compTimer[i],&streamParams->maxCompTimer[i],AVGLOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
+		MPI_Reduce(&streamParams->waitTimer[i],&streamParams->maxWaitTimer[i],AVGLOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
+		MPI_Reduce(&streamParams->sendTimer[i],&streamParams->maxSendTimer[i],AVGLOOPCOUNT, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
 	} 
-
-	MPI_Reduce(&streamParams->wallTimer,&streamParams->maxWallTimer,1, MPI_DOUBLE, MPI_MAX, 0,computeComm); 
+	MPI_Reduce(&streamParams->wallTimer,&streamParams->maxWallTimer,1, MPI_DOUBLE, MPI_MAX, 0,computeComm); // wall time only 1 
 } 
 
 void resultsOutput(struct stream_params* streamParams, MPI_Comm computeComm)
@@ -78,17 +70,17 @@ void resultsOutput(struct stream_params* streamParams, MPI_Comm computeComm)
 	fprintf(out, "WallTimer,,,,,%lf \n", streamParams->maxWallTimer); 
 } 
 
-// print out all the values, not just average values 
+// print out all the values to a different value per kernel, not just average values 
 void fullResultsOutput(struct stream_params* streamParams)
 {
-
 	int test; 
 	// define filenames 
 	streamParams->fullResults_filename[0] = 		"copy.csv" ; 
 	streamParams->fullResults_filename[1] = 		"scale.csv"; 
 	streamParams->fullResults_filename[2] = 		"add.csv"		; 
 	streamParams->fullResults_filename[3] = 		"triad.csv"; 
-
+	
+	// go via each kernel 
 	for (int i = 0; i< KERNELS; i++)
 	{
 		FILE* out; 
@@ -112,18 +104,9 @@ void fullResultsOutput(struct stream_params* streamParams)
 		// write to file
 		fprintf(out, "Iter,CompTimer(s),WaitTimer(s),SendTimer(s)\n"); 
 		int writeCounter = 0; // reset for every kernel 
-		for (int j = 0; j < LOOPCOUNT; j++)
+		for (int j = 0; j < AVGLOOPCOUNT; j++)
 		{
-			if(j%streamParams->writeFreq==0) // if writing then write out send timer 
-			{
-				fprintf(out, "%i, %lf, %lf, %lf\n", j, streamParams->maxCompTimer[i][j], streamParams->maxWaitTimer[i][j], streamParams->maxSendTimer[i][writeCounter]); 
-				writeCounter ++; 
-			}
-			else //else leave blank
-			{
-				fprintf(out, "%i, %lf,%lf,\n", j, streamParams->maxCompTimer[i][j],streamParams->maxWaitTimer[i][j]); 
-			} 
+			fprintf(out, "%i, %lf,%lf,%lf \n", j, streamParams->maxCompTimer[i][j], streamParams->maxWaitTimer[i][j], streamParams->maxSendTimer[i][j]); 
 		} 
 	} 
-
 }
