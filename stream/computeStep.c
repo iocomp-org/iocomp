@@ -101,12 +101,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	} // end avg loop 
 
 	triad_wait(iocompParams, streamParams, k-1); // catch any triad sending after loop ends 
-#ifdef TEST_VALS
-	if(!myrank)
-	{
-		test_vals(iocompParams, streamParams, a, "TRIAD"); 	
-	} 
-#endif 
 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
 #ifndef NDEBUG
