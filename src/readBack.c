@@ -24,10 +24,14 @@ void readBack(struct iocomp_params* iocompParams)
 		 default:
 				break; 
 	}
-	// print out data stream
-	for(int i = 0; i < (int)iocompParams->globalDataSize; i++)
+	// print out data stream into 2D
+	for(int i = 0; i < (int)iocompParams->globalArray[0]; i++)
 	{
-		printf("%lf ", readData[i]); 
+		for(int j = 0; j < (int)iocompParams->globalArray[1]; j++)
+		{
+			printf("%lf,", readData[i*(int)iocompParams->globalArray[1] + j]); 
+		} 
+		printf("\n");  
 	}
 	free(readData); 
 	readData = NULL; 

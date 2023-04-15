@@ -36,7 +36,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #endif 
 			mpiiowrite(iodata, iocompParams);
 #ifdef IOCOMP_TIMERS
-			MPI_Barrier(comm);
+			MPI_Barrier(iocompParams->ioServerComm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 #endif 
 			break; 
@@ -47,7 +47,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #endif 
 			phdf5write(iodata, iocompParams);
 #ifdef IOCOMP_TIMERS
-			MPI_Barrier(comm);
+			MPI_Barrier(iocompParams->ioServerComm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 #endif 
 			break; 
@@ -61,7 +61,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #endif 
 			adioswrite(iodata, iocompParams);
 #ifdef IOCOMP_TIMERS
-			MPI_Barrier(comm);
+			MPI_Barrier(iocompParams->ioServerComm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 #endif 
 			break; 
@@ -74,7 +74,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	printf("ioLibraries -> end of switch for IO libraries\n");
 #endif
 #ifdef READBACK
-	MPI_Barrier(comm); // wait for all processes to finish writing data 
+	MPI_Barrier(iocompParams->ioServerComm); // wait for all processes to finish writing data 
 	if(!ioRank)
 	{
 		readBack(iocompParams); // read files and print them out 
