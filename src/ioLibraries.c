@@ -16,7 +16,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	printf("ioLibraries -> start\n");
 #endif
 	int ioSize, ioRank;
-	
+
 	MPI_Comm_size(iocompParams->ioServerComm, &ioSize);
 	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
 #ifndef NDEBUG
@@ -39,7 +39,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 #endif 
-		break; 
+			break; 
 
 		case 1: 
 #ifdef IOCOMP_TIMERS
@@ -50,11 +50,11 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 #endif 
-		break; 
-		/*
-		 * in case of adios2, initialisations of different engines obtained using config file
-		 * which takes place in ioServerInitialise
-		 */ 
+			break; 
+			/*
+			 * in case of adios2, initialisations of different engines obtained using config file
+			 * which takes place in ioServerInitialise
+			 */ 
 		case 2: case 3: case 4: 
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
@@ -64,8 +64,8 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 			MPI_Barrier(comm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 #endif 
-		break; 
-	
+			break; 
+
 		default:
 			printf("Invalid I/O library number \n"); 
 			break; 
@@ -74,10 +74,11 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 	printf("ioLibraries -> end of switch for IO libraries\n");
 #endif
 #ifdef READBACK
-			if(!ioRank)
-			{
-				readBack(iocompParams); // read files and print them out 
-			} 
+	MPI_Barrier(comm); // wait for all processes to finish writing data 
+	if(!ioRank)
+	{
+		readBack(iocompParams); // read files and print them out 
+	} 
 #endif
 
 #ifdef IOCOMP_TIMERS
