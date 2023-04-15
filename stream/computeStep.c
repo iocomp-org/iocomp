@@ -69,12 +69,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		if(k > 0) // wait for at least 1 iteration before A gets sent
 		{
 			triad_wait(iocompParams, streamParams, k-1);
-#ifdef TEST_VALS
-			if(!myrank)
-			{
-				test_vals(iocompParams, streamParams, a, "TRIAD"); 	
-			} 
-#endif 
 		} 
 		copy_send(iocompParams, streamParams, k,c);
 
@@ -85,12 +79,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		scale(iocompParams, streamParams, k, c, b);
 		copy_wait(iocompParams, streamParams, k);
-#ifdef TEST_VALS
-		if(!myrank)
-		{
-			test_vals(iocompParams, streamParams, c, "COPY"); 	
-		} 
-#endif 
 		scale_send(iocompParams, streamParams, k, b );
 
 		/*
@@ -100,12 +88,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		add(iocompParams, streamParams, k, c, a, b);
 		scale_wait(iocompParams, streamParams, k);
-#ifdef TEST_VALS
-		if(!myrank)
-		{
-			test_vals(iocompParams, streamParams, b, "SCALE"); 	
-		} 
-#endif 
 		add_send(iocompParams, streamParams, k, c );
 
 		/*
@@ -115,12 +97,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		triad(iocompParams, streamParams, k, c, a, b);
 		add_wait(iocompParams, streamParams, k);
-#ifdef TEST_VALS
-		if(!myrank)
-		{
-			test_vals(iocompParams, streamParams, c, "ADD"); 
-		} 
-#endif 
 		triad_send(iocompParams, streamParams, k, a);
 	} // end avg loop 
 

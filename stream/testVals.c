@@ -26,7 +26,7 @@ void test_vals(struct iocomp_params *iocompParams, struct stream_params* streamP
 	switch(iocompParams->ioLibNum)
 	{
 		case 0: 
-			readData = mpiRead(iocompParams, streamParams->globalDataSize); 
+			readData = mpiRead(iocompParams); 
 			checkArray(streamParams, readData, testData); 
 			break; 
 
