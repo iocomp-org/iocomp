@@ -43,32 +43,34 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	int root; 
 	size_t dim[2] = {0,0}; // setting this to be 2 dimensions   
 	root = (int)pow(iocompParams->localDataSize,power);
+
 	// if its a perfect square 
 	if(pow(root,iocompParams->NDIM) == iocompParams->localDataSize)
 	{
 		dim[0] = root; 
 		dim[1] = root; 
 	}
+
 	// if closest sq root is a perfect factorial 
-	else if(!iocompParams->localDataSize%root) 
+	else if(iocompParams->localDataSize%root == 0) 
 	{
 		dim[0] = root; 
 		dim[1] = iocompParams->localDataSize/root; 
 	}
 	// or if closest sq root is not a perfect factorial 
 	// then reduce the numbers and check for the closest factorials 
-	else
+	else if(iocompParams->localDataSize%root != 0)
 	{
 		for(int i = 1; i < root; i++)
 		{
-			if(!iocompParams->localDataSize%(root-i)) 
+			if(iocompParams->localDataSize%(root-i) == 0) 
 			{
 				dim[0] = root - i; 
 				dim[1] = iocompParams->localDataSize/(root-i); 
+				break; 
 			}
 		}
 	}
-
 	for (i = 0; i < iocompParams->NDIM; i++)
 	{
 		iocompParams->localArray[i] = dim[i]; 
@@ -76,7 +78,9 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	}
 
 	// final check if the array dimensions multiply to give the local data size 
-	assert(iocompParams->localArray[0]*iocompParams->localArray[1]!=iocompParams->localDataSize);
+	// size_t mult = (iocompParams->localArray[0]*iocompParams->localArray[1]); 
+	// print("value of multiplication %li and localdatasize %li \n ", mult, iocompParams->localDataSize); 
+	assert( (iocompParams->localArray[0]*iocompParams->localArray[1]) == iocompParams->localDataSize);
 
 	/*
 	 * globalArray is multiplied by total size of available processors 
