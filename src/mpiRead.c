@@ -3,23 +3,17 @@
 #include <stdbool.h>
 #include "../include/iocomp.h"
 
-double* mpiRead(struct iocomp_params *iocompParams, size_t globalSize)
+double* mpiRead(struct iocomp_params *iocompParams)
 {
 	FILE *fp;
 	double* iodata_test = NULL; 
-	iocompParams->globalDataSize=globalSize; 
 	printf("iocomp->globaldatasize val %li \n", iocompParams->globalDataSize); 
 	iodata_test = (double*)malloc(iocompParams->globalDataSize*sizeof(double));
 	size_t num; 
-	iocompParams->FILENAMES[iocompParams->ioLibNum] = "mpiio.dat"; 
 	fp = fopen(iocompParams->FILENAMES[iocompParams->ioLibNum],"r");
 
 	if (fp==NULL)
 	{
-		while(fp!=NULL)
-		{
-			wai
-		}
 		printf("Error: file %s not opening. Exiting \n", iocompParams->FILENAMES[iocompParams->ioLibNum]); 
 		exit(1); 
 	}

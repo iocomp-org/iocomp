@@ -73,6 +73,12 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 	printf("ioLibraries -> end of switch for IO libraries\n");
 #endif
+#ifdef READBACK
+			if(!ioRank)
+			{
+				readBack(iocompParams); // read files and print them out 
+			} 
+#endif
 
 #ifdef IOCOMP_TIMERS
 	if (!ioRank) 

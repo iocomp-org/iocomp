@@ -119,6 +119,14 @@ void free_check(double* test);
 void phdf5write(double* iodata, struct iocomp_params *iocompParams);  
 void mpiiowrite(double* iodata, struct iocomp_params *iocompParams);  
 void adioswrite(double* iodata, struct iocomp_params *iocompParams); 
+
+/*
+ * IO libraries read files
+ */ 
+double* mpiRead(struct iocomp_params *iocompParams); 
+double* hdf5Read(struct iocomp_params *iocompParams); 
+double* adios2Read(struct iocomp_params *iocompParams); 
+void readBack(struct iocomp_params *iocompParams);  
 #ifdef __cplusplus
 }
 #endif 

@@ -8,7 +8,7 @@ CFLAGS = -Wall -Wpedantic -Werror -Wextra
 # DADIOS2_USE_MPI for adios2 
 # DPRINT_ORDERING for printing out orders of splitting between compute and I/O
 # processes
-CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared -g -Og -O2 -DNDEBUG #-DPRINT_ORDERING #-DIOCOMP_TIMERS 
+CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared -g -Og -O2 -DNDEBUG -DREADBACK #-DPRINT_ORDERING #-DIOCOMP_TIMERS 
 
 # linker flags
 LFLAGS += -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
