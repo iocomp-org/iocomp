@@ -10,7 +10,8 @@ static int verbose_flag;
 static int HT_flag; 
 static int nx; 
 static int ny; 
-static int size; 
+static int size1; 
+static int size2; 
 static int io; 
 
 int main(int argc, char** argv)
@@ -27,7 +28,8 @@ int main(int argc, char** argv)
    */ 
 
   int c;
-	size = 10; 
+	size1 = 10; 
+	size2 = 10; 
 	io = 0; 
   while (1)
   {
@@ -38,14 +40,15 @@ int main(int argc, char** argv)
       {"HT",   no_argument,       &HT_flag, 1},
       /* These options don’t set a flag.
          We distinguish them by their indices. */
-			{"size",  required_argument, 0, 'd'}, 
-			{"io",  required_argument, 0, 'e'}, 
+			{"size1",  required_argument, 0, 'd'}, 
+			{"size2",  required_argument, 0, 'e'}, 
+			{"io",  required_argument, 0, 'f'}, 
       {0, 0, 0, 0}
     };
     /* getopt_long stores the option index here. */
     int option_index = 0;
 
-    c = getopt_long (argc, argv, "d:e:",						long_options, &option_index);
+    c = getopt_long (argc, argv, "d:e:f:",						long_options, &option_index);
 
     /* Detect the end of the options. */
     if (c == -1)
@@ -64,9 +67,12 @@ int main(int argc, char** argv)
         break;
 			
 			case 'd':
-				size = atoi(optarg); 
+				size1 = atoi(optarg); 
 
 			case 'e':
+				size2 = atoi(optarg); 
+
+			case 'f':
 				io = atoi(optarg); 
 
       case '?':
@@ -89,12 +95,12 @@ int main(int argc, char** argv)
     if (HT_flag)
 		{
       puts ("HT flag is set to on");
-			printf("size of array %i IO num %i \n", size, io); 
+			printf("size of array %i x %i IO num %i \n", size1, size2, io); 
 		} 
     else 
 		{
       puts ("HT flag is switched off"); 
-			printf("size of array %i IO num %i \n", size, io); 
+			printf("size of array %i x %i IO num %i \n", size1,size2, io); 
 		} 
   } 
 
@@ -116,9 +122,9 @@ int main(int argc, char** argv)
 	
 	/*
 	 * initialises the local array sizes 
-	 * and data size 
+	 * multiplying by size1 x size2
 	 */ 
-	streamParams.localDataSize = pow(size,NDIM); 
+	streamParams.localDataSize = size1*size2; 
 #ifndef NDEBUG
   printf("stream-> localdatasize initialised with %li \n", streamParams.localDataSize); 
 #endif
