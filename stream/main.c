@@ -10,8 +10,6 @@ static int verbose_flag;
 static int HT_flag; 
 static int nx; 
 static int ny; 
-static int size1; 
-static int size2; 
 static int io; 
 
 int main(int argc, char** argv)
@@ -28,8 +26,8 @@ int main(int argc, char** argv)
    */ 
 
   int c;
-	size1 = 10; 
-	size2 = 10; 
+	nx = 10; 
+	nx = 10; 
 	io = 0; 
   while (1)
   {
@@ -40,8 +38,8 @@ int main(int argc, char** argv)
       {"HT",   no_argument,       &HT_flag, 1},
       /* These options don’t set a flag.
          We distinguish them by their indices. */
-			{"size1",  required_argument, 0, 'd'}, 
-			{"size2",  required_argument, 0, 'e'}, 
+			{"nx",  required_argument, 0, 'd'}, 
+			{"ny",  required_argument, 0, 'e'}, 
 			{"io",  required_argument, 0, 'f'}, 
       {0, 0, 0, 0}
     };
@@ -67,10 +65,10 @@ int main(int argc, char** argv)
         break;
 			
 			case 'd':
-				size1 = atoi(optarg); 
+				nx = atoi(optarg); 
 
 			case 'e':
-				size2 = atoi(optarg); 
+				ny = atoi(optarg); 
 
 			case 'f':
 				io = atoi(optarg); 
@@ -95,12 +93,12 @@ int main(int argc, char** argv)
     if (HT_flag)
 		{
       puts ("HT flag is set to on");
-			printf("size of array %i x %i IO num %i \n", size1, size2, io); 
+			printf("size of array %i x %i IO num %i \n", nx, ny, io); 
 		} 
     else 
 		{
       puts ("HT flag is switched off"); 
-			printf("size of array %i x %i IO num %i \n", size1,size2, io); 
+			printf("size of array %i x %i IO num %i \n", nx, ny, io); 
 		} 
   } 
 
@@ -124,7 +122,7 @@ int main(int argc, char** argv)
 	 * initialises the local array sizes 
 	 * multiplying by size1 x size2
 	 */ 
-	streamParams.localDataSize = size1*size2; 
+	streamParams.localDataSize = nx*ny;  
 #ifndef NDEBUG
   printf("stream-> localdatasize initialised with %li \n", streamParams.localDataSize); 
 #endif
