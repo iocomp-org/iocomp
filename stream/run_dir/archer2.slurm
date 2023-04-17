@@ -1,5 +1,5 @@
 #!/bin/bash --login
-#SBATCH --job-name=stream
+#SBATCH --job-name=str_test
 #SBATCH --nodes=1
 #SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
@@ -36,25 +36,28 @@ FULL_CORES=$((${SLURM_NTASKS_PER_NODE}))
 HALF_NODES=$((${SLURM_NNODES}/2))
 TOTAL_RANKS=$(($SLURM_NNODES * $SLURM_NTASKS_PER_NODE))
 
+NX=4096
+NY=4096
 echo "Job started " $(date +"%T") # start time
 
-for IO in {0..3}
+for IO in {0..0}
 do 
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1.1/GLOBAL/LOOP100/WRITE10/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
+  #export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1.1/GLOBAL/LOOP100/WRITE10/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
+  export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1.2/TEST/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
 
-  # Case 1 
-  source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
-  wait 
+#  # Case 1 
+#  source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
+#  wait 
 #  # Case 2
 #	source ${SLURM_SUBMIT_DIR}/slurm_files/oversubscribe.sh 
 #	wait 
   # Case 3
   source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
   wait 
-  # Case 4
-  source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
-	wait 
-
+#  # Case 4
+#  source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
+#	wait 
+#
 done 
 
 echo $(module list) 
