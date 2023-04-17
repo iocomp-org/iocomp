@@ -46,8 +46,16 @@ void ioServer(struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 		VERBOSE_1(ioRank,"ioServer -> start of ioServer loop, iter %i ioRank %i \n", iter, ioRank ); 
 #endif
+
 		MPI_Probe(source, tag, iocompParams->globalComm, &status); // Probe for additional messages. 
+#ifndef NDEBUG
+		VERBOSE_1(ioRank,"ioServer -> MPI probe called \n"); 
+#endif
+
 		MPI_Get_count(&status, MPI_DOUBLE, &test_count); // get count 
+#ifndef NDEBUG
+		VERBOSE_1(ioRank,"ioServer -> MPI get count %i \n", test_count); 
+#endif
 
 		/*
 		 * Check for count = 0, means stop recieving messages 
