@@ -7,12 +7,17 @@
 
 void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 {   
-	int			i, ierr, nprocs, myrank; 
+	int			i, ierr, nprocs, ioRank; 
 
 	int			dims[iocompParams->NDIM],
 					coords[iocompParams->NDIM], 
 					periods[iocompParams->NDIM]; 
 	
+	ierr = MPI_Comm_size(iocompParams->cartcomm, &nprocs);
+	mpi_error_check(ierr); 
+	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
+	mpi_error_check(ierr); 
+
 	// initialise dims, periods and coords
 	for(i = 0; i < iocompParams->NDIM; i++)
 	{
@@ -21,7 +26,7 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 		periods[i] = 0; 
 	}
 #ifndef NDEBUG  
-	printf("mpiWrite -> MPI variables init completed with NDIM %i\n", iocompParams->NDIM); 
+	VERBOSE_1(ioRank,"mpiWrite -> MPI variables init completed with NDIM %i\n", iocompParams->NDIM); 
 #endif 
 
 	// MPI initialisations
@@ -29,23 +34,19 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 	MPI_Status      status;
 	MPI_Datatype    filetype; 
 
-	ierr = MPI_Comm_size(iocompParams->cartcomm, &nprocs);
-	mpi_error_check(ierr); 
-	ierr = MPI_Comm_rank(iocompParams->cartcomm, &myrank);
-	mpi_error_check(ierr); 
 #ifndef NDEBUG   
-	printf("mpiWrite -> MPI rank %i and size %i \n", myrank, nprocs); 
+	VERBOSE_1(ioRank,"mpiWrite -> MPI rank %i and size %i \n", ioRank, nprocs); 
 #endif 
 	ierr = MPI_Cart_get(iocompParams->cartcomm, iocompParams->NDIM, dims, periods, coords); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   
-	printf("mpiWrite -> MPI cartget \n"); 
+	VERBOSE_1(ioRank,"mpiWrite -> MPI cartget \n"); 
 #endif 
 	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum],
 			MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   
-	printf("mpiWrite -> MPI file open\n"); 
+	VERBOSE_1(ioRank,"mpiWrite -> MPI file open\n"); 
 #endif 
 
 	// Initialise int arrays for MPIIO 
@@ -53,7 +54,7 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 	int globalArray[iocompParams->NDIM]; 
 	int arrayStart[iocompParams->NDIM]; 
 #ifndef NDEBUG   
-	printf("mpiWrite -> declare arrays in integers\n"); 
+	VERBOSE_1(ioRank,"mpiWrite -> declare arrays in integers\n"); 
 #endif 
 	
 	for(i = 0; i < iocompParams->NDIM; i++)
@@ -66,26 +67,22 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 	}
 
 #ifndef NDEBUG   
-	printf("mpiWrite -> globalArray for rank %i \n",myrank); 
-	for (int i = 0; i < iocompParams->NDIM; i++){printf("%i ", globalArray[i]); }
-	printf("\nmpiWrite -> localArray for rank %i \n",myrank); 
-	for (int i = 0; i < iocompParams->NDIM; i++){printf("%i ", localArray[i]); }
-	printf("\nmpiWrite -> arrayStart for rank %i \n",myrank); 
-	for (int i = 0; i < iocompParams->NDIM; i++){printf("%i ", arrayStart[i]); }
-	printf("\n"); 
+	VERBOSE_1(ioRank,"mpiWrite -> globalArray:[%i,%i] \n",globalArray[0], globalArray[1] ); 
+	VERBOSE_1(ioRank,"mpiWrite -> localArray:[%i,%i] \n",localArray[0], localArray[1] ); 
+	VERBOSE_1(ioRank,"mpiWrite -> startArray:[%i,%i] \n",arrayStart[0], arrayStart[1] ); 
 #endif 
 
 	ierr = MPI_Type_create_subarray(iocompParams->NDIM, globalArray, localArray, arrayStart,
 			MPI_ORDER_C, MPI_DOUBLE, &filetype); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   
-	printf("mpiWrite ->MPI create subarray \n"); 
+	VERBOSE_1(ioRank,"mpiWrite -> MPI create subarray \n"); 
 #endif                                   
 
 	ierr = MPI_Type_commit(&filetype); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   
-	printf("mpiWrite ->MPI type commit \n"); 
+	VERBOSE_1(ioRank,"mpiWrite -> MPI type commit \n"); 
 #endif       
 
 	// Open file
@@ -93,14 +90,14 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 					MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   
-	printf("mpiWrite ->MPI file open \n"); 
+	VERBOSE_1(ioRank,"mpiWrite -> MPI file open \n"); 
 #endif       
 
 	// Set view for this process using datatype 
 	ierr = MPI_File_set_view(fh, 0, MPI_DOUBLE, filetype, "native",  MPI_INFO_NULL); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   
-	printf("mpiWrite ->MPI file set view \n"); 
+	VERBOSE_1(ioRank,"mpiWrite -> MPI file set view \n"); 
 #endif       
 
 	int total_data = 1; 
@@ -111,19 +108,19 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 	ierr = MPI_File_write_all(fh, iodata, total_data, MPI_DOUBLE, &status);   
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   
-	printf("mpiWrite ->MPI file write all \n"); 
+	VERBOSE_1(ioRank,"mpiWrite -> MPI file write all \n"); 
 #endif       
 
 	ierr = MPI_File_close(&fh);
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   
-	printf("mpiWrite ->MPI file close \n"); 
+	VERBOSE_1(ioRank,"mpiWrite -> MPI file close \n"); 
 #endif       
 
 	ierr = MPI_Type_free(&filetype); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   
-	printf("mpiWrite ->MPI filetype\n"); 
+	VERBOSE_1(ioRank,"mpiWrite -> MPI filetype\n"); 
 #endif       
 }
 

@@ -8,9 +8,6 @@
 void ioServer(struct iocomp_params *iocompParams)
 {
 
-#ifndef NDEBUG
-	printf("ioServer -> started\n"); 
-#endif
 	int ierr, ioRank; 
 
 	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
@@ -28,7 +25,7 @@ void ioServer(struct iocomp_params *iocompParams)
 	tag = source; 
 
 #ifndef NDEBUG
-	printf("ioServer -> Recieving data starts from source rank %i \n", source); 
+	VERBOSE_1(ioRank,"ioServer -> Recieving data starts from source rank %i \n", source); 
 #endif
 	int test_count = 1; 
 	int iter = 0; 
@@ -47,7 +44,7 @@ void ioServer(struct iocomp_params *iocompParams)
 	for(;;) 
 	{
 #ifndef NDEBUG
-		printf("ioServer -> start of ioServer loop, iter %i ioRank %i \n", iter, ioRank ); 
+		VERBOSE_1(ioRank,"ioServer -> start of ioServer loop, iter %i ioRank %i \n", iter, ioRank ); 
 #endif
 		MPI_Probe(source, tag, iocompParams->globalComm, &status); // Probe for additional messages. 
 		MPI_Get_count(&status, MPI_DOUBLE, &test_count); // get count 
@@ -58,7 +55,7 @@ void ioServer(struct iocomp_params *iocompParams)
 		if(!test_count)
 		{
 #ifndef NDEBUG
-			printf("ioServer -> ghost messaged recieved \n"); 	
+			VERBOSE_1(ioRank,"ioServer -> ghost messaged recieved \n"); 	
 #endif
 			int ghost;  
 			ierr = MPI_Recv(&ghost, 0, MPI_INT, source, tag,
@@ -119,15 +116,14 @@ void ioServer(struct iocomp_params *iocompParams)
 			} 
 
 #ifndef NDEBUG
-			printf("ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
+			VERBOSE_1(ioRank,"ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
 #endif
 			ierr = MPI_Recv(recv, test_count, MPI_DOUBLE, source, tag,
 					iocompParams->globalComm,&status);
 			mpi_error_check(ierr); 
 
 #ifndef NDEBUG
-			printf("ioServer -> Recv data coming from rank %i \n",source ); 
-			//for(i = 0; i < (int)iocompParams->localDataSize; i++) { printf("%lf ",recv[i]); }
+			VERBOSE_1(ioRank,"ioServer -> Recv data coming from rank %i \n",source ); 
 #endif
 
 			/*
@@ -135,7 +131,7 @@ void ioServer(struct iocomp_params *iocompParams)
 			 * Parameters passed using iocompParams  
 			 */ 
 #ifndef NDEBUG
-			printf("ioServer -> Send to ioLibraries \n"); 
+			VERBOSE_1(ioRank,"ioServer -> Send to ioLibraries \n"); 
 #endif
 			ioLibraries(recv, iocompParams); 
 		}  

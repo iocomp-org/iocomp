@@ -8,11 +8,13 @@
 /*
  * Initialises the library 
  */
-MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum, int fullNode)
+MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, 
+	int ioLibNum, int fullNode)
 {
-
+	int myGlobalrank; 
+	MPI_Comm_rank(comm, &myGlobalrank); 
 #ifndef NDEBUG
-	printf("iocompInit -> Start of intercomm_init\n"); 
+	VERBOSE_1(myGlobalrank, "iocompInit -> Start of intercomm_init\n"); 
 #endif
 
 	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
@@ -28,7 +30,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	assert(iocompParams->NODESIZE > 0); 
 
 #ifndef NDEBUG
-	printf("iocompInit -> variables declared flag %i, ndim %i, iolib %i\n", iocompParams->hyperthreadFlag, iocompParams->NDIM, iocompParams->ioLibNum); 
+	VERBOSE_1(myGlobalrank,"iocompInit -> variables declared flag %i, ndim %i, iolib %i\n", iocompParams->hyperthreadFlag, iocompParams->NDIM, iocompParams->ioLibNum); 
 #endif
 	/*
 	 * comm split splits communicators in 2, assigns colour to ranks
@@ -36,7 +38,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 */ 
 	comm_split(iocompParams, comm); 
 #ifndef NDEBUG
-	printf("iocompInit -> communicator split up and colour assigned \n"); 
+	VERBOSE_1(myGlobalrank, "iocompInit -> communicator split up and colour assigned \n"); 
 #endif
 
 	/*
@@ -56,16 +58,18 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 */ 
 	if(iocompParams->hyperthreadFlag && iocompParams->colour == ioColour)
 	{
+			int ioRank; 
+			MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 #ifndef NDEBUG
-			printf("ioServerInitialise -> ioServer called\n"); 
+			VERBOSE_1(ioRank,"ioServerInitialise -> ioServer called\n"); 
 #endif
 			ioServer(iocompParams);
 #ifndef NDEBUG
-			printf("ioServerInitialise -> After ioServer\n"); 
+			VERBOSE_1(ioRank,"ioServerInitialise -> After ioServer\n"); 
 #endif
 			MPI_Finalize(); 
 #ifndef NDEBUG
-			printf("ioServerInitialise -> After finalize\n"); 
+			VERBOSE_1(ioRank,"ioServerInitialise -> After finalize\n"); 
 #endif
 			exit(0); 
 	}
@@ -76,8 +80,5 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 * is returned
 	 */ 
 	return(iocompParams->compServerComm); 
-#ifndef NDEBUG
-	printf("iocomp_init -> end of function\n"); 
-#endif
 } 
 

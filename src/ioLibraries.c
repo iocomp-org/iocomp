@@ -12,19 +12,16 @@
  */ 
 void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 {
-#ifndef NDEBUG
-	printf("ioLibraries -> start\n");
-#endif
 	int ioSize, ioRank;
 
 	MPI_Comm_size(iocompParams->ioServerComm, &ioSize);
 	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
 #ifndef NDEBUG
-	printf("ioLibraries -> initialise filenames \n");
+	VERBOSE_1(ioRank,"ioLibraries -> initialise filenames \n");
 #endif
 
 #ifndef NDEBUG
-	printf("ioLibraries -> Pass off to I/O libraries with ioLibNum %i  \n", iocompParams->ioLibNum);
+	VERBOSE_1(ioRank,"ioLibraries -> Pass off to I/O libraries with ioLibNum %i  \n", iocompParams->ioLibNum);
 #endif
 
 	switch(iocompParams->ioLibNum){
@@ -71,7 +68,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 			break; 
 	} 
 #ifndef NDEBUG
-	printf("ioLibraries -> end of switch for IO libraries\n");
+	VERBOSE_1(ioRank,"ioLibraries -> end of switch for IO libraries\n");
 #endif
 #ifdef READBACK
 	MPI_Barrier(iocompParams->ioServerComm); // wait for all processes to finish writing data 

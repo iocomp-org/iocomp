@@ -14,10 +14,6 @@
 void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 {
 
-#ifndef NDEBUG
-	printf("arrayParamsInit -> start \n"); 
-#endif
-
 	int ioSize,ioRank, i; 
 	MPI_Comm_size(comm, &ioSize);
 	MPI_Comm_rank(comm, &ioRank);
@@ -29,7 +25,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	iocompParams->globalArray = malloc(sizeof(size_t)*iocompParams->NDIM);
 	iocompParams->dataType = MPI_DOUBLE; // data type of sent and recvd data 
 #ifndef NDEBUG
-	printf("arrayParamsInit -> local, global size initialised \n"); 
+	VERBOSE_1(ioRank,"arrayParamsInit -> local, global size initialised \n"); 
 #endif
 
 	/*
@@ -89,13 +85,12 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	 */ 
 	iocompParams->globalArray[0]*= ioSize; // assumes outermost dimension gets expanded by each rank 
 
-#ifndef NDEBUG
-	printf("arrayParamsInit -> localArray initialised \n"); 
-	for (int i = 0; i < iocompParams->NDIM; i++){printf("%li ", iocompParams->localArray[i]); }
-	printf("\narrayParamsInit -> globalArray initialised with size \n"); 
-	for (int i = 0; i < iocompParams->NDIM; i++){printf("%li ", iocompParams->globalArray[i]); }
-	printf("\narrayParamsInit -> NDIM initialised with size %i\n", iocompParams->NDIM); 
-#endif
+
+#ifndef NDEBUG   
+	VERBOSE_1(ioRank,"arrayParamsInit-> globalArray:[%li,%li] \n",iocompParams->globalArray[0], iocompParams->globalArray[1] ); 
+	VERBOSE_1(ioRank,"arrayParamsInit-> localArray:[%li,%li] \n", iocompParams->localArray[0],  iocompParams->localArray[1] ); 
+	// VERBOSE_1(ioRank,"arrayParamsInit-> startArray:[%li,%li] \n", iocompParams->arrayStart[0],  iocompParams->arrayStart[1] ); 
+#endif 
 
 	/*
 	 * Array local, global data sizes initialise 
@@ -103,7 +98,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	iocompParams->globalDataSize = iocompParams->localDataSize * ioSize; 
 	
 #ifndef NDEBUG
-	printf("arrayParamsInit -> size definitions, localDataSize %li, globalDataSize %li\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
+	VERBOSE_1(ioRank,"arrayParamsInit -> size definitions, localDataSize %li, globalDataSize %li\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
 #endif
 
 	/*
@@ -111,7 +106,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	 */ 
 	iocompParams->arrayStart = malloc(sizeof(int)*iocompParams->NDIM);
 #ifndef NDEBUG
-	printf("arrayParamsInit -> initialise arrayStart \n");
+	VERBOSE_1(ioRank,"arrayParamsInit -> initialise arrayStart \n");
 #endif
 
 	for (int i = 0; i < iocompParams->NDIM; i++)
@@ -120,7 +115,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	}
 	iocompParams->arrayStart[0] = ioRank * iocompParams->localArray[0]; // assuming ar_size has uniform dimensions. 
 #ifndef NDEBUG
-	printf("arrayParamsInit -> arrayStart initialised ioRank = %i\n",ioRank);
+	VERBOSE_1(ioRank,"arrayParamsInit -> arrayStart initialised ioRank = %i\n",ioRank);
 #endif
 
 } 

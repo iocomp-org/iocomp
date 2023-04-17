@@ -8,25 +8,13 @@
 
 void stopSend(struct iocomp_params *iocompParams)
 {
-
-#ifndef NDEBUG
-	printf("stopSend -> starts \n"); 
-#endif
+	int globalRank, ierr, compRank;  
+	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank);
+	ierr = MPI_Comm_rank(iocompParams->compServerComm, &compRank);
+	mpi_error_check(ierr); 
 
 	if(iocompParams->hyperthreadFlag) // check if flag is true? 
 	{
-		int ierr; 
-#ifndef NDEBUG
-		printf("stopSend -> HT flag \n"); 
-#endif
-		int globalRank; 
-		ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank);
-		mpi_error_check(ierr); 
-
-#ifndef NDEBUG
-		printf("stopSend -> globalRank \n"); 
-#endif
-
 		/*
 		 *	Send data using MPI_Isend to computeRank in interComm  
 		 *	which is paired with the same rank of IO server 
@@ -37,14 +25,14 @@ void stopSend(struct iocomp_params *iocompParams)
 
 		double ghost = 0.0; 
 
-#ifndef NDEBUG
+#ifdef VERBOSE_2
 		printf("stopSend -> Sending data starts from compProcessor with globalRank %i to ioProcessor with globalRank  %i  \n", globalRank, dest); 
 #endif
 		ierr = MPI_Send(&ghost, 0 , MPI_DOUBLE, dest, tag,
 				iocompParams->globalComm); // every rank sends its portion of data 
 		mpi_error_check(ierr); 
 #ifndef NDEBUG
-		printf("stopSend -> Sending data stop \n"); 
+		VERBOSE_1(compRank,"stopSend -> Ghost message sent \n"); 
 #endif
 	}
 	/*
@@ -57,6 +45,9 @@ void stopSend(struct iocomp_params *iocompParams)
 		{
 			adios2_finalize(iocompParams->adios); 
 		} 
+#ifndef NDEBUG
+		VERBOSE_1(compRank,"stopSend -> adios2 finalised with HT flag=%i \n", iocompParams->hyperthreadFlag); 
+#endif
 	}
 } 
 

@@ -28,9 +28,13 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 	int globalRank, globalSize; 
   char nodeName[MPI_MAX_PROCESSOR_NAME];
 	int namelen; 
-	MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
-	MPI_Comm_size(iocompParams->globalComm, &globalSize); 
-  MPI_Get_processor_name (nodeName, &namelen);
+	int ierr; 
+	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
+	mpi_error_check(ierr); 
+	ierr = MPI_Comm_size(iocompParams->globalComm, &globalSize); 
+	mpi_error_check(ierr); 
+  ierr = MPI_Get_processor_name (nodeName, &namelen);
+	mpi_error_check(ierr); 
 
 	int numNodes = (int)(globalSize/(iocompParams->NODESIZE*2)); 
 	int lastwholeNode = numNodes *iocompParams->NODESIZE*2; 
