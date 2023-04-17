@@ -35,6 +35,8 @@ void error_report_fn(int ierr, int line_no, char *file_name);
 
 #endif
 
+#define VERBOSE_1(rank, ...) if(!rank) fprintf(stderr, __VA_ARGS__)
+
 /*
 * structure passes around to most functions in program 
 */ 
