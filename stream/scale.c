@@ -6,7 +6,7 @@
 #include "stream.h"
 #define constant 5.00
 
-void scale(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* b)
+void scale(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* c, double* b)
 {
 #ifndef NDEBUG
 	printf("stream -> SCALE starts\n"); 
@@ -19,14 +19,17 @@ void scale(struct iocomp_params *iocompParams, struct stream_params* streamParam
 		{
 			b[i] = constant * c[i]; 
 #ifdef MPI_TESTS
-			streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY]); 
+			if(iter%WRITE_FREQ == 0) // only when scale sends data 
+			{
+				streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY]); 
+			} 
 #endif 
 		}
 	} 
-	streamParams->compTimer[SCALE][k] = MPI_Wtime() - timerStart;  // computeTime for SCALE 
+	streamParams->compTimer[SCALE][iter] = MPI_Wtime() - timerStart;  // computeTime for SCALE 
 }
 
-void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k)
+void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter)
 {
 #ifndef NDEBUG
 	printf("stream -> ADD wait\n"); 
@@ -34,13 +37,13 @@ void scale_wait(struct iocomp_params *iocompParams, struct stream_params* stream
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
 	dataWait(iocompParams,&streamParams->requestArray[SCALE]);
-	streamParams->waitTimer[SCALE][k] = MPI_Wtime() - timerStart; // wait time for SCALE
+	streamParams->waitTimer[SCALE][iter] = MPI_Wtime() - timerStart; // wait time for SCALE
 #ifndef NDEBUG
 	printf("stream -> ADD finished\n"); 
 #endif
 }
 
-void scale_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* b)
+void scale_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* b)
 {
 #ifndef NDEBUG
 	printf("stream -> ADD send start\n"); 
@@ -48,7 +51,7 @@ void scale_send(struct iocomp_params *iocompParams, struct stream_params* stream
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
 	dataSend(b,iocompParams, &streamParams->requestArray[SCALE],streamParams->localDataSize); // send data off using dataSend
-	streamParams->sendTimer[SCALE][k] = MPI_Wtime() - timerStart; // wait time for ADD
+	streamParams->sendTimer[SCALE][iter] = MPI_Wtime() - timerStart; // wait time for ADD
 #ifndef NDEBUG
 	printf("stream -> SCALE send finished with these values\n"); 
 	for(int i = 0; i< streamParams->localDataSize; i++){ printf("%lf",b[i]); }

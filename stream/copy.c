@@ -18,7 +18,7 @@ void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams
 		{
 			c[i] = a[i]; 
 #ifdef MPI_TESTS
-			if(iter>0) // need to wait for at least 1 iteration
+			if( (iter+1)%WRITE_FREQ == 0 && iter > 0) // test for triad which sent message in previous loop
 			{
 				streamParams->mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]);
 			} 

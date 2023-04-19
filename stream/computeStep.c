@@ -52,9 +52,10 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	/*
 	 * STREAM kernels ADD, COPY, SCALE and TRIAD
 	 * loop till AVGLOOPCOUNT to get an average 
+	 * and send data for every multiple of WRITE_FREQ
 	 */
-	int k; 
-	for(k = 0; k< AVGLOOPCOUNT; k++) // averaging 
+	int iter; 
+	for(iter = 0; iter< AVGLOOPCOUNT; iter++) // averaging 
 	{
 #ifndef NDEBUG
 		printf("stream -> stream loop starts\n"); 
@@ -65,42 +66,55 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * WAIT(A)
 		 * SEND(C) 
 		 */ 
-		copy(iocompParams, streamParams, k, c, a); // loop
-		if(k > 0) // wait for at least 1 iteration before A gets sent
+		copy(iocompParams, streamParams, iter, c, a); // loop
+		if( (iter+1)%WRITE_FREQ == 0 && iter > 0) 
 		{
-			triad_wait(iocompParams, streamParams, k-1);
+			// wait for at least one iteration of TRIAD before waiting for TRIAD
+			triad_wait(iocompParams, streamParams, iter-1);
 		} 
-		copy_send(iocompParams, streamParams, k,c);
+		if(iter%WRITE_FREQ==0)
+		{
+			copy_send(iocompParams, streamParams, iter,c);
+		} 
 
 		/*
 		 * SCALE(B) + MPITEST(C)
 		 * WAIT(C)
 		 * SEND(B)
 		 */ 
-		scale(iocompParams, streamParams, k, c, b);
-		copy_wait(iocompParams, streamParams, k);
-		scale_send(iocompParams, streamParams, k, b );
+		scale(iocompParams, streamParams, iter, c, b);
+		if(iter%WRITE_FREQ==0)
+		{
+			copy_wait(iocompParams, streamParams, iter);
+			scale_send(iocompParams, streamParams, iter, b );
+		} 
 
 		/*
 		 * ADD(C) + MPITEST(B)
 		 * WAIT(B) 
 		 * SEND(C) 
 		 */ 
-		add(iocompParams, streamParams, k, c, a, b);
-		scale_wait(iocompParams, streamParams, k);
-		add_send(iocompParams, streamParams, k, c );
+		add(iocompParams, streamParams, iter, c, a, b);
+		if(iter%WRITE_FREQ==0)
+		{
+			scale_wait(iocompParams, streamParams, iter);
+			add_send(iocompParams, streamParams, iter, c );
+		} 
 
 		/*
 		 * TRIAD(A) + MPITEST(C)
 		 * WAIT(C)
 		 * SEND(A)
 		 */ 
-		triad(iocompParams, streamParams, k, c, a, b);
-		add_wait(iocompParams, streamParams, k);
-		triad_send(iocompParams, streamParams, k, a);
+		triad(iocompParams, streamParams, iter, c, a, b);
+		if(iter%WRITE_FREQ==0)
+		{
+			add_wait(iocompParams, streamParams, iter);
+			triad_send(iocompParams, streamParams, iter, a);
+		} 
 	} // end avg loop 
 
-	triad_wait(iocompParams, streamParams, k-1); // catch any triad sending after loop ends 
+	triad_wait(iocompParams, streamParams, iter-1); // catch any triad sending after loop ends 
 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
 #ifndef NDEBUG

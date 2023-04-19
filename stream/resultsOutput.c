@@ -17,11 +17,12 @@ void averages(struct stream_params* streamParams)
 		streamParams->avgSendTimer[i]=0.0; 
 		
 		// average out the values from compue values 
+		int avgCount = AVGLOOPCOUNT/WRITE_FREQ; 
 		for (int k = 0; k < AVGLOOPCOUNT; k++)
 		{
-			streamParams->avgCompTimer[i] += (double)(streamParams->maxCompTimer[i][k]/(double)AVGLOOPCOUNT); 
-			streamParams->avgWaitTimer[i] += (double)(streamParams->maxWaitTimer[i][k]/(double)AVGLOOPCOUNT); 
-			streamParams->avgSendTimer[i] += (double)streamParams->maxSendTimer[i][k]/(double)AVGLOOPCOUNT; 
+			streamParams->avgCompTimer[i] += (double)(streamParams->maxCompTimer[i][k]/(double)avgCount); 
+			streamParams->avgWaitTimer[i] += (double)(streamParams->maxWaitTimer[i][k]/(double)avgCount); 
+			streamParams->avgSendTimer[i] += (double)streamParams->maxSendTimer[i][k]/(double)avgCount; 
 		}
 	}
 } 
