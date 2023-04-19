@@ -125,9 +125,9 @@ void adioswrite(double* iodata, struct iocomp_params *iocompParams);
 /*
  * IO libraries read files
  */ 
-double* mpiRead(struct iocomp_params *iocompParams); 
-double* hdf5Read(struct iocomp_params *iocompParams); 
-double* adios2Read(struct iocomp_params *iocompParams); 
+void mpiRead(struct iocomp_params *iocompParams, double* iodata_test); 
+void hdf5Read(struct iocomp_params *iocompParams, double* iodata_test); 
+void adios2Read(struct iocomp_params *iocompParams, double* iodata_test); 
 void readBack(struct iocomp_params *iocompParams);  
 #ifdef __cplusplus
 }

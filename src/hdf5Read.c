@@ -11,13 +11,10 @@
 
 /*** READ SERIALLY ***/ 
 
-double* hdf5Read(struct iocomp_params *iocompParams)
+void hdf5Read(struct iocomp_params *iocompParams, double* iodata_test)
 {
 	hid_t  file_id, dataset_id; /* identifiers */
 	herr_t status;
-
-	double* iodata_test = NULL; 
-	iodata_test = (double*)malloc(iocompParams->globalDataSize*sizeof(double));
 
 	/* Open an existing file. */
 	file_id = H5Fopen(iocompParams->FILENAMES[iocompParams->ioLibNum], H5F_ACC_RDWR, H5P_DEFAULT);
@@ -35,9 +32,6 @@ double* hdf5Read(struct iocomp_params *iocompParams)
 	/* Close the file. */
 	status = H5Fclose(file_id);
 	mpi_error_check(status); 
-
-	// free iodata_read
-	return iodata_test; 
 }
 
 

@@ -7,22 +7,23 @@
 void readBack(struct iocomp_params* iocompParams) 
 {
 	double* readData = NULL; 
+	readData = (double*)malloc(iocompParams->globalDataSize*sizeof(double)); 
 	switch(iocompParams->ioLibNum)
 	{
 		case 0: 
-			readData = mpiRead(iocompParams); 
+			mpiRead(iocompParams, readData); 
 			break; 
 
 		case 1: 
-			readData = hdf5Read(iocompParams); 
+			hdf5Read(iocompParams, readData); 
 			break; 
 
 		case 2: case 3: case 4: 
-			readData = adios2Read(iocompParams); 
+			adios2Read(iocompParams, readData); 
 			break; 
 
-		 default:
-				break; 
+		default:
+			break; 
 	}
 	// print out data stream into 2D
 	for(int i = 0; i < (int)iocompParams->globalArray[0]; i++)

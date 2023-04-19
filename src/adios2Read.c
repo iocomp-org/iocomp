@@ -6,12 +6,10 @@
 #include <stdbool.h>
 #include "../include/iocomp.h"
 
-double* adios2Read(struct iocomp_params *iocompParams)
+void adios2Read(struct iocomp_params *iocompParams, double* iodata_test)
 {   
 	int											ierr; 	
 	float                   times = 0; 
-	double* iodata_test = NULL; 
-	iodata_test = (double*)malloc(iocompParams->globalDataSize*sizeof(double));
 
 	/*
 	 * Since this is rank 0 testing for files, adios2 is declared serially.
@@ -38,7 +36,5 @@ double* adios2Read(struct iocomp_params *iocompParams)
 
 	engine = NULL; 
 	adios2_finalize(adios); 
-
-	return iodata_test; 
 }
 
