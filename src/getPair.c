@@ -20,14 +20,14 @@ int getPair(struct iocomp_params *iocompParams)
 	 */ 
 	int ierr; 
 	int globalRank, globalSize; 
-  char nodeName[MPI_MAX_PROCESSOR_NAME];
+	char nodeName[MPI_MAX_PROCESSOR_NAME];
 	int namelen; 
 
 	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
 	mpi_error_check(ierr); 
 	ierr = MPI_Comm_size(iocompParams->globalComm, &globalSize); 
 	mpi_error_check(ierr);
-  MPI_Get_processor_name (nodeName, &namelen);
+	MPI_Get_processor_name (nodeName, &namelen);
 
 	if(iocompParams->colour == ioColour) 
 	{
@@ -43,7 +43,8 @@ int getPair(struct iocomp_params *iocompParams)
 #ifdef PRINT_ORDERING
 		if(!iocompParams->pairPrintCounter) // only print message first time? 
 		{
-			printf("%10s | %20i | %20i | %20i | %20s | %20i \n", "IO", globalRank, globalSize, sched_getcpu(), nodeName, source); 
+			printf("%10s | %20i | %20i | %20i | %20s | %20i \n", "IO", globalRank, globalSize, 
+					sched_getcpu(), nodeName, source); 
 			iocompParams->pairPrintCounter = 1; 
 		} 
 #endif
@@ -52,7 +53,8 @@ int getPair(struct iocomp_params *iocompParams)
 
 	/*
 	 * compServer is pairing up with the upper half of ranks. 
-	 * if total size is 8, and compRank is 0 in globalComm, its pairing with 4th rank of globalComm. 
+	 * if total size is 8, and compRank is 0 in globalComm, its pairing with the 
+	 * 4th rank of globalComm. 
 	 */ 
 	else if(iocompParams->colour == compColour) 
 	{
@@ -68,10 +70,11 @@ int getPair(struct iocomp_params *iocompParams)
 		} 
 #ifdef PRINT_ORDERING
 		if(!iocompParams->pairPrintCounter) // only print message first time? 
-			{
-			printf("%10s | %20i | %20i | %20i | %20s | %20i \n", "COMP", globalRank, globalSize, sched_getcpu(), nodeName, dest); 
-				iocompParams->pairPrintCounter = 1; 
-			} 
+		{
+			printf("%10s | %20i | %20i | %20i | %20s | %20i \n", "COMP", globalRank, globalSize,
+					sched_getcpu(), nodeName, dest); 
+			iocompParams->pairPrintCounter = 1; 
+		} 
 #endif
 		return(dest); 
 	}

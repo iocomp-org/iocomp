@@ -17,7 +17,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	int ioSize,ioRank, i; 
 	MPI_Comm_size(comm, &ioSize);
 	MPI_Comm_rank(comm, &ioRank);
-	
+
 	/*
 	 * Array size specs initialise
 	 */ 
@@ -96,7 +96,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	 * Array local, global data sizes initialise 
 	 */ 
 	iocompParams->globalDataSize = iocompParams->localDataSize * ioSize; 
-	
+
 #ifndef NDEBUG
 	VERBOSE_1(ioRank,"arrayParamsInit -> size definitions, localDataSize %li, globalDataSize %li\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
 #endif

@@ -23,11 +23,11 @@ void adioswrite(double* iodata, struct iocomp_params *iocompParams)
 #endif
 	if(!iocompParams->adios2Init) // check if declared before so that adios2 variable is not defined again. 
 	{
-	iocompParams->var_iodata = adios2_define_variable(iocompParams->io, "iodata", adios2_type_double,iocompParams->NDIM,
-			iocompParams->globalArray, iocompParams->arrayStart, iocompParams->localArray, adios2_constant_dims_true); 
+		iocompParams->var_iodata = adios2_define_variable(iocompParams->io, "iodata", adios2_type_double,iocompParams->NDIM,
+				iocompParams->globalArray, iocompParams->arrayStart, iocompParams->localArray, adios2_constant_dims_true); 
 		iocompParams->adios2Init = 1;  
 #ifndef NDEBUG
-	printf("adios2Write->variable defined \n");
+		printf("adios2Write->variable defined \n");
 #endif
 	}
 

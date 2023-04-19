@@ -2,15 +2,6 @@
 #include <stdlib.h>
 #include "stdio.h"
 
-//void mpi_error_check(int ierr)
-//{
-//	if (ierr != MPI_SUCCESS)
-//	{
-//		printf("MPI call fails \n"); 
-//		exit(0); 
-//	}
-//}
-//
 void malloc_check(double* test)
 {
 	if(test == NULL)
@@ -37,9 +28,9 @@ void free_check(double* test)
  */
 void error_report_fn(int ierr, int line_no, char *file_name)
 {
-  if (ierr != 0)
-  {
-    printf("ERROR: received error code %i at line %i of %s\n", ierr, line_no, file_name);
-    exit(ierr);
-  }
+	if (ierr != 0)
+	{
+		printf("ERROR: received error code %i at line %i of %s\n", ierr, line_no, file_name);
+		exit(ierr);
+	}
 }

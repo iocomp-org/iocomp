@@ -69,7 +69,8 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		{	   
 			highlowOrdering(iocompParams); 
 #ifdef PRINT_ORDERING
-			iocompParams->pairPrintCounter = 0; // so that io and comm processes dont print too many messages. 
+			// so that io and comm processes dont print too many messages.
+			iocompParams->pairPrintCounter = 0;  
 #endif 
 		}
 #ifndef NDEBUG
@@ -79,15 +80,16 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		/*
 		 * split MPI comm
 		 */
-		ierr =	MPI_Comm_split(iocompParams->globalComm, iocompParams->colour, globalRank,	&splitComm);  // splitcommunicator based on colour 
+		ierr =	MPI_Comm_split(iocompParams->globalComm, iocompParams->colour, globalRank,	&splitComm);   
 		mpi_error_check(ierr);
 #ifndef NDEBUG
 		VERBOSE_1(globalRank,"commSplit -> MPI comm split \n"); 
 #endif
 
 		if(iocompParams->colour == compColour)
-		{
-			ierr = MPI_Comm_dup(splitComm, &iocompParams->compServerComm); // compute communicator for compute tasks and colour != 0 
+		{	
+			// compute communicator for compute tasks and colour != 0
+			ierr = MPI_Comm_dup(splitComm, &iocompParams->compServerComm);  
 			mpi_error_check(ierr); 
 #ifndef NDEBUG
 			VERBOSE_1(globalRank,"commSplit -> MPI compServerComm initialised \n"); 
@@ -96,6 +98,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 
 		else
 		{
+			// all other values get ioServerComm
 			ierr = MPI_Comm_dup(splitComm, &iocompParams->ioServerComm); // compute communicator for compute tasks and colour != 0 
 			mpi_error_check(ierr); 
 #ifndef NDEBUG
