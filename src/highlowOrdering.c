@@ -27,58 +27,53 @@
  * NODE 4 896	-	1023	: I/O
  */
 
-
 void highlowOrdering(struct iocomp_params *iocompParams) 
 {
 	int globalRank, globalSize; 
-  char nodeName[MPI_MAX_PROCESSOR_NAME];
+	char nodeName[MPI_MAX_PROCESSOR_NAME];
 	int namelen; 
 	int ierr; 
 	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
 	mpi_error_check(ierr); 
 	ierr = MPI_Comm_size(iocompParams->globalComm, &globalSize); 
 	mpi_error_check(ierr); 
-  ierr = MPI_Get_processor_name (nodeName, &namelen);
+	ierr = MPI_Get_processor_name (nodeName, &namelen);
 	mpi_error_check(ierr); 
 
 	int numNodes = (int)(globalSize/(iocompParams->NODESIZE*2)); 
 	int lastwholeNode = numNodes *iocompParams->NODESIZE*2; 
+	int currentNode, nodeRank; 
 
-	if(globalSize <= iocompParams->NODESIZE*2)
+	if(globalRank < lastwholeNode) // globalRank comes within full node?
 	{
-		if(globalRank < globalSize/2){
+		currentNode = (int)( globalRank/(iocompParams->NODESIZE*2) );
+		nodeRank = globalRank - currentNode*iocompParams->NODESIZE*2;
+		if(nodeRank < iocompParams->NODESIZE)
+		{
 			iocompParams->colour = compColour; 
-		} 
-		else{
+		}
+		else
+		{
 			iocompParams->colour = ioColour; 
 		}
-	} 
+	}
 
-	else{           
-
-		if(globalRank < lastwholeNode){ // globalRank comes within full node? 
-			for(int x = 0; x <= numNodes+2; x+=2 ) 
-			{
-				if(globalRank <  (x+1)*iocompParams->NODESIZE && globalRank >= (x)*iocompParams->NODESIZE){
-					iocompParams->colour = compColour; 
-				} 
-				if(globalRank >=  (x+1)*iocompParams->NODESIZE && globalRank < (x+2)*iocompParams->NODESIZE){
-					iocompParams->colour = ioColour; 
-				} 
-			}
-		} 
-
-		else if(globalRank >= lastwholeNode){ // globalRank is not within full node. 
-			if(globalRank  < (globalSize + lastwholeNode)/2){
-				iocompParams->colour = compColour; 
-			} 
-			else{
-				iocompParams->colour = ioColour; 
-			} 
-
+	else if(globalRank >= lastwholeNode)// globalRank is not within full node.
+	{
+		if(globalRank  < (globalSize + lastwholeNode)/2)
+		{
+			iocompParams->colour = compColour; 
 		}
-	} 
+		else
+		{
+			iocompParams->colour = ioColour; 
+		}
+	}
+
 	// check if colour is compColour or ioColour. 
 	assert(iocompParams->colour == 0 || iocompParams->colour == 1); 
+#ifndef NDEBUG
+	VERBOSE_1(globalRank,"highLowOrdering -> ranks assigned their colours %i with global rank %i \n", iocompParams->colour, globalRank); 
+#endif
 } 
 
