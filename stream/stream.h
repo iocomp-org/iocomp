@@ -3,8 +3,9 @@
 
 #define NDIM 2  // power to size
 #define KERNELS 4
-#define AVGLOOPCOUNT 1 // number of average cycles 
+#define AVGLOOPCOUNT 20 // number of average cycles 
 #define COMPLOOPCOUNT 1 // number of compute cycles
+#define WRITE_FREQ 5 // frequency of writing 
 #define COPY		0
 #define SCALE		1
 #define ADD			2
@@ -58,8 +59,8 @@ void scale_send(struct iocomp_params *iocompParams, struct stream_params* stream
 void add_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c); 
 void triad_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* a); 
 //values check function 
-void test_vals(struct iocomp_params *iocompParams, struct stream_params* streamParams, double *testArray, char* KERNEL); 
-void checkArray(struct stream_params* streamParams, double *readData, double* testData); 
+//void test_vals(struct iocomp_params *iocompParams, struct stream_params* streamParams, double *testArray, char* KERNEL); 
+//void checkArray(struct stream_params* streamParams, double *readData, double* testData); 
 
 // others. 
 void resultsOutput(struct stream_params* streamParams, MPI_Comm comm); 
