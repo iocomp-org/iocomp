@@ -15,13 +15,18 @@
  * in 1 node when using Hyperthreads 
  * After 1 node the logic operates in a step function way 
  * and divides ranks into nodes given by NODESIZE
+ * For ex: for archer2, this should be the division given for 4nodes with
+ * nodesize 128
+ * NODE 1 0		- 127		: compute 
+ * NODE 1 128 - 255		: I/O
+ * NODE 2 256 - 383		: compute 
+ * NODE 2 384	- 511 	: I/O
+ * NODE 3 512	-	639 	: compute
+ * NODE 3 640	-	767 	: I/O
+ * NODE 4 768	-	895 	: compute
+ * NODE 4 896	-	1023	: I/O
  */
 
-/*
- * PRINT_ORDERING flag prints the node id and the core id of different 
- * processes 
- */ 
-int sched_getcpu();
 
 void highlowOrdering(struct iocomp_params *iocompParams) 
 {
@@ -49,7 +54,6 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 		}
 	} 
 
-	// size greater than 256 
 	else{           
 
 		if(globalRank < lastwholeNode){ // globalRank comes within full node? 
@@ -74,5 +78,7 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 
 		}
 	} 
+	// check if colour is compColour or ioColour. 
+	assert(iocompParams->colour == 0 || iocompParams->colour == 1); 
 } 
 
