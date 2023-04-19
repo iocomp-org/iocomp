@@ -53,7 +53,7 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 	else{           
 
 		if(globalRank < lastwholeNode){ // globalRank comes within full node? 
-			for(int x = 0; x <= numNodes; x+=2 ) 
+			for(int x = 0; x <= numNodes+2; x+=2 ) 
 			{
 				if(globalRank <  (x+1)*iocompParams->NODESIZE && globalRank >= (x)*iocompParams->NODESIZE){
 					iocompParams->colour = compColour; 
