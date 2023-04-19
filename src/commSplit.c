@@ -27,17 +27,17 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 	MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
 
 #ifndef NDEBUG
-		VERBOSE_1(globalRank,"commSplit -> comm duplicate \n"); 
+	VERBOSE_1(globalRank,"commSplit -> comm duplicate \n"); 
 #endif
-	
+
 	// header file for printing ordering 
 #ifdef PRINT_ORDERING
-		MPI_Barrier(iocompParams->globalComm); // so that the header is written first.
-		if(!globalRank) // header file by global rank 0
-		{
-			printf("%*s | %*s | %*s | %*s | %*s | %*s \n", 10, "TYPE", MAXSPACE, "MPI RANK", 
+	MPI_Barrier(iocompParams->globalComm); // so that the header is written first.
+	if(!globalRank) // header file by global rank 0
+	{
+		printf("%*s | %*s | %*s | %*s | %*s | %*s \n", 10, "TYPE", MAXSPACE, "MPI RANK", 
 				MAXSPACE, "MPI SIZE", MAXSPACE,"CPU-ID", MAXSPACE, "NODE-ID", MAXSPACE, "PAIR");
-		} 
+	} 
 #endif
 
 	if(iocompParams->hyperthreadFlag) // check if flag is true? 
@@ -67,7 +67,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		 */ 
 		if(ordering == HIGH_LOW)
 		{	   
-      highlowOrdering(iocompParams); 
+			highlowOrdering(iocompParams); 
 #ifdef PRINT_ORDERING
 			iocompParams->pairPrintCounter = 0; // so that io and comm processes dont print too many messages. 
 #endif 
@@ -84,13 +84,13 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 #ifndef NDEBUG
 		VERBOSE_1(globalRank,"commSplit -> MPI comm split \n"); 
 #endif
-		
+
 		if(iocompParams->colour == compColour)
 		{
 			ierr = MPI_Comm_dup(splitComm, &iocompParams->compServerComm); // compute communicator for compute tasks and colour != 0 
 			mpi_error_check(ierr); 
 #ifndef NDEBUG
-		VERBOSE_1(globalRank,"commSplit -> MPI compServerComm initialised \n"); 
+			VERBOSE_1(globalRank,"commSplit -> MPI compServerComm initialised \n"); 
 #endif
 		} 
 
@@ -99,10 +99,10 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 			ierr = MPI_Comm_dup(splitComm, &iocompParams->ioServerComm); // compute communicator for compute tasks and colour != 0 
 			mpi_error_check(ierr); 
 #ifndef NDEBUG
-		VERBOSE_1(globalRank,"commSplit -> MPI ioServerComm initialised \n"); 
+			VERBOSE_1(globalRank,"commSplit -> MPI ioServerComm initialised \n"); 
 #endif
 		} 
-	
+
 
 #ifdef VERBOSE_2
 		int ioRank, computeRank; 
@@ -119,7 +119,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 #endif
 	}
 
-	
+
 	else // if HT flag is false 
 	{
 		ierr = MPI_Comm_dup(iocompParams->globalComm, &iocompParams->compServerComm); // compute communicator for compute tasks and colour != 0 
