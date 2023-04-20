@@ -3,9 +3,9 @@
 
 #define NDIM 2  // power to size
 #define KERNELS 4
-#define AVGLOOPCOUNT 20 // number of average cycles 
+#define AVGLOOPCOUNT 100 // number of average cycles 
 #define COMPLOOPCOUNT 1 // number of compute cycles
-#define WRITE_FREQ 5 // frequency of writing 
+#define WRITE_FREQ 10 // frequency of writing 
 #define COPY		0
 #define SCALE		1
 #define ADD			2

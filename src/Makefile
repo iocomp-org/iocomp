@@ -1,15 +1,17 @@
 # define c compiler 
 CC = cc 
-CFLAGS = -Wall -Wpedantic -Werror -Wextra  
 
 # define compile time flags 
+# DADIOS2_USE_MPI for adios2 
+CFLAGS = -Wall -Wpedantic -Werror -Wextra -fPIC  -DADIOS2_USE_MPI -shared -g -Og -O2  
+
+# enable and disable different iocomp related flags 
 # DNDEBUG for not including error messages 
 # DIOCOMP_TIMERS for printing out time taken to write by ioLibraries.c 
-# DADIOS2_USE_MPI for adios2 
 # DPRINT_ORDERING for printing out orders of splitting between compute and I/O
 # processes
 # DREADACK for printing after the data is written into different files 
-CFLAGS += -fPIC  -DADIOS2_USE_MPI -shared -g -Og -O2 -DNDEBUG -DREADBACK #-DPRINT_ORDERING #-DIOCOMP_TIMERS 
+IOCOMP_FLAGS += -DNDEBUG #-DREADBACK #-DPRINT_ORDERING #-DIOCOMP_TIMERS 
 
 # linker flags
 LFLAGS += -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
@@ -33,10 +35,10 @@ _OBJS = $(SRCS:.c=.o)
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
 $(ODIR)/%.o: %.c $(DEPS)
-	$(CC) $(CFLAGS) ${LFLAGS} -c $< -o $@
+	$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -c $< -o $@
 
 $(MAIN): $(OBJS) 
-	$(CC) $(CFLAGS) ${LFLAGS} -o ../lib/libiocomp.so Object_files/*.o
+	$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -o ../lib/libiocomp.so Object_files/*.o
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of
