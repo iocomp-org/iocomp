@@ -48,6 +48,15 @@ void stopSend(struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 		VERBOSE_1(compRank,"stopSend -> adios2 finalised with HT flag=%i \n", iocompParams->hyperthreadFlag); 
 #endif
+		// delete file function is called in ioServer
+		// for non HT implementation, files should be deleted after the data is sent
+		// through 
+#ifndef DNDelete
+		if(compRank == 0)
+		{
+			deleteFiles(iocompParams); // delete files 
+		} 
+#endif
 	}
 } 
 
