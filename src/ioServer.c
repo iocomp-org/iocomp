@@ -80,6 +80,7 @@ void ioServer(struct iocomp_params *iocompParams)
 				adios2_finalize(iocompParams->adios); 
 			} 
 #ifndef DNDelete
+			MPI_Barrier(iocompParams->ioServerComm); // wait for all files to finish writing  
 			if(ioRank == 0)
 			{
 				deleteFiles(iocompParams); // delete files 

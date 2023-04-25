@@ -1,4 +1,3 @@
-
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
@@ -52,6 +51,7 @@ void stopSend(struct iocomp_params *iocompParams)
 		// for non HT implementation, files should be deleted after the data is sent
 		// through 
 #ifndef DNDelete
+		MPI_Barrier(iocompParams->compServerComm); 
 		if(compRank == 0)
 		{
 			deleteFiles(iocompParams); // delete files 
