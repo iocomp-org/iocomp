@@ -11,7 +11,8 @@ CFLAGS = -Wall -Wpedantic -Werror -Wextra -fPIC  -DADIOS2_USE_MPI -shared -g -Og
 # DPRINT_ORDERING for printing out orders of splitting between compute and I/O
 # processes
 # DREADACK for printing after the data is written into different files 
-IOCOMP_FLAGS += -DNDEBUG #-DREADBACK #-DPRINT_ORDERING #-DIOCOMP_TIMERS 
+# DNDELETE for disabling the delete file commands after writing is completed  
+IOCOMP_FLAGS += -DNDEBUG #-DREADBACK #-DPRINT_ORDERING #-DIOCOMP_TIMERS #-DNDELETE
 
 # linker flags
 LFLAGS += -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 

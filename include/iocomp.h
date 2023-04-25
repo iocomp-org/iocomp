@@ -111,9 +111,12 @@ void dataWait(struct iocomp_params *iocompParams, MPI_Request *request); // wrap
 int dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request); // wrapper function to implement testing of send data IF HT flag is on 
 
 // checks 
-//void mpi_error_check(int ierr);
 void malloc_check(double* test); 
 void free_check(double* test); 
+
+// delete files and directories  
+// int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf); 
+void deleteFiles(struct iocomp_params* iocompParams); 
 
 /*
 * IO libraries headers 

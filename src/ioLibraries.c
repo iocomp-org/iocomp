@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
-#include <sys/time.h>
 #include <math.h>
 #include <sys/time.h>
 #include "../include/iocomp.h"
