@@ -26,8 +26,8 @@ DEPS = ../include/iocomp.h
 # define C source files 
 SRCS = $(wildcard *.c)
 
-# define executable file  
-MAIN = iocomp
+# define library name  
+MAIN = ../lib/libiocomp.so
 
 .PHONY: depend clean
 
@@ -39,7 +39,7 @@ $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -c $< -o $@
 
 $(MAIN): $(OBJS) 
-	$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -o ../lib/libiocomp.so Object_files/*.o
+	$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -o $(MAIN) Object_files/*.o
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of
