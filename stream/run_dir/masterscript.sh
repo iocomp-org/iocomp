@@ -1,15 +1,37 @@
-# bash script to perform global scaling on stream 
-# export SIZE variable to archer2 slurm script 
-
 PPN=128 # tasks per node 
-GLOBAL_SIZE=4096 # size of array per core for 1 node jobs 
 
-for i in $(seq 0 3) # 1 till 16 nodes 
+## WEAK SCALING  
+for i in $(seq 0 3)
 do 
-
-  SIZE_LOCAL=$((${GLOBAL_SIZE}/(2**${i}))) # local size per node 
-  NUM_NODES=$((2**(2*${i})))
-  echo NODES ${NUM_NODES} SIZE  ${SIZE_LOCAL} 
-  sbatch --export=ALL,SIZE=${SIZE_LOCAL} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --time=5:00:00  archer2.slurm 
-
+  NUM_NODES=$(( 2**${i})) # 2^i nodes  
+  DIR=noMPItest/v1.1.3/WEAK
+  if ((x<3)) # different times for different number of nodes 
+  then 
+    TIME_VAR=4:00:00
+  elif ((x==3))
+  then 
+    TIME_VAR=6:00:00
+  else 
+    TIME_VAR=8:00:00
+  fi
+  NX=4096
+  NY=4096
+  echo NODES ${NUM_NODES} PPN ${PPN} TIME ${TIME} ARRAY ${NX} x ${NY}  
+  sbatch --export=ALL,NX=${NX},NY=${NY},DIR=${DIR} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --array=0-2 --time=${TIME_VAR} archer2.slurm 
 done 
+
+### STRONG SCALING 
+#DIR=v1.1.3/STRONG
+#for i in $(seq 0 3)
+#do 
+#  NUM_NODES=$(( 2**${i})) # 2^i nodes  
+#  NX=4096
+#  NY=$((${NX}/${NUM_NODES})) # for strong scaling, NY is reduced to maintain global size 
+#  DIR=v1.1.3/STRONG
+#  TIME_VAR=3:00:00
+#  echo NODES ${NUM_NODES} PPN ${PPN} TIME ${TIME} ARRAY ${NX} x ${NY}  
+#  sbatch --export=ALL,NX=${NX},NY=${NY},DIR=${DIR} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --array=0-2 --time=${TIME_VAR} archer2.slurm 
+#done 
+
+
+
