@@ -1,10 +1,10 @@
 PPN=128 # tasks per node 
 
-## WEAK SCALING  
-for i in $(seq 0 3)
+# WEAK SCALING  
+for i in $(seq 0 0)
 do 
   NUM_NODES=$(( 2**${i})) # 2^i nodes  
-  DIR=noMPItest/v1.1.3/WEAK
+  DIR=v1.1.3/noMPItest/WEAK # name of starting directory with version of library 
   if ((x<3)) # different times for different number of nodes 
   then 
     TIME_VAR=4:00:00
@@ -17,7 +17,7 @@ do
   NX=4096
   NY=4096
   echo NODES ${NUM_NODES} PPN ${PPN} TIME ${TIME} ARRAY ${NX} x ${NY}  
-  sbatch --export=ALL,NX=${NX},NY=${NY},DIR=${DIR} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --array=0-2 --time=${TIME_VAR} archer2.slurm 
+  sbatch --export=ALL,NX=${NX},NY=${NY},DIR=${DIR} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --array=0-2 --time=${TIME_VAR} --job-name=notest archer2.slurm 
 done 
 
 ### STRONG SCALING 
@@ -34,4 +34,15 @@ done
 #done 
 
 
-
+### TEST
+#for i in $(seq 0 0)
+#do 
+#  NUM_NODES=$(( 2**${i})) # 2^i nodes  
+#  DIR=TEST
+#  TIME_VAR=00:10:00
+#  NX=128
+#  NY=128
+#  echo NODES ${NUM_NODES} PPN ${PPN} TIME ${TIME} ARRAY ${NX} x ${NY}  
+#  sbatch --export=ALL,NX=${NX},NY=${NY},DIR=${DIR} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --time=${TIME_VAR} archer2.slurm 
+#done 
+#
