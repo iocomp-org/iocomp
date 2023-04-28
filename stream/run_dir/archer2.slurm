@@ -7,7 +7,6 @@
 #SBATCH --account=e609
 #SBATCH --partition=standard 
 #SBATCH --qos=lowpriority
-#SBATCH --array=0-5
 
 module swap PrgEnv-cray/8.0.0 PrgEnv-gnu
 module load cmake 
@@ -36,15 +35,13 @@ FULL_CORES=$((${SLURM_NTASKS_PER_NODE}))
 HALF_NODES=$((${SLURM_NNODES}/2))
 TOTAL_RANKS=$(($SLURM_NNODES * $SLURM_NTASKS_PER_NODE))
 
-NX=4096
-NY=2048
 SIZE=$(( ${NX}*${NY}*8 / 2**20 )) # local size in MiB
 
 echo "Job started " $(date +"%T") # start time
 
-for IO in {1..4}
+for IO in {0..3}
 do 
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1.3/WEAK/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
+  export PARENT_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}/${IOLAYERS[${IO}]}
 
   # Case 1 
   source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
