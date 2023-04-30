@@ -25,6 +25,7 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 
 #ifndef NDEBUG
 	VERBOSE_1(ioRank,"ioServerInitialise -> MPI size %i and rank %i \n", ioSize, ioRank);
+	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> MPI size %i and rank %i \n", ioSize, ioRank);
 #endif
 
 	/*
@@ -47,6 +48,7 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	mpi_error_check(ierr); 
 #ifndef NDEBUG
 	VERBOSE_1(ioRank,"ioServerInitialise-> MPI dims create \n");
+	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise-> MPI dims create \n");
 #endif
 
 	ierr = MPI_Cart_create(iocompParams->ioServerComm, iocompParams->NDIM, dims_mpi,
@@ -54,12 +56,14 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	mpi_error_check(ierr); 
 #ifndef NDEBUG
 	VERBOSE_1(ioRank,"ioServerInitialise -> MPI cart create  \n");
+	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> MPI cart create  \n");
 #endif
 
 	ierr = MPI_Cart_coords(iocompParams->cartcomm, ioRank, iocompParams->NDIM, coords);
 	mpi_error_check(ierr); 
 #ifndef NDEBUG
 	VERBOSE_1(ioRank,"ioServerInitialise -> MPI cart coords \n");
+	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> MPI cart coords \n");
 #endif
 
 	/*	
@@ -79,6 +83,7 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 
 #ifndef NDEBUG
 	VERBOSE_1(ioRank,"ioServerInitialise -> assigned file names and adios2 ioengines\n");
+	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> assigned file names and adios2 ioengines\n");
 #endif
 	/*
 	 * adios2 object declared before loop entered
@@ -91,6 +96,7 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 			iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler declaration
 #ifndef NDEBUG
 	VERBOSE_1(ioRank,"ioServerInitialise -> initialised adios2 engine and io param\n");
+	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> initialised adios2 engine and io param\n");
 #endif
 	} 
 
@@ -101,10 +107,14 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	iocompParams->previousCount = 0;  
 	iocompParams->adios2Init = 0;  
 #ifndef NDEBUG
-	VERBOSE_1(ioRank,"ioServerInitialise -> initialisation flags set, previousInit %i,\
-	previousCount %i, adios2Init %i\n", iocompParams->previousInit, iocompParams->previousCount,\
-	iocompParams->adios2Init);
+	VERBOSE_1(ioRank,
+			"ioServerInitialise -> initialisation flags set, previousInit %i, previousCount %i, adios2Init %i\n", 
+			iocompParams->previousInit, iocompParams->previousCount, iocompParams->adios2Init);
+	VERBOSE_2(iocompParams->debug_out,
+			"ioServerInitialise -> initialisation flags set, previousInit %i, previousCount %i, adios2Init %i\n", 
+			iocompParams->previousInit, iocompParams->previousCount, iocompParams->adios2Init);
 #endif
+
 
 } 
 

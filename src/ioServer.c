@@ -26,6 +26,7 @@ void ioServer(struct iocomp_params *iocompParams)
 
 #ifndef NDEBUG
 	VERBOSE_1(ioRank,"ioServer -> Recieving data starts from source rank %i \n", source); 
+	VERBOSE_2(iocompParams->debug_out,"ioServer -> Recieving data starts from source rank %i \n", source); 
 #endif
 	int test_count = 1; 
 	int iter = 0; 
@@ -44,17 +45,20 @@ void ioServer(struct iocomp_params *iocompParams)
 	for(;;) 
 	{
 #ifndef NDEBUG
-		VERBOSE_1(ioRank,"ioServer -> start of ioServer loop, iter %i ioRank %i \n", iter, ioRank ); 
+		VERBOSE_1(ioRank,"ioServer -> start of ioServer loop, iter %i ioRank %i \n",iter,ioRank); 
+		VERBOSE_2(iocompParams->debug_out,"ioServer -> start of ioServer loop, iter %i ioRank %i \n",iter,ioRank); 
 #endif
 
-		MPI_Probe(source, tag, iocompParams->globalComm, &status); // Probe for additional messages. 
+		MPI_Probe(source, tag, iocompParams->globalComm, &status); // Probe for additional messages
 #ifndef NDEBUG
 		VERBOSE_1(ioRank,"ioServer -> MPI probe called \n"); 
+		VERBOSE_2(iocompParams->debug_out,"ioServer -> MPI probe called \n"); 
 #endif
 
 		MPI_Get_count(&status, MPI_DOUBLE, &test_count); // get count 
 #ifndef NDEBUG
 		VERBOSE_1(ioRank,"ioServer -> MPI get count %i \n", test_count); 
+		VERBOSE_2(iocompParams->debug_out,"ioServer -> MPI get count %i \n", test_count); 
 #endif
 
 		/*
@@ -64,6 +68,7 @@ void ioServer(struct iocomp_params *iocompParams)
 		{
 #ifndef NDEBUG
 			VERBOSE_1(ioRank,"ioServer -> ghost messaged recieved \n"); 	
+			VERBOSE_2(iocompParams->debug_out,"ioServer -> ghost messaged recieved \n"); 	
 #endif
 			int ghost;  
 			ierr = MPI_Recv(&ghost, 0, MPI_INT, source, tag,
@@ -132,6 +137,7 @@ void ioServer(struct iocomp_params *iocompParams)
 
 #ifndef NDEBUG
 			VERBOSE_1(ioRank,"ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
+			VERBOSE_2(iocompParams->debug_out,"ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
 #endif
 			ierr = MPI_Recv(recv, test_count, MPI_DOUBLE, source, tag,
 					iocompParams->globalComm,&status);
@@ -139,6 +145,7 @@ void ioServer(struct iocomp_params *iocompParams)
 
 #ifndef NDEBUG
 			VERBOSE_1(ioRank,"ioServer -> Recv data coming from rank %i \n",source ); 
+			VERBOSE_2(iocompParams->debug_out,"ioServer -> Recv data coming from rank %i \n",source ); 
 #endif
 
 			/*
@@ -147,6 +154,7 @@ void ioServer(struct iocomp_params *iocompParams)
 			 */ 
 #ifndef NDEBUG
 			VERBOSE_1(ioRank,"ioServer -> Send to ioLibraries \n"); 
+			VERBOSE_2(iocompParams->debug_out,"ioServer -> Send to ioLibraries \n"); 
 #endif
 			ioLibraries(recv, iocompParams); 
 		}  

@@ -28,6 +28,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 
 #ifndef NDEBUG
 	VERBOSE_1(globalRank,"commSplit -> comm duplicate \n"); 
+	VERBOSE_2(iocompParams->debug_out,"commSplit -> comm duplicate \n"); 
 #endif
 
 	// header file for printing ordering 
@@ -75,6 +76,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		}
 #ifndef NDEBUG
 		VERBOSE_1(globalRank,"commSplit -> colour assigned based on HIGH LOW ordering \n"); 
+		VERBOSE_2(iocompParams->debug_out,"commSplit -> colour assigned based on HIGH LOW ordering \n"); 
 #endif
 
 		/*
@@ -93,6 +95,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 			mpi_error_check(ierr); 
 #ifndef NDEBUG
 			VERBOSE_1(globalRank,"commSplit -> MPI compServerComm initialised \n"); 
+			VERBOSE_2(iocompParams->debug_out,"commSplit -> MPI compServerComm initialised \n"); 
 #endif
 		} 
 
@@ -103,6 +106,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 			mpi_error_check(ierr); 
 #ifndef NDEBUG
 			VERBOSE_1(globalRank,"commSplit -> MPI ioServerComm initialised \n"); 
+			VERBOSE_2(iocompParams->debug_out,"commSplit -> MPI ioServerComm initialised \n"); 
 #endif
 		} 
 
@@ -113,11 +117,13 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		{
 			MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 			VERBOSE_1(globalRank,"commSplit -> Hello from ioServeComm with rank %i and colour %i \n", ioRank, iocompParams->colour); 
+			VERBOSE_2(iocompParams->debug_out,"commSplit -> Hello from ioServeComm with rank %i and colour %i \n", ioRank, iocompParams->colour); 
 		} 
 		else if ( iocompParams->colour == compColour )
 		{
 			MPI_Comm_rank(iocompParams->compServerComm, &computeRank); 
 			VERBOSE_1(globalRank,"commSplit -> Hello from computecomm with rank %i and colour %i \n", computeRank, iocompParams->colour); 
+			VERBOSE_2(iocompParams->debug_out,"commSplit -> Hello from computecomm with rank %i and colour %i \n", computeRank, iocompParams->colour); 
 		} 
 #endif
 	}
@@ -131,6 +137,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		mpi_error_check(ierr); 
 #ifndef NDEBUG
 		VERBOSE_1(globalRank,"commSplit -> MPI ioServerComm and compServerComm set to globalComm for hyperthreads switched off\n"); 
+		VERBOSE_2(iocompParams->debug_out,"commSplit -> MPI ioServerComm and compServerComm set to globalComm for hyperthreads switched off\n"); 
 #endif
 	}
 }

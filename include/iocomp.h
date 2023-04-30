@@ -6,6 +6,7 @@ extern "C" {
 
 #include "mpi.h"
 #include <stdbool.h>
+#include <stdio.h> 
 #include <stddef.h>
 #include <stdlib.h>
 #include <assert.h>  
@@ -36,6 +37,7 @@ void error_report_fn(int ierr, int line_no, char *file_name);
 #endif
 
 #define VERBOSE_1(rank, ...) if(rank==0) fprintf(stderr, __VA_ARGS__)
+#define VERBOSE_2(output_file, ...) fprintf(output_file, __VA_ARGS__)
 
 /*
 * structure passes around to most functions in program 
@@ -87,6 +89,11 @@ struct iocomp_params
 	int previousInit; // previously initialised counter 
 	int previousCount; // previous element count 
 	int adios2Init; // previous element count 
+
+#ifndef NDEBUG
+	char DEBUG_FILE[100]; // filename for debug 
+	FILE* debug_out; // output file per rank 
+#endif 
 
 #ifdef PRINT_ORDERING
 	int pairPrintCounter; // so that getPair messages are not printed more than once.

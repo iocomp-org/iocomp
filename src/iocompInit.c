@@ -3,18 +3,37 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <string.h> 
 #include "../include/iocomp.h"
+#define atoa(x) #x
 
 /*
  * Initialises the library 
  */
 MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, 
-	int ioLibNum, int fullNode)
+		int ioLibNum, int fullNode)
 {
 	int myGlobalrank; 
 	MPI_Comm_rank(comm, &myGlobalrank); 
 #ifndef NDEBUG
-	VERBOSE_1(myGlobalrank, "iocompInit -> Start of intercomm_init\n"); 
+	char rank_str[10]; 
+	sprintf(rank_str, "%d", myGlobalrank);
+
+	strcat(iocompParams->DEBUG_FILE,rank_str ); 
+	strcat(iocompParams->DEBUG_FILE,".out"); 
+	printf("debug file name %s\n",iocompParams->DEBUG_FILE); 
+
+	iocompParams->debug_out=fopen(iocompParams->DEBUG_FILE,"w+"); // create new file 
+	if(iocompParams->debug_out==NULL)
+	{
+		printf("debug file not created \n"); 
+		exit(1); 
+	}
+	// fprintf(iocompParams->debug_out, "iocompInit \n"); 
+	// VERBOSE_1(myGlobalrank, "iocompInit -> Start of intercomm_init\n"); 
+	VERBOSE_2(iocompParams->debug_out, "iocompInit -> Start of intercomm_init\n"); 
 #endif
 
 	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
@@ -30,7 +49,11 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	assert(iocompParams->NODESIZE > 0); 
 
 #ifndef NDEBUG
-	VERBOSE_1(myGlobalrank,"iocompInit -> variables declared flag %i, ndim %i, iolib %i\n", iocompParams->hyperthreadFlag, iocompParams->NDIM, iocompParams->ioLibNum); 
+	VERBOSE_1(myGlobalrank,"iocompInit -> variables declared flag %i, ndim %i, iolib %i\n", 
+			iocompParams->hyperthreadFlag, iocompParams->NDIM, iocompParams->ioLibNum); 
+	VERBOSE_2(iocompParams->debug_out,
+			"iocompInit -> variables declared flag %i, ndim %i, iolib %i\n", 
+			iocompParams->hyperthreadFlag, iocompParams->NDIM, iocompParams->ioLibNum); 
 #endif
 	/*
 	 * comm split splits communicators in 2, assigns colour to ranks
@@ -39,6 +62,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	comm_split(iocompParams, comm); 
 #ifndef NDEBUG
 	VERBOSE_1(myGlobalrank, "iocompInit -> communicator split up and colour assigned \n"); 
+	VERBOSE_2(iocompParams->debug_out, "iocompInit -> communicator split up and colour assigned \n"); 
 #endif
 
 	/*
@@ -58,20 +82,23 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 */ 
 	if(iocompParams->hyperthreadFlag && iocompParams->colour == ioColour)
 	{
-			int ioRank; 
-			MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
+		int ioRank; 
+		MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 #ifndef NDEBUG
-			VERBOSE_1(ioRank,"ioServerInitialise -> ioServer called\n"); 
+		VERBOSE_1(ioRank,"ioServerInitialise -> ioServer called\n"); 
+		VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> ioServer called\n"); 
 #endif
-			ioServer(iocompParams);
+		ioServer(iocompParams);
 #ifndef NDEBUG
-			VERBOSE_1(ioRank,"ioServerInitialise -> After ioServer\n"); 
+		VERBOSE_1(ioRank,"ioServerInitialise -> After ioServer\n"); 
+		VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> After ioServer\n"); 
 #endif
-			MPI_Finalize(); 
+		MPI_Finalize(); 
 #ifndef NDEBUG
-			VERBOSE_1(ioRank,"ioServerInitialise -> After finalize\n"); 
+		VERBOSE_1(ioRank,"ioServerInitialise -> After finalize\n"); 
+		VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> After finalize\n"); 
 #endif
-			exit(0); 
+		exit(0); 
 	}
 
 	/*
