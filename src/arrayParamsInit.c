@@ -104,7 +104,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	/*
 	 * Define and initialise arrayStart
 	 */ 
-	iocompParams->arrayStart = malloc(sizeof(int)*iocompParams->NDIM);
+	iocompParams->arrayStart = malloc(sizeof(size_t)*iocompParams->NDIM);
 #ifndef NDEBUG
 	VERBOSE_1(ioRank,"arrayParamsInit -> initialise arrayStart \n");
 #endif
