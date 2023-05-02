@@ -15,34 +15,57 @@ PPN=128 # tasks per node
 #
 #done 
 
-## Weak scaling 
+### Weak scaling 
+#
+## fixed at 128 tasks per node
+#PPN=128  
+## array parameters 
+#NX=4096
+#NY=4096
+## number of nodes, as power of 2s
+#NODE_START=0
+#NODE_END=4
+## directory 
+#DIR=v1.1.4/WEAK
+## I/O layers range 
+#IO_START=0
+#IO_END=3
+## time for job  
+#TIMES=("5:00:00" "06:00:00" "08:00:00" "10:00:00" "10:00:00") 
+#ARRAY=0
+#
+#echo $DIR 
+## iterate through number of nodes 
+#for i in $(seq ${NODE_START} ${NODE_END}) # 1 till 16 nodes 
+#do 
+#  TIME_VAR=${TIMES[${i}]} 
+#  NUM_NODES=$((2**${i}))
+#  echo NODES ${NUM_NODES} ARRAY SIZE ${NX} x ${NY}  TIME ${TIME_VAR} IO ${IO_START} to ${IO_END} 
+#  # sbatch --export=ALL,SIZE=${SIZE_LOCAL},NX=${NX},NY=${NY},DIR=${DIR},IO_START=${IO_START},IO_END=${IO_END} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --time=${TIME_VAR} --array=${ARRAY} archer2.slurm 
+#
+#done 
 
+
+## Cray PAT
 # fixed at 128 tasks per node
 PPN=128  
-# array parameters 
-NX=4096
-NY=4096
-# number of nodes, as power of 2s
-NODE_START=0
-NODE_END=4
+NUM_NODES=1
 # directory 
-DIR=v1.1.4/WEAK
+DIR=CRAY-PAT/GNU
 # I/O layers range 
 IO_START=0
 IO_END=3
-# time for job  
-TIMES=("5:00:00" "06:00:00" "08:00:00" "10:00:00" "10:00:00") 
-ARRAY=0
-
+SIZE_START=1
+SIZE_END=10
 echo $DIR 
-# iterate through number of nodes 
-for i in $(seq ${NODE_START} ${NODE_END}) # 1 till 16 nodes 
+# iterate through number of elements 
+for i in $(seq ${SIZE_START} ${SIZE_END}) # 1 till 16 nodes 
 do 
-  TIME_VAR=${TIMES[${i}]} 
-  NUM_NODES=$((2**${i}))
+  # array parameters 
+  NX=128
+  NY=$((128*${i})) 
+  TIME_VAR=00:10:00
   echo NODES ${NUM_NODES} ARRAY SIZE ${NX} x ${NY}  TIME ${TIME_VAR} IO ${IO_START} to ${IO_END} 
-  # sbatch --export=ALL,SIZE=${SIZE_LOCAL},NX=${NX},NY=${NY},DIR=${DIR},IO_START=${IO_START},IO_END=${IO_END} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --time=${TIME_VAR} --array=${ARRAY} archer2.slurm 
-
+  sbatch --export=ALL,SIZE=${SIZE_LOCAL},NX=${NX},NY=${NY},DIR=${DIR},IO_START=${IO_START},IO_END=${IO_END} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --time=${TIME_VAR}  archer2.slurm 
 done 
-
 
