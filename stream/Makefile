@@ -6,16 +6,18 @@ CFLAGS = -Wall -Wpedantic -Werror  -Wno-unused-variable -Wno-unused-but-set-vari
 # DNDEBUG for not including error messages 
 # DMPI_TESTS for including MPI tests in stream kernels 
 # DADIOS2_USE_MPI for adios2 
-CFLAGS += -fPIC -O2 -DADIOS2_USE_MPI -DMPI_TESTS -DNDEBUG
+# DNOADIOS2 for disabling ADIOS2 in iocomp 
+# DNOHDF5 for disabling HDF5 in iocomp 
+CFLAGS += -fPIC -O2 -DADIOS2_USE_MPI -DMPI_TESTS -DNDEBUG -DNOADIOS2 -DNOHDF5
 
 # linker flags
-LFLAGS += -I$(OMPI_DIR)/include -I$(IOCOMP_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
+LFLAGS += -I$(OMPI_DIR)/include -I$(IOCOMP_DIR)/include #-I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
 
 # object file directory
 ODIR = Object_files
 
 # define library paths 
-LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm -L$(IOCOMP_DIR)/lib -liocomp  -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5  -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi -L$(ADIOS2_DIR)/lib64 -ladios2_c -ladios2_c_mpi  -lm 
+LIBS +=  -L$(OMPI_DIR)/lib -lmpi -lm -L$(IOCOMP_DIR)/lib -liocomp  #-L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5  -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi -L$(ADIOS2_DIR)/lib64 -ladios2_c -ladios2_c_mpi  -lm 
 
 # define C source files 
 SRCS = $(wildcard *.c)
