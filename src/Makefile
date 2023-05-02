@@ -26,6 +26,25 @@ DEPS = ../include/iocomp.h
 # define C source files 
 SRCS = $(wildcard *.c)
 
+# remove adios2 file from compilation if NOADIOS2 passed to Makefile 
+# and remove linker files 
+# and pass appropriate flag to iocomp files to remove the references 
+ifdef NOADIOS2
+$(info ************ ADIOS2 REMOVED ************)
+IOCOMP_FLAGS += -DNOADIOS2 
+
+ifdef NOHDF5 # if HDF5 also no wanted 
+$(info ************  HDF5 REMOVED ************)
+IOCOMP_FLAGS += -DNOHDF5
+SRCS = $(filter-out hdf5Write.c hdf5Read.c  adios2Write.c adios2Read.c ,$(wildcard *.c))
+LFLAGS = -I$(OMPI_DIR)/include 
+endif 
+
+else # only ADIOS2 not wanted 
+SRCS = $(filter-out adios2Write.c adios2Read.c ,$(wildcard *.c))
+LFLAGS = -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include  
+endif 
+
 # define library name  
 MAIN = ../lib/libiocomp.so
 

@@ -3,10 +3,14 @@
 #include <stdlib.h>
 #include "stdio.h"
 #include "mpi.h"
-#include <adios2_c.h>
-#include <adios2/c/adios2_c_types.h>
 #include "../include/iocomp.h"
 #define config_file "config.xml"
+
+// include ADIOS2 files if flag not defined 
+#ifndef NOADIOS2 
+#include <adios2_c.h>
+#include <adios2/c/adios2_c_types.h>
+#endif 
 
 /*
  * Initialises the library 
@@ -52,7 +56,7 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 #endif
 
 	ierr = MPI_Cart_create(iocompParams->ioServerComm, iocompParams->NDIM, dims_mpi,
-		periods, reorder, &iocompParams->cartcomm); // comm;
+			periods, reorder, &iocompParams->cartcomm); // comm;
 	mpi_error_check(ierr); 
 #ifndef NDEBUG
 	VERBOSE_1(ioRank,"ioServerInitialise -> MPI cart create  \n");
@@ -85,6 +89,8 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	VERBOSE_1(ioRank,"ioServerInitialise -> assigned file names and adios2 ioengines\n");
 	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> assigned file names and adios2 ioengines\n");
 #endif
+
+#ifndef NOADIOS2
 	/*
 	 * adios2 object declared before loop entered
 	 * only when ioLib chosen is adios2 and one of its engines 
@@ -93,12 +99,13 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	{
 		iocompParams->adios = adios2_init_config_mpi(config_file, iocompParams->cartcomm); 
 		iocompParams->io = adios2_declare_io(iocompParams->adios, 
-			iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler declaration
+				iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler declaration
 #ifndef NDEBUG
-	VERBOSE_1(ioRank,"ioServerInitialise -> initialised adios2 engine and io param\n");
-	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> initialised adios2 engine and io param\n");
+		VERBOSE_1(ioRank,"ioServerInitialise -> initialised adios2 engine and io param\n");
+		VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> initialised adios2 engine and io param\n");
 #endif
 	} 
+#endif 
 
 	/*
 	 * Initialise previous initialisation and element counter flag

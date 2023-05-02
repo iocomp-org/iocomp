@@ -13,15 +13,17 @@ void readBack(struct iocomp_params* iocompParams)
 		case 0: 
 			mpiRead(iocompParams, readData); 
 			break; 
-
+#ifndef NOHDF5
 		case 1: 
 			hdf5Read(iocompParams, readData); 
 			break; 
+#endif 
 
+#ifndef NOADIOS2
 		case 2: case 3: case 4: 
 			adios2Read(iocompParams, readData); 
 			break; 
-
+#endif 
 		default:
 			break; 
 	}

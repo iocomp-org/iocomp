@@ -80,10 +80,12 @@ void ioServer(struct iocomp_params *iocompParams)
 			 */ 
 			free(recv);
 			recv = NULL; 
+#ifndef NOADIOS2
 			if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
 			{
 				adios2_finalize(iocompParams->adios); 
 			} 
+#endif 
 #ifndef NDELETE
 			MPI_Barrier(iocompParams->ioServerComm); // wait for all files to finish writing  
 			if(ioRank == 0)

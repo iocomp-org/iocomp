@@ -36,7 +36,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 #endif 
 			break; 
-
+#ifndef NOHDF5
 		case 1: 
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
@@ -47,10 +47,12 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 #endif 
 			break; 
+#endif 
 			/*
 			 * in case of adios2, initialisations of different engines obtained using config file
 			 * which takes place in ioServerInitialise
 			 */ 
+#ifndef NOADIOS2
 		case 2: case 3: case 4: 
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
@@ -61,6 +63,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
 #endif 
 			break; 
+#endif 
 
 		default:
 			printf("Invalid I/O library number \n"); 

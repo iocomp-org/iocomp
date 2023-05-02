@@ -40,10 +40,13 @@ void stopSend(struct iocomp_params *iocompParams)
 	 */ 
 	else 
 	{
+#ifndef NOADIOS2
 		if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
 		{
 			adios2_finalize(iocompParams->adios); 
 		} 
+#endif 
+
 #ifndef NDEBUG
 		VERBOSE_1(compRank,"stopSend -> adios2 finalised with HT flag=%i \n", iocompParams->hyperthreadFlag); 
 #endif
