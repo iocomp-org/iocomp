@@ -47,19 +47,8 @@ endif
 
 # define library name
 # if LIB variable provided it will save the library into directory given by $(DIR). 
-# if not then it will save in ../lib 
 ifdef DIR
 MAIN = $(DIR)/lib/libiocomp.so
-# to make library into another directory given in DIR variable  
-LIB: $(OBJS)
-	rm -rf $(DIR)
-	mkdir $(DIR)
-	mkdir $(DIR)/include 
-	mkdir $(DIR)/bin
-	mkdir $(DIR)/lib 
-	# $(CC) $(CFLAGS) $(LFLAGS) -o $(DIR)/lib/libiocomp.so  $(OBJS) $(LIBS)
-	$(CC) $(CFLAGS) $(LFLAGS) -o $(MAIN)  $(OBJS) $(LIBS)
-	cp $(DEPS) $(DIR)/include 
 else 
 MAIN = ../lib/libiocomp.so
 endif 
@@ -73,8 +62,21 @@ OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -c $< -o $@
 
+# if DIR specified then build under that directory, else build under ../lib  
+ifdef DIR 
+$(MAIN): $(OBJS) 
+	rm -rf $(DIR)
+	mkdir $(DIR)
+	mkdir $(DIR)/include 
+	mkdir $(DIR)/bin
+	mkdir $(DIR)/lib 
+	# $(CC) $(CFLAGS) $(LFLAGS) -o $(DIR)/lib/libiocomp.so  $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) $(LFLAGS) -o $(MAIN)  $(OBJS) $(LIBS)
+	cp $(DEPS) $(DIR)/include 
+else
 $(MAIN): $(OBJS) 
 	$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -o $(MAIN) Object_files/*.o
+endif 
 
 	
 
