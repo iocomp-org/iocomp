@@ -45,8 +45,24 @@ SRCS = $(filter-out adios2Write.c adios2Read.c ,$(wildcard *.c))
 LFLAGS = -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include  
 endif 
 
-# define library name  
+# define library name
+# if LIB variable provided it will save the library into directory given by $(DIR). 
+# if not then it will save in ../lib 
+ifdef DIR
+MAIN = $(DIR)/lib/libiocomp.so
+# to make library into another directory given in DIR variable  
+LIB: $(OBJS)
+	rm -rf $(DIR)
+	mkdir $(DIR)
+	mkdir $(DIR)/include 
+	mkdir $(DIR)/bin
+	mkdir $(DIR)/lib 
+	# $(CC) $(CFLAGS) $(LFLAGS) -o $(DIR)/lib/libiocomp.so  $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) $(LFLAGS) -o $(MAIN)  $(OBJS) $(LIBS)
+	cp $(DEPS) $(DIR)/include 
+else 
 MAIN = ../lib/libiocomp.so
+endif 
 
 .PHONY: depend clean
 
@@ -60,19 +76,7 @@ $(ODIR)/%.o: %.c $(DEPS)
 $(MAIN): $(OBJS) 
 	$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -o $(MAIN) Object_files/*.o
 
-# this is a suffix replacement rule for building .o's from .c's
-# it uses automatic variables $<: the name of the prerequisite of
-# the rule(a .c file) and $@: the name of the target of the rule (a .o file) 
-
-LIB: $(OBJS)
-	rm -rf $(DIR)/* 
-	mkdir $(DIR)/include 
-	mkdir $(DIR)/bin
-	mkdir $(DIR)/lib 
-	gcc -shared -o $(DIR)/lib/libiocomp.so Object_files/*.o
-	#$(CC) $(CFLAGS) ${LFLAGS} -o $(MAIN) $(OBJS) $(LIBS)
-	cp iocomp.h $(DIR)/include/ 
-	cp iocomp $(DIR)/bin/ 
+	
 
 clean:
 	rm -f $(ODIR)/*.o *.o *~ $(MAIN)
