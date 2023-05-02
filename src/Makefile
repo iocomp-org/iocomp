@@ -3,7 +3,7 @@ CC = cc
 
 # define compile time flags 
 # DADIOS2_USE_MPI for adios2 
-CFLAGS = -Wall -Wpedantic -Werror -Wextra -fPIC  -DADIOS2_USE_MPI -shared -O2 
+CFLAGS =-fPIC  -DADIOS2_USE_MPI -O2 -shared #-Wall -Wpedantic -Werror -Wextra 
 
 # enable and disable different iocomp related flags 
 # DNDEBUG for not including error messages 
@@ -12,10 +12,12 @@ CFLAGS = -Wall -Wpedantic -Werror -Wextra -fPIC  -DADIOS2_USE_MPI -shared -O2
 # processes
 # DREADACK for printing after the data is written into different files 
 # DNDELETE for disabling the delete file commands after writing is completed  
+# DNOADIOS2 for disabling ADIOS2 
+# DNOHDF5 for disabling HDF5 
 IOCOMP_FLAGS += -DNDEBUG #-DNDELETE #-DREADBACK #-DPRINT_ORDERING #-DIOCOMP_TIMERS #-DNDELETE
 
 # linker flags
-LFLAGS += -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
+LFLAGS = -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
 
 # object file directory
 ODIR = Object_files
@@ -40,9 +42,6 @@ SRCS = $(filter-out hdf5Write.c hdf5Read.c  adios2Write.c adios2Read.c ,$(wildca
 LFLAGS = -I$(OMPI_DIR)/include 
 endif 
 
-else # only ADIOS2 not wanted 
-SRCS = $(filter-out adios2Write.c adios2Read.c ,$(wildcard *.c))
-LFLAGS = -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include  
 endif 
 
 # define library name
@@ -68,11 +67,9 @@ $(MAIN): $(OBJS)
 	rm -rf $(DIR)
 	mkdir $(DIR)
 	mkdir $(DIR)/include 
-	mkdir $(DIR)/bin
 	mkdir $(DIR)/lib 
-	# $(CC) $(CFLAGS) $(LFLAGS) -o $(DIR)/lib/libiocomp.so  $(OBJS) $(LIBS)
-	$(CC) $(CFLAGS) $(LFLAGS) -o $(MAIN)  $(OBJS) $(LIBS)
 	cp $(DEPS) $(DIR)/include 
+	$(CC) $(CFLAGS) $(LFLAGS) -o $(MAIN)  $(OBJS) 
 else
 $(MAIN): $(OBJS) 
 	$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -o $(MAIN) Object_files/*.o
