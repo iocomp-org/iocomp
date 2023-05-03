@@ -30,3 +30,11 @@ mkdir Object_files
 make 
 ```
 
+## iocomp run commands 
+```
+# for the default case with sequential compute and I/O operations 
+./test --nx=<size of nx> --ny=<size of ny> --io=<I/O selection>
+
+# for the HT case with compute and I/O operations on different MPI processes 
+./test --HT --nx=<size of nx> --ny=<size of ny> --io=<I/O selection>
+
