@@ -41,11 +41,13 @@ Command line arguments
     - 3 : ADIOS2_BP4 
     - 3 : ADIOS2_BP5
 - HT : Flag which when passed splits the communicators to have different operations on different processes. 
-```
-# for the default case with sequential compute and I/O operations 
-./test --nx=<size of nx> --ny=<size of ny> --io=<I/O selection>
 
-# for the HT case with compute and I/O operations on different MPI processes 
+### for the default case with sequential compute and I/O operations 
+```
+./test --nx=<size of nx> --ny=<size of ny> --io=<I/O selection>
+```
+### for the HT case with compute and I/O operations on different MPI processes 
+```
 ./test --HT --nx=<size of nx> --ny=<size of ny> --io=<I/O selection>
 ```
 
