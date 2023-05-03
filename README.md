@@ -33,7 +33,7 @@ make
 ## iocomp run commands 
 Command line arguments
 - nx : Dimension 1 of STREAM vector. 
-- ny : Dimensions 2 of STREAM vector. nx * ny give the total size of array that is passed to STREAM. 
+- ny : Dimension 2 of STREAM vector. nx * ny give the total size of array that is passed to STREAM. 
 - io : I/O backend selection. 
     - 0 : MPIIO
     - 1 : HDF5 
