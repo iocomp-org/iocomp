@@ -14,7 +14,7 @@ make DIR=</path/to/installation/dir>
 make DIR=</path/to/installation/dir> NOADIOS2=1 NOHDF5=1
 ``` 
 
-### Preprocessor flags 
+### Preprocessor flags for the iocomp src/Makefile 
 - NDELETE : add this flag to not delete the files after finishing writing 
 - NDEBUG : add this flag to not print out error messages 
 - IOCOMP_TIMERS : add this flag to print out I/O bandwidths after each step of writing is completed 
