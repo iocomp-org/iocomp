@@ -49,4 +49,3 @@ Command line arguments
 ./test --HT --nx=<size of nx> --ny=<size of ny> --io=<I/O selection>
 ```
 
-I/O selection is using 
