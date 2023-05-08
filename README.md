@@ -39,7 +39,7 @@ Command line arguments
     - 1 : HDF5 
     - 2 : ADIOS2_HDF5 
     - 3 : ADIOS2_BP4 
-    - 3 : ADIOS2_BP5
+    - 4 : ADIOS2_BP5
 - HT : Flag which when passed splits the communicators to have different operations on different processes. 
 
 ### for the default case with sequential compute and I/O operations 
