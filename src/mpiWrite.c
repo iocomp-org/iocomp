@@ -42,9 +42,14 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 #ifndef NDEBUG   
 	VERBOSE_1(ioRank,"mpiWrite -> MPI cartget \n"); 
 #endif 
+	double openTime = MPI_Wtime(); 
 	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum],
 			MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh); 
 	mpi_error_check(ierr); 
+	openTime = MPI_Wtime() - openTime; 
+	// print out the time to open mpi file 
+	printf("Rank %i open time = %lf \n",ioRank,openTime); 
+
 #ifndef NDEBUG   
 	VERBOSE_1(ioRank,"mpiWrite -> MPI file open\n"); 
 #endif 
