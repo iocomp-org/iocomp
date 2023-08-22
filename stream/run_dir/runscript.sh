@@ -46,26 +46,24 @@ PPN=128 # tasks per node
 #done 
 
 
-## Cray PAT
+## TESTING
 # fixed at 128 tasks per node
 PPN=128  
-NUM_NODES=1
+NUM_NODES=32
 # directory 
-DIR=CRAY-PAT/GNU
+DIR=TIMER
 # I/O layers range 
 IO_START=0
 IO_END=3
-SIZE_START=1
-SIZE_END=10
 echo $DIR 
 # iterate through number of elements 
-for i in $(seq ${SIZE_START} ${SIZE_END}) # 1 till 16 nodes 
+for i in $(seq ${IO_START} ${IO_END}) # 1 till 16 nodes 
 do 
   # array parameters 
-  NX=128
-  NY=$((128*${i})) 
-  TIME_VAR=00:10:00
+  NX=4096
+  NY=4096
+  TIME_VAR=03:00:00
   echo NODES ${NUM_NODES} ARRAY SIZE ${NX} x ${NY}  TIME ${TIME_VAR} IO ${IO_START} to ${IO_END} 
-  sbatch --export=ALL,SIZE=${SIZE_LOCAL},NX=${NX},NY=${NY},DIR=${DIR},IO_START=${IO_START},IO_END=${IO_END} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --time=${TIME_VAR}  archer2.slurm 
+  sbatch --export=ALL,SIZE=${SIZE_LOCAL},NX=${NX},NY=${NY},DIR=${DIR},IO_START=${i},IO_END=${i} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --time=${TIME_VAR}  archer2.slurm 
 done 
 
