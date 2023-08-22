@@ -47,8 +47,6 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 			MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh); 
 	mpi_error_check(ierr); 
 	openTime = MPI_Wtime() - openTime; 
-	// print out the time to open mpi file 
-	printf("Rank %i open time = %lf \n",ioRank,openTime); 
 
 #ifndef NDEBUG   
 	VERBOSE_1(ioRank,"mpiWrite -> MPI file open\n"); 
