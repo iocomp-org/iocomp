@@ -18,12 +18,12 @@ void scale(struct iocomp_params *iocompParams, struct stream_params* streamParam
 		for(int i = 0; i< streamParams->localDataSize; i++) // scale kernel
 		{
 			b[i] = constant * c[i]; 
-#ifdef MPI_TESTS
-			if(iter%WRITE_FREQ == 0) // only when scale sends data 
-			{
-				streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY]); 
-			} 
-#endif 
+//#ifdef MPI_TESTS
+//			if(iter%WRITE_FREQ == 0) // only when scale sends data 
+//			{
+//				streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY]); 
+//			} 
+//#endif 
 		}
 	} 
 	streamParams->compTimer[SCALE][iter] = MPI_Wtime() - timerStart;  // computeTime for SCALE 

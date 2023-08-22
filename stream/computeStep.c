@@ -21,11 +21,17 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	double* a = NULL; // initialise data pointer  
 	double* b = NULL; // initialise data pointer  
 	double* c = NULL; // initialise data pointer  
-
+	
+	// initialise a, b, c 
 	a = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 	b = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 	c = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
-	a = init(streamParams,a); // initialise a array
+	for(int i = 0; i < streamParams->localDataSize; i++)
+	{
+		a[i] = 1.0; 
+		b[i] = 2.0; 
+		c[i] = 0.0; 
+	}
 
 	double wallTime_start, wallTime_end; 
 	wallTime_start = MPI_Wtime(); 
@@ -66,16 +72,16 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * WAIT(A)
 		 * SEND(C) 
 		 */ 
-		copy(iocompParams, streamParams, iter, c, a); // loop
+		// copy(iocompParams, streamParams, iter, c, a); // loop
 		if( (iter+1)%WRITE_FREQ == 0 && iter > 0) 
 		{
 			// wait for at least one iteration of TRIAD before waiting for TRIAD
 			triad_wait(iocompParams, streamParams, iter-1);
 		} 
-		if(iter%WRITE_FREQ==0)
-		{
-			copy_send(iocompParams, streamParams, iter,c);
-		} 
+		//if(iter%WRITE_FREQ==0)
+		//{
+		//	copy_send(iocompParams, streamParams, iter,c);
+		//} 
 
 		/*
 		 * SCALE(B) + MPITEST(C)
@@ -85,7 +91,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		scale(iocompParams, streamParams, iter, c, b);
 		if(iter%WRITE_FREQ==0)
 		{
-			copy_wait(iocompParams, streamParams, iter);
+			// copy_wait(iocompParams, streamParams, iter);
 			scale_send(iocompParams, streamParams, iter, b );
 		} 
 
