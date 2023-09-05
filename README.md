@@ -9,7 +9,7 @@ git clone <iocomp repository>
 cd iocomp 
 cd src 
 mkdir Object_files
-make DIR=</path/to/installation/dir>
+make DIR=</path/to/installation/dir> HDF5_DIR=<path/to/hdf> ADIOS2_DIR=<path/to/adios2>
 # if only MPI compilation required
 make DIR=</path/to/installation/dir> NOADIOS2=1 NOHDF5=1
 ``` 
