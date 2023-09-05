@@ -6,6 +6,7 @@ Different back-ends include MPIIO, HDF5, ADIOS2 HDF5 and ADIOS2 BP4, BP5
 The repository is arranged as follows:
 
     <root>
+        include/                       # Header files for iocomp library 
         src/                           # iocomp library source code 
         stream/                        # STREAM test benchmark
             run_dir/                   # Directory containing all slurm scripts to run on ARCHER2 and Cirrus  
