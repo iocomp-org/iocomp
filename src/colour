@@ -1,0 +1,211 @@
+hdf5Write.c:23:    hsize_t         count[iocompParams->NDIM], 
+hdf5Write.c:24:                    offset[iocompParams->NDIM],
+hdf5Write.c:25:                    dimsf[iocompParams->NDIM];   // specifies the dimensions of dataset, dimsf[0] number of rows, dimsf[1] number of columns, dimsf[2] so on..
+hdf5Write.c:42:    for (int i = 0; i < iocompParams->NDIM; i++)
+hdf5Write.c:44:        dimsf[i] = iocompParams->globalArray[i]; 
+hdf5Write.c:45:        count[i] = iocompParams->localArray[i]; 
+hdf5Write.c:46:        offset[i]= iocompParams->arrayStart[i]; 
+hdf5Write.c:61:    H5Pset_fapl_mpio(plist_id, iocompParams->cartcomm, info);
+hdf5Write.c:70:    file_id = H5Fcreate(iocompParams->FILENAMES[iocompParams->ioLibNum], H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+hdf5Write.c:80:    filespace = H5Screate_simple(iocompParams->NDIM, dimsf, NULL); 
+hdf5Write.c:90:    memspace = H5Screate_simple(iocompParams->NDIM, count, NULL); 
+hdf5Write.c:108:		for(int i = 0; i < (int)iocompParams->localArray[0]; i++)
+hdf5Write.c:110:			for(int j = 0; j < (int)iocompParams->localArray[1]; j++)
+hdf5Write.c:111:				printf("%lf,",iodata[i*(int)iocompParams->localArray[0] + j]); 
+ioLibraries.c:17:	MPI_Comm_size(iocompParams->ioServerComm, &ioSize);
+ioLibraries.c:18:	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
+ioLibraries.c:24:	VERBOSE_1(ioRank,"ioLibraries -> Pass off to I/O libraries with ioLibNum %i  \n", iocompParams->ioLibNum);
+ioLibraries.c:27:	switch(iocompParams->ioLibNum){
+ioLibraries.c:36:			MPI_Barrier(iocompParams->ioServerComm);
+ioLibraries.c:47:			MPI_Barrier(iocompParams->ioServerComm);
+ioLibraries.c:61:			MPI_Barrier(iocompParams->ioServerComm);
+ioLibraries.c:74:	MPI_Barrier(iocompParams->ioServerComm); // wait for all processes to finish writing data 
+ioLibraries.c:84:		double fileSize = iocompParams->globalDataSize*sizeof(double)/(pow(10,9)); 
+hdf5Read.c:20:	iodata_test = (double*)malloc(iocompParams->globalDataSize*sizeof(double));
+hdf5Read.c:23:	file_id = H5Fopen(iocompParams->FILENAMES[iocompParams->ioLibNum], H5F_ACC_RDWR, H5P_DEFAULT);
+highlowOrdering.c:32:	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
+highlowOrdering.c:34:	ierr = MPI_Comm_size(iocompParams->globalComm, &globalSize); 
+highlowOrdering.c:39:	int numNodes = (int)(globalSize/(iocompParams->NODESIZE*2)); 
+highlowOrdering.c:40:	int lastwholeNode = numNodes *iocompParams->NODESIZE*2; 
+highlowOrdering.c:42:	if(globalSize <= iocompParams->NODESIZE*2)
+highlowOrdering.c:45:			iocompParams->colour = compColour; 
+highlowOrdering.c:48:			iocompParams->colour = ioColour; 
+highlowOrdering.c:58:				if(globalRank <  (x+1)*iocompParams->NODESIZE && globalRank >= (x)*iocompParams->NODESIZE){
+highlowOrdering.c:59:					iocompParams->colour = compColour; 
+highlowOrdering.c:61:				if(globalRank >=  (x+1)*iocompParams->NODESIZE && globalRank < (x+2)*iocompParams->NODESIZE){
+highlowOrdering.c:62:					iocompParams->colour = ioColour; 
+highlowOrdering.c:69:				iocompParams->colour = compColour; 
+highlowOrdering.c:72:				iocompParams->colour = ioColour; 
+readBack.c:10:	switch(iocompParams->ioLibNum)
+readBack.c:28:	for(int i = 0; i < (int)iocompParams->globalArray[0]; i++)
+readBack.c:30:		for(int j = 0; j < (int)iocompParams->globalArray[1]; j++)
+readBack.c:32:			printf("%lf,", readData[i*(int)iocompParams->globalArray[1] + j]); 
+iocompInit.c:20:	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
+iocompInit.c:21:	iocompParams->NDIM = NUM_DIM; // set number of dimensions
+iocompInit.c:22:	iocompParams->ioLibNum = ioLibNum; // set selection of I/O library 
+iocompInit.c:23:	iocompParams->NODESIZE = fullNode; // set size of node for comm splitting 
+iocompInit.c:28:	assert(iocompParams->ioLibNum < ioLibCount); 
+iocompInit.c:29:	assert(iocompParams->ioLibNum >= 0);
+iocompInit.c:30:	assert(iocompParams->NODESIZE > 0); 
+iocompInit.c:33:	VERBOSE_1(myGlobalrank,"iocompInit -> variables declared flag %i, ndim %i, iolib %i\n", iocompParams->hyperthreadFlag, iocompParams->NDIM, iocompParams->ioLibNum); 
+iocompInit.c:50:	if(!iocompParams->hyperthreadFlag || iocompParams->colour==ioColour) 
+iocompInit.c:53:	VERBOSE_1(myGlobalrank, "iocompInit -> colour %i ioServer calling ioServerInitialise rank  %i \n",iocompParams->colour, myGlobalrank); 
+iocompInit.c:58:	VERBOSE_1(myGlobalrank, "iocompInit -> colour %i compServer not called %i \n",iocompParams->colour, myGlobalrank); 
+iocompInit.c:65:	if(iocompParams->hyperthreadFlag && iocompParams->colour == ioColour)
+iocompInit.c:68:			MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
+iocompInit.c:88:	return(iocompParams->compServerComm); 
+dataSendTest.c:10:	if(iocompParams->hyperthreadFlag) // only implement if HT flag switched on 
+commSplit.c:24:	int ierr = MPI_Comm_dup(comm, &iocompParams->globalComm); // comm is assigned to globalComm
+commSplit.c:27:	MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
+commSplit.c:35:		MPI_Barrier(iocompParams->globalComm); // so that the header is written first.
+commSplit.c:43:	if(iocompParams->hyperthreadFlag) // check if flag is true? 
+commSplit.c:49:		ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
+commSplit.c:72:			iocompParams->pairPrintCounter = 0; // so that io and comm processes dont print too many messages. 
+commSplit.c:82:		ierr =	MPI_Comm_split(iocompParams->globalComm, iocompParams->colour, globalRank,	&splitComm);  // splitcommunicator based on colour 
+commSplit.c:88:		if(iocompParams->colour == compColour)
+commSplit.c:90:			ierr = MPI_Comm_dup(splitComm, &iocompParams->compServerComm); // compute communicator for compute tasks and colour != 0 
+commSplit.c:99:			ierr = MPI_Comm_dup(splitComm, &iocompParams->ioServerComm); // compute communicator for compute tasks and colour != 0 
+commSplit.c:109:		if ( iocompParams->colour == ioColour )
+commSplit.c:111:			MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
+commSplit.c:112:			VERBOSE_1(globalRank,"commSplit -> Hello from ioServeComm with rank %i and colour %i \n", ioRank, iocompParams->colour); 
+commSplit.c:114:		else if ( iocompParams->colour == compColour )
+commSplit.c:116:			MPI_Comm_rank(iocompParams->compServerComm, &computeRank); 
+commSplit.c:117:			VERBOSE_1(globalRank,"commSplit -> Hello from computecomm with rank %i and colour %i \n", computeRank, iocompParams->colour); 
+commSplit.c:125:		ierr = MPI_Comm_dup(iocompParams->globalComm, &iocompParams->compServerComm); // compute communicator for compute tasks and colour != 0 
+commSplit.c:127:		ierr = MPI_Comm_dup(iocompParams->globalComm, &iocompParams->ioServerComm); // compute communicator for compute tasks and colour != 0 
+getPair.c:26:	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
+getPair.c:28:	ierr = MPI_Comm_size(iocompParams->globalComm, &globalSize); 
+getPair.c:32:	if(iocompParams->colour == ioColour) 
+getPair.c:35:		if(globalSize > iocompParams->NODESIZE*2)
+getPair.c:37:			source = globalRank - iocompParams->NODESIZE; 
+getPair.c:44:		if(!iocompParams->pairPrintCounter) // only print message first time? 
+getPair.c:47:			iocompParams->pairPrintCounter = 1; 
+getPair.c:57:	else if(iocompParams->colour == compColour) 
+getPair.c:61:		if(globalSize > iocompParams->NODESIZE*2)
+getPair.c:63:			dest = globalRank + iocompParams->NODESIZE; 
+getPair.c:70:		if(!iocompParams->pairPrintCounter) // only print message first time? 
+getPair.c:73:				iocompParams->pairPrintCounter = 1; 
+dataSend.c:13:	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank);
+dataSend.c:15:	ierr = MPI_Comm_rank(iocompParams->compServerComm, &compRank);
+dataSend.c:18:	iocompParams->localDataSize = localDataSize; // assign size of local array 
+dataSend.c:20:	if(iocompParams->hyperthreadFlag) // check if flag is true? 
+dataSend.c:35:		ierr = MPI_Isend(data, iocompParams->localDataSize , MPI_DOUBLE, dest, tag,
+dataSend.c:36:					iocompParams->globalComm, request); // every rank sends its portion of data 
+dataSend.c:50:		iocompParams->localDataSize = localDataSize;
+dataSend.c:51:		if(!iocompParams->previousInit || iocompParams->previousCount!=(int)localDataSize)
+dataSend.c:53:			arrayParamsInit(iocompParams,iocompParams->ioServerComm); 
+dataSend.c:54:			iocompParams->previousInit = 1; 
+dataSend.c:55:			iocompParams->previousCount = localDataSize; 
+dataWait.c:11:	if(iocompParams->hyperthreadFlag) // only implement if HT flag switched on 
+dataWait.c:16:		MPI_Comm_rank(iocompParams->compServerComm, &compRank); 
+ioServerInitialise.c:21:	ierr = MPI_Comm_size(iocompParams->ioServerComm, &ioSize); 
+ioServerInitialise.c:23:	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
+ioServerInitialise.c:33:	int dims_mpi[iocompParams->NDIM]; 		
+ioServerInitialise.c:34:	int periods[iocompParams->NDIM]; 		
+ioServerInitialise.c:35:	int coords[iocompParams->NDIM]; 		
+ioServerInitialise.c:36:	for (int j = 0; j < iocompParams->NDIM; j++)
+ioServerInitialise.c:46:	ierr = MPI_Dims_create(ioSize, iocompParams->NDIM, dims_mpi);
+ioServerInitialise.c:52:	ierr = MPI_Cart_create(iocompParams->ioServerComm, iocompParams->NDIM, dims_mpi,
+ioServerInitialise.c:53:		periods, reorder, &iocompParams->cartcomm); // comm;
+ioServerInitialise.c:59:	ierr = MPI_Cart_coords(iocompParams->cartcomm, ioRank, iocompParams->NDIM, coords);
+ioServerInitialise.c:68:	iocompParams->FILENAMES[0] = "mpiio.dat"; 
+ioServerInitialise.c:69:	iocompParams->FILENAMES[1] = "hdf5.h5"; 
+ioServerInitialise.c:70:	iocompParams->FILENAMES[2] = "adios2.h5";
+ioServerInitialise.c:71:	iocompParams->FILENAMES[3] = "adios2.bp4";
+ioServerInitialise.c:72:	iocompParams->FILENAMES[4] = "adios2.bp5"; 
+ioServerInitialise.c:76:	iocompParams->ADIOS2_IOENGINES[0] = "HDF5"; 
+ioServerInitialise.c:77:	iocompParams->ADIOS2_IOENGINES[1] = "BP4"; 
+ioServerInitialise.c:78:	iocompParams->ADIOS2_IOENGINES[2] = "BP5";
+ioServerInitialise.c:87:	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
+ioServerInitialise.c:89:		iocompParams->adios = adios2_init_config_mpi(config_file, iocompParams->cartcomm); 
+ioServerInitialise.c:90:		iocompParams->io = adios2_declare_io(iocompParams->adios, 
+ioServerInitialise.c:91:			iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler declaration
+ioServerInitialise.c:100:	iocompParams->previousInit = 0;  
+ioServerInitialise.c:101:	iocompParams->previousCount = 0;  
+ioServerInitialise.c:102:	iocompParams->adios2Init = 0;  
+ioServerInitialise.c:105:	previousCount %i, adios2Init %i\n", iocompParams->previousInit, iocompParams->previousCount,\
+ioServerInitialise.c:106:	iocompParams->adios2Init);
+adios2Write.c:14:	for (int i = 0; i <iocompParams->NDIM; i++)
+adios2Write.c:16:		assert(iocompParams->localArray[i]  > 0); 
+adios2Write.c:17:		assert(iocompParams->globalArray[i] > 0); 
+adios2Write.c:22:	printf("adios2Write->adios2Init flag %i \n", iocompParams->adios2Init);
+adios2Write.c:24:	if(!iocompParams->adios2Init) // check if declared before so that adios2 variable is not defined again. 
+adios2Write.c:26:	iocompParams->var_iodata = adios2_define_variable(iocompParams->io, "iodata", adios2_type_double,iocompParams->NDIM,
+adios2Write.c:27:			iocompParams->globalArray, iocompParams->arrayStart, iocompParams->localArray, adios2_constant_dims_true); 
+adios2Write.c:28:		iocompParams->adios2Init = 1;  
+adios2Write.c:34:	adios2_engine *engine = adios2_open(iocompParams->io, iocompParams->FILENAMES[iocompParams->ioLibNum], adios2_mode_write);
+adios2Write.c:45:	errio = adios2_put(engine,iocompParams->var_iodata, iodata, adios2_mode_deferred);
+mpiRead.c:11:	filesize = iocompParams->globalArray[0] * iocompParams->globalArray[1]; 
+mpiRead.c:14:	fp = fopen(iocompParams->FILENAMES[iocompParams->ioLibNum],"r");
+mpiRead.c:18:		printf("Error: file %s not opening. Exiting \n", iocompParams->FILENAMES[iocompParams->ioLibNum]); 
+mpiRead.c:21:	printf("file %s open \n", iocompParams->FILENAMES[iocompParams->ioLibNum]); 
+mpiRead.c:26:		printf("read elements %li not equal to global size of file %li \n", num, iocompParams->globalDataSize); 
+stopSend.c:12:	ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank);
+stopSend.c:13:	ierr = MPI_Comm_rank(iocompParams->compServerComm, &compRank);
+stopSend.c:16:	if(iocompParams->hyperthreadFlag) // check if flag is true? 
+stopSend.c:32:				iocompParams->globalComm); // every rank sends its portion of data 
+stopSend.c:44:		if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
+stopSend.c:46:			adios2_finalize(iocompParams->adios); 
+stopSend.c:49:		VERBOSE_1(compRank,"stopSend -> adios2 finalised with HT flag=%i \n", iocompParams->hyperthreadFlag); 
+mpiWrite.c:12:	int			dims[iocompParams->NDIM],
+mpiWrite.c:13:					coords[iocompParams->NDIM], 
+mpiWrite.c:14:					periods[iocompParams->NDIM]; 
+mpiWrite.c:16:	ierr = MPI_Comm_size(iocompParams->cartcomm, &nprocs);
+mpiWrite.c:18:	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
+mpiWrite.c:22:	for(i = 0; i < iocompParams->NDIM; i++)
+mpiWrite.c:29:	VERBOSE_1(ioRank,"mpiWrite -> MPI variables init completed with NDIM %i\n", iocompParams->NDIM); 
+mpiWrite.c:40:	ierr = MPI_Cart_get(iocompParams->cartcomm, iocompParams->NDIM, dims, periods, coords); 
+mpiWrite.c:45:	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum],
+mpiWrite.c:53:	int localArray[iocompParams->NDIM]; 
+mpiWrite.c:54:	int globalArray[iocompParams->NDIM]; 
+mpiWrite.c:55:	int arrayStart[iocompParams->NDIM]; 
+mpiWrite.c:60:	for(i = 0; i < iocompParams->NDIM; i++)
+mpiWrite.c:62:		localArray[i] =	 (int)iocompParams->localArray[i]; 
+mpiWrite.c:63:		globalArray[i] = (int)iocompParams->globalArray[i]; 
+mpiWrite.c:64:		arrayStart[i] =  (int)iocompParams->arrayStart[i]; 
+mpiWrite.c:75:	ierr = MPI_Type_create_subarray(iocompParams->NDIM, globalArray, localArray, arrayStart,
+mpiWrite.c:89:	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->FILENAMES[iocompParams->ioLibNum], 
+mpiWrite.c:104:	for (i = 0; i< iocompParams->NDIM; i++)
+arrayParamsInit.c:24:	iocompParams->localArray = malloc(sizeof(size_t)*iocompParams->NDIM);
+arrayParamsInit.c:25:	iocompParams->globalArray = malloc(sizeof(size_t)*iocompParams->NDIM);
+arrayParamsInit.c:26:	iocompParams->dataType = MPI_DOUBLE; // data type of sent and recvd data 
+arrayParamsInit.c:38:	float power = (float)1/iocompParams->NDIM; 
+arrayParamsInit.c:41:	root = (int)pow(iocompParams->localDataSize,power);
+arrayParamsInit.c:44:	if(pow(root,iocompParams->NDIM) == iocompParams->localDataSize)
+arrayParamsInit.c:51:	else if(iocompParams->localDataSize%root == 0) 
+arrayParamsInit.c:54:		dim[1] = iocompParams->localDataSize/root; 
+arrayParamsInit.c:58:	else if(iocompParams->localDataSize%root != 0)
+arrayParamsInit.c:62:			if(iocompParams->localDataSize%(root-i) == 0) 
+arrayParamsInit.c:65:				dim[1] = iocompParams->localDataSize/(root-i); 
+arrayParamsInit.c:70:	for (i = 0; i < iocompParams->NDIM; i++)
+arrayParamsInit.c:72:		iocompParams->localArray[i] = dim[i]; 
+arrayParamsInit.c:73:		iocompParams->globalArray[i]	= iocompParams->localArray[i]; 
+arrayParamsInit.c:77:	// size_t mult = (iocompParams->localArray[0]*iocompParams->localArray[1]); 
+arrayParamsInit.c:78:	// print("value of multiplication %li and localdatasize %li \n ", mult, iocompParams->localDataSize); 
+arrayParamsInit.c:79:	assert( (iocompParams->localArray[0]*iocompParams->localArray[1]) == iocompParams->localDataSize);
+arrayParamsInit.c:86:	iocompParams->globalArray[0]*= ioSize; // assumes outermost dimension gets expanded by each rank 
+arrayParamsInit.c:90:	VERBOSE_1(ioRank,"arrayParamsInit-> globalArray:[%li,%li] \n",iocompParams->globalArray[0], iocompParams->globalArray[1] ); 
+arrayParamsInit.c:91:	VERBOSE_1(ioRank,"arrayParamsInit-> localArray:[%li,%li] \n", iocompParams->localArray[0],  iocompParams->localArray[1] ); 
+arrayParamsInit.c:92:	// VERBOSE_1(ioRank,"arrayParamsInit-> startArray:[%li,%li] \n", iocompParams->arrayStart[0],  iocompParams->arrayStart[1] ); 
+arrayParamsInit.c:98:	iocompParams->globalDataSize = iocompParams->localDataSize * ioSize; 
+arrayParamsInit.c:101:	VERBOSE_1(ioRank,"arrayParamsInit -> size definitions, localDataSize %li, globalDataSize %li\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
+arrayParamsInit.c:107:	iocompParams->arrayStart = malloc(sizeof(int)*iocompParams->NDIM);
+arrayParamsInit.c:112:	for (int i = 0; i < iocompParams->NDIM; i++)
+arrayParamsInit.c:114:		iocompParams->arrayStart[i] = 0; 
+arrayParamsInit.c:116:	iocompParams->arrayStart[0] = ioRank * iocompParams->localArray[0]; // assuming ar_size has uniform dimensions. 
+adios2Read.c:14:	iodata_test = (double*)malloc(iocompParams->globalDataSize*sizeof(double));
+adios2Read.c:21:			iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler declaration
+adios2Read.c:22:	adios2_engine *engine = adios2_open(io, iocompParams->FILENAMES[iocompParams->ioLibNum], adios2_mode_read);
+ioServer.c:13:	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
+ioServer.c:50:		MPI_Probe(source, tag, iocompParams->globalComm, &status); // Probe for additional messages. 
+ioServer.c:70:					iocompParams->globalComm,&status);
+ioServer.c:78:			if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
+ioServer.c:80:				adios2_finalize(iocompParams->adios); 
+ioServer.c:99:				iocompParams->localDataSize = test_count; 
+ioServer.c:100:				assert(iocompParams->localDataSize>0); // check for negative values 
+ioServer.c:106:				if(iocompParams->previousInit) 
+ioServer.c:118:					iocompParams->previousInit = 1; 
+ioServer.c:119:					arrayParamsInit(iocompParams,iocompParams->ioServerComm); 
+ioServer.c:121:				recv = (double*)malloc(iocompParams->localDataSize*sizeof(double)); // one rank only sends to one rank
+ioServer.c:127:			VERBOSE_1(ioRank,"ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
+ioServer.c:130:					iocompParams->globalComm,&status);

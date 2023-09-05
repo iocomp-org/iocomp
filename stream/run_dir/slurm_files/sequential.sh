@@ -1,13 +1,7 @@
 export CASE=Sequential
-export RUNDIR=${PARENT_DIR}/${CASE}/$i
-echo "**" $CASE 
-echo $RUNDIR 
 
-rm -rf ${RUNDIR}
-mkdir -p ${RUNDIR}
-lfs setstripe -c -1  ${RUNDIR}
-cd ${RUNDIR} 
-cp ${CONFIG} . 
+# setup of directories and copying of config files and make outputs.
+source ${SLURM_SUBMIT_DIR}/slurm_files/setup.sh 
 
 if (( ${SLURM_NNODES} > 1  )); then 
   NUM_NODES=${HALF_NODES} 
@@ -22,7 +16,7 @@ if (( ${SLURM_NNODES} > 1  )); then
  
   if (( ${MAP} == 1  )); then 
     TOTAL_RANKS=$((${NUM_NODES}*${END_CORES}))
-    map -n ${TOTAL_RANKS} --mpiargs="--hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_TASKS}  --cpu-bind=map_cpu:${bar[@]}" ${EXE} --size ${SIZE} --io ${IO}
+    map --mpi=slurm  -n ${TOTAL_RANKS} --mpiargs="--hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_TASKS}  --cpu-bind=map_cpu:${bar[@]}" ${EXE} --nx ${NX} --ny ${NY} --io ${IO} 
   else 
    srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_TASKS}  --cpu-bind=map_cpu:${bar[@]} ${EXE} --nx ${NX} --ny ${NY} --io ${IO} > test.out  
  fi 
@@ -38,7 +32,7 @@ else
   
   TOTAL_RANKS=$((${NUM_NODES}*${END_CORES}))
   if (( ${MAP} == 1  )); then 
-    map -n ${TOTAL_RANKS} --mpiargs="--hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]}" --profile  ${EXE} --size ${SIZE} --io ${IO}
+    map --mpi=slurm -n ${TOTAL_RANKS} --mpiargs="--hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]}" --profile  ${EXE} --nx ${NX} --ny ${NY} --io ${IO}
   else 
     srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --nx ${NX} --ny ${NY} --io ${IO} > test.out
   fi 

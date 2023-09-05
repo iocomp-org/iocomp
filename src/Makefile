@@ -3,7 +3,7 @@ CC = cc
 
 # define compile time flags 
 # DADIOS2_USE_MPI for adios2 
-CFLAGS =-fPIC  -DADIOS2_USE_MPI -O2 -shared #-Wall -Wpedantic -Werror -Wextra 
+CFLAGS = -fpic -shared -O2 -DADIOS2_USE_MPI  -Wall -Wpedantic -Werror -Wextra 
 
 # enable and disable different iocomp related flags 
 # DNDEBUG for not including error messages 
@@ -14,10 +14,10 @@ CFLAGS =-fPIC  -DADIOS2_USE_MPI -O2 -shared #-Wall -Wpedantic -Werror -Wextra
 # DNDELETE for disabling the delete file commands after writing is completed  
 # DNOADIOS2 for disabling ADIOS2 
 # DNOHDF5 for disabling HDF5 
-IOCOMP_FLAGS += -DNDEBUG #-DNDELETE #-DREADBACK #-DPRINT_ORDERING #-DIOCOMP_TIMERS #-DNDELETE
+IOCOMP_FLAGS += -DNDEBUG #-DPRINT_ORDERING #-DNDELETE #-DREADBACK  #-DIOCOMP_TIMERS #-DNDELETE
 
 # linker flags
-LFLAGS = -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
+LFLAGS = -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
 
 # object file directory
 ODIR = Object_files

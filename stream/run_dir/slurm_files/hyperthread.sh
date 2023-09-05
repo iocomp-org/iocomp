@@ -1,5 +1,5 @@
 export CASE=Hyperthread
-export RUNDIR=${PARENT_DIR}/${CASE}/$i
+export RUNDIR=${PARENT_DIR}/${CASE}/${iter}
 echo "**" $CASE 
 echo $RUNDIR
 
