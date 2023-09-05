@@ -2,7 +2,16 @@
 
 Library to compare performance from different I/O libraries with the option to switch between asynchronous and direct synchronous I/O. 
 Different back-ends include MPIIO, HDF5, ADIOS2 HDF5 and ADIOS2 BP4, BP5
+## Organization ##
+The repository is arranged as follows:
 
+    <root>
+        src/                           # iocomp library source code 
+        stream/                        # STREAM test benchmark
+            run_dir/                   # directory containing all slurm scripts to run on ARCHER2 and Cirrus  
+        LICENSE                  	# The software license governing the software in this repository
+        
+   
 ## Installation for iocomp library 
 ```
 git clone <iocomp repository>
