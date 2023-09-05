@@ -8,7 +8,8 @@ The repository is arranged as follows:
     <root>
         src/                           # iocomp library source code 
         stream/                        # STREAM test benchmark
-            run_dir/                   # directory containing all slurm scripts to run on ARCHER2 and Cirrus  
+            run_dir/                   # Directory containing all slurm scripts to run on ARCHER2 and Cirrus  
+        test/                          # Testing source code with read scripts for output formats 
         LICENSE                  	   # The software license governing the software in this repository
         
    
