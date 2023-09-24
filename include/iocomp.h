@@ -20,6 +20,16 @@ extern "C" {
 #define ioLibCount 5
 #define NUM_DIM 2
 
+// define number of shared memory windows 
+#define NUM_WIN 3
+
+// define window control integers 
+#define WIN_DEACTIVATE 0 
+#define WIN_TEST 1
+#define WIN_ACTIVATE 2 
+#define WIN_WAIT 3
+#define WIN_FREE -1
+
 	/*
 	 * Header file for declaring the error_report_fn and macro error_report which simplifies calling.
 	 */
@@ -103,6 +113,20 @@ extern "C" {
 #ifdef PRINT_ORDERING
 		int pairPrintCounter; // so that getPair messages are not printed more than once.
 #endif 
+
+		// shared memory addition 
+		// communicators 
+		MPI_Comm newComm; 
+		MPI_Comm ioComm; 
+		// group 
+		MPI_Group group; 
+		// sync access control flags 
+		int wintestflags[NUM_WIN]; 	
+		// shared MPI window array
+		MPI_Win winMap[NUM_WIN];  
+		// Shared window pointers and MPI window thing 
+		double *array[NUM_WIN]; 
+
 	}; 
 	extern struct iocomp_params iocompParams; 
 
@@ -115,7 +139,8 @@ extern "C" {
 	void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm); 
 	void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm ); 
 	void highlowOrdering(struct iocomp_params *iocompParams); 
-	MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum, int NODESIZE); // initialises the library 
+	MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, 
+			int ioLibNum, int fullNode, bool sharedFlag); 
 	void ioServerInitialise(struct iocomp_params *iocompParams); // initialise ioServer if ioProcessor 
 	void testData(struct iocomp_params *iocompParams, int testFlag); // test data structures with flag to switch on/off  
 	void stopSend(struct iocomp_params *iocompParams); // ghost send function that signals MPI_Sends are stopping
@@ -144,6 +169,10 @@ extern "C" {
 	void adioswrite(double* iodata, struct iocomp_params *iocompParams); 
 	void adios2Read(struct iocomp_params *iocompParams, double* iodata_test); 
 #endif 
+	
+	// Shared memory additions 
+	void ioServer_shared(struct iocomp_params *iocompParams); 
+	void fileWrite(struct iocomp_params *iocompParams, double* iodata, int* loopCounter, int windowNum); 
 
 #ifdef __cplusplus
 }

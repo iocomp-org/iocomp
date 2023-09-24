@@ -13,7 +13,7 @@
  * Initialises the library 
  */
 MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, 
-		int ioLibNum, int fullNode)
+		int ioLibNum, int fullNode, bool sharedFlag)
 {
 	int myGlobalrank; 
 	MPI_Comm_rank(comm, &myGlobalrank); 
@@ -99,6 +99,16 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 		VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> After finalize\n"); 
 #endif
 		exit(0); 
+	}
+
+	/*
+	 * If the shared flag is on and process is ioserver then ioServer initialises
+	 * shared windows. 
+	 */ 
+	if( (sharedFlag == true) && (iocompParams->colour == ioColour) )
+	{
+		ioServer_shared(iocompParams);
+		MPI_Finalize(); 
 	}
 
 	/*
