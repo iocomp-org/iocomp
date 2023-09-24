@@ -25,8 +25,6 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	ierr = MPI_Comm_rank(iocompParams->ioComm, &ioRank); 
 	mpi_error_check(ierr); 
 
-	int loopCounter[NUM_WIN]; 
-
 	// Allocate cartesian communicator, adios2 objects	
 	ioServerInitialise(iocompParams); 
 
@@ -73,19 +71,17 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	// declare mult variable to test for completion among all windows 
 	int wintestmult = 1; 
 
-	// loopCounter to assign timers per loop iteration for each window
+#ifdef IOBW
 	for(int i = 0 ; i < NUM_WIN; i ++)
 	{
-		loopCounter[i] = 0; 
-#ifdef IOBW
 		// initialise timers 
 		for(int j = 0; j < AVGLOOPCOUNT; j++)
 		{
 			iocompParams->winTime[i][j] = 0.0; 
 			iocompParams->writeTime[i][j] = 0.0; 
 		}
-#endif 
 	}
+#endif 
 
 	/* 
 	 * initialise flag variable to test for window completion
@@ -132,16 +128,13 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 					// wait for window completion 
 					ierr = MPI_Win_wait(win_ptr[i]); 
 					mpi_error_check(ierr); 
-					fileWrite(iocompParams, array[i], loopCounter, i); 
+					ioLibraries(array[i], iocompParams); 
 					flag[i] = 1; 
 				}
 
 				ierr = MPI_Win_post(group, 0, win_ptr[i]);
 				mpi_error_check(ierr); 
 				flag[i] = 0; // window activated 
-#ifndef NDEBUG 
-				fprintf(iocompParams->debug, "ioServer window:%i MPI post loopCounter %i\n", i, loopCounter[i]); 
-#endif 
 #ifdef IOBW	
 				iocompParams->winTime_start[i] = MPI_Wtime();
 #endif 
@@ -158,7 +151,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 #ifndef NDEBUG 
 					fprintf(iocompParams->debug, "ioServer window:%i flag positive \n",i); 
 #endif
-					fileWrite(iocompParams, array[i], loopCounter, i); 
+					ioLibraries(array[i], iocompParams); 
 				}
 			} 
 			else if(iocompParams->wintestflags[i] == WIN_TEST && flag[i] == 0)
@@ -176,7 +169,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 #ifndef NDEBUG 
 					fprintf(iocompParams->debug, "ioServer window:%i flag positive \n",i); 
 #endif
-					fileWrite(iocompParams, array[i], loopCounter, i); 
+					ioLibraries(array[i], iocompParams); 
 
 				}
 			} 
@@ -209,7 +202,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 		{
 			ierr = MPI_Win_wait(win_ptr[i]); 
 			mpi_error_check(ierr); 
-			fileWrite(iocompParams, array[i], loopCounter, i); 
+			ioLibraries(array[i], iocompParams); 
 #ifndef NDEBUG 
 			fprintf(iocompParams->debug, "ioServer window:%i before win free reached\n",i); 
 #endif 

@@ -73,7 +73,7 @@ $(MAIN): $(OBJS)
 else
 $(MAIN): $(OBJS) 
 	#$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -o $(MAIN) Object_files/*.o
-	ar rcs $(MAIN) $(OBJS)
+	$(CC) $(CFLAGS) $(LFLAGS) -o $(MAIN)  $(OBJS) 
 endif 
 
 	
