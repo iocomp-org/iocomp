@@ -30,6 +30,11 @@ extern "C" {
 #define WIN_WAIT 3
 #define WIN_FREE -1
 
+// define avg loop count of stream kernels
+#define AVGLOOPCOUNT 2
+// define number of compute cycles per avg loop count 
+#define COMPLOOPCOUNT 1
+
 	/*
 	 * Header file for declaring the error_report_fn and macro error_report which simplifies calling.
 	 */
@@ -126,6 +131,10 @@ extern "C" {
 		MPI_Win winMap[NUM_WIN];  
 		// Shared window pointers and MPI window thing 
 		double *array[NUM_WIN]; 
+		// filenames 
+		char WRITEFILE[NUM_WIN][AVGLOOPCOUNT][100]; 
+
+		bool sharedFlag; 
 
 	}; 
 	extern struct iocomp_params iocompParams; 
@@ -173,6 +182,8 @@ extern "C" {
 	// Shared memory additions 
 	void ioServer_shared(struct iocomp_params *iocompParams); 
 	void fileWrite(struct iocomp_params *iocompParams, double* iodata, int* loopCounter, int windowNum); 
+	void fileNameInit(struct iocomp_params *iocompParams, char filenames[NUM_WIN][100]); 
+	void wininits(struct iocomp_params *iocompParams, int localdatasize); 
 
 #ifdef __cplusplus
 }

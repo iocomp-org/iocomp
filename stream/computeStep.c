@@ -22,10 +22,16 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	double* b = NULL; // initialise data pointer  
 	double* c = NULL; // initialise data pointer  
 	
-	// initialise a, b, c 
-	a = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
-	b = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
-	c = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
+	/*
+	 * Initialise a, b, c. 
+	 * Initialise shared windows associated with arrays *if* shared flag is true
+	 * otherwise return the malloced arrays with localDataSize 
+	 */ 
+	winInits(iocompParams, streamParams->localDataSize); 
+	a = ioParams->array[0];
+	c = ioParams->array[1];
+	b = ioParams->array[2];
+
 	for(int i = 0; i < streamParams->localDataSize; i++)
 	{
 		a[i] = 1.0; 

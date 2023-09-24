@@ -107,6 +107,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 */ 
 	if( (sharedFlag == true) && (iocompParams->colour == ioColour) )
 	{
+		iocompParams->sharedFlag = true; 
 		ioServer_shared(iocompParams);
 		MPI_Finalize(); 
 	}
