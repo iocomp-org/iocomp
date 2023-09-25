@@ -23,8 +23,8 @@ LIBS +=   -L$(IOCOMP_DIR)/lib -liocomp  -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5  -L$(
 					#-Wl,--eh-frame-hdr -Wl,-rpath=${FORGE_DIR}/map/libs/default/gnu/ofi
 
 # define C source files 
-SRCS = $(wildcard *.c)
-
+# SRCS = $(wildcard *.c)
+SRCS = $(filter-out add.c copy.c triad.c, $(wildcard *.c))
 # define executable file  
 MAIN = test 
 

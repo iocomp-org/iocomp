@@ -29,14 +29,14 @@ void scale(struct iocomp_params *iocompParams, struct stream_params* streamParam
 	streamParams->compTimer[SCALE][iter] = MPI_Wtime() - timerStart;  // computeTime for SCALE 
 }
 
-void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter)
+void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* b)
 {
 #ifndef NDEBUG
 	printf("stream -> ADD wait\n"); 
 #endif
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
-	dataWait(iocompParams,&streamParams->requestArray[SCALE]);
+	dataWait(iocompParams,&streamParams->requestArray[SCALE], b);
 	streamParams->waitTimer[SCALE][iter] = MPI_Wtime() - timerStart; // wait time for SCALE
 #ifndef NDEBUG
 	printf("stream -> ADD finished\n"); 

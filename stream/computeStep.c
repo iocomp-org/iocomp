@@ -79,11 +79,11 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * SEND(C) 
 		 */ 
 		// copy(iocompParams, streamParams, iter, c, a); // loop
-		if( (iter+1)%WRITE_FREQ == 0 && iter > 0) 
-		{
-			// wait for at least one iteration of TRIAD before waiting for TRIAD
-			triad_wait(iocompParams, streamParams, iter-1);
-		} 
+//		if( (iter+1)%WRITE_FREQ == 0 && iter > 0) 
+//		{
+//			// wait for at least one iteration of TRIAD before waiting for TRIAD
+//			triad_wait(iocompParams, streamParams, iter-1);
+//		} 
 		//if(iter%WRITE_FREQ==0)
 		//{
 		//	copy_send(iocompParams, streamParams, iter,c);
@@ -94,36 +94,54 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * WAIT(C)
 		 * SEND(B)
 		 */ 
+		if(iter > 0)
+		{
+			// winWaitInfo(ioParams, b); 
+			streamParams->mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE],b); 
+			dataWait(iocompParams,&streamParams->requestArray[SCALE], b);
+			// streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY],); 
+			// winTestInfo(ioParams, c); 
+			// winTestInfo(ioParams, a); 
+		}
+		else
+		{
+			winActivateInfo(ioParams, b); 
+		}
+		dataSendInfo(ioParams);
+		dataSendStart(ioParams, b); 
 		scale(iocompParams, streamParams, iter, c, b);
+		// scale(ioParams,iter, a,b,c); 
+		dataSendEnd(ioParams, b); 	
+
 		if(iter%WRITE_FREQ==0)
 		{
 			// copy_wait(iocompParams, streamParams, iter);
 			scale_send(iocompParams, streamParams, iter, b );
 		} 
 
-		/*
-		 * ADD(C) + MPITEST(B)
-		 * WAIT(B) 
-		 * SEND(C) 
-		 */ 
-		add(iocompParams, streamParams, iter, c, a, b);
-		if(iter%WRITE_FREQ==0)
-		{
-			scale_wait(iocompParams, streamParams, iter);
-			add_send(iocompParams, streamParams, iter, c );
-		} 
-
-		/*
-		 * TRIAD(A) + MPITEST(C)
-		 * WAIT(C)
-		 * SEND(A)
-		 */ 
-		triad(iocompParams, streamParams, iter, c, a, b);
-		if(iter%WRITE_FREQ==0)
-		{
-			add_wait(iocompParams, streamParams, iter);
-			triad_send(iocompParams, streamParams, iter, a);
-		} 
+//		/*
+//		 * ADD(C) + MPITEST(B)
+//		 * WAIT(B) 
+//		 * SEND(C) 
+//		 */ 
+//		add(iocompParams, streamParams, iter, c, a, b);
+//		if(iter%WRITE_FREQ==0)
+//		{
+//			scale_wait(iocompParams, streamParams, iter);
+//			add_send(iocompParams, streamParams, iter, c );
+//		} 
+//
+//		/*
+//		 * TRIAD(A) + MPITEST(C)
+//		 * WAIT(C)
+//		 * SEND(A)
+//		 */ 
+//		triad(iocompParams, streamParams, iter, c, a, b);
+//		if(iter%WRITE_FREQ==0)
+//		{
+//			add_wait(iocompParams, streamParams, iter);
+//			triad_send(iocompParams, streamParams, iter, a);
+//		} 
 	} // end avg loop 
 
 	triad_wait(iocompParams, streamParams, iter-1); // catch any triad sending after loop ends 
