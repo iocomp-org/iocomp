@@ -6,7 +6,7 @@
 		Otherwise the function will allocate the arrays with the required data size and return the array.  
 */
 
-void wininits(struct iocomp_params *iocompParams, int localDataSize)
+void winInits(struct iocomp_params *iocompParams, int localDataSize)
 {
 	if(iocompParams->sharedFlag == 1)
 	{
