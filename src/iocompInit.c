@@ -19,8 +19,8 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	MPI_Comm_rank(comm, &myGlobalrank); 
 
 #ifndef NDEBUG
-	initDebugFile(&iocompParams, myGlobalRank);
-	fprintf(ioParams.debug, "MPI initialised \n");
+	initDebugFile(iocompParams, myGlobalrank);
+	fprintf(iocompParams->debug, "MPI initialised \n");
 #endif 
 
 	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
@@ -41,7 +41,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 */ 
 	comm_split(iocompParams, comm); 
 #ifndef NDEBUG
-	fprintf(ioParams.debug, "iocompInit -> communicator split up and colour assigned \n"); 
+	fprintf(iocompParams->debug, "iocompInit -> communicator split up and colour assigned \n"); 
 #endif
 
 	/*
@@ -64,15 +64,15 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 		int ioRank; 
 		MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 #ifndef NDEBUG
-		fprintf(ioParams.debug,"ioServerInitialise -> ioServer called\n"); 
+		fprintf(iocompParams->debug,"ioServerInitialise -> ioServer called\n"); 
 #endif
 		ioServer(iocompParams);
 #ifndef NDEBUG
-		fprintf(ioParams.debug,"ioServerInitialise -> After ioServer\n"); 
+		fprintf(iocompParams->debug,"ioServerInitialise -> After ioServer\n"); 
 #endif
 		MPI_Finalize(); 
 #ifndef NDEBUG
-		fprintf(ioParams.debug,"ioServerInitialise -> After finalize\n"); 
+		fprintf(iocompParams->debug,"ioServerInitialise -> After finalize\n"); 
 #endif
 		exit(0); 
 	}

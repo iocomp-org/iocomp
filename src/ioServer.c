@@ -25,7 +25,7 @@ void ioServer(struct iocomp_params *iocompParams)
 	tag = source; 
 
 #ifndef NDEBUG
-	fprintf(ioParams->debug,"ioServer -> Recieving data starts from source rank %i \n", source); 
+	fprintf(iocompParams->debug,"ioServer -> Recieving data starts from source rank %i \n", source); 
 #endif
 	int test_count = 1; 
 	int iter = 0; 
@@ -44,17 +44,17 @@ void ioServer(struct iocomp_params *iocompParams)
 	for(;;) 
 	{
 #ifndef NDEBUG
-		fprintf(ioParams->debug,"ioServer -> start of ioServer loop, iter %i ioRank %i \n",iter,ioRank); 
+		fprintf(iocompParams->debug,"ioServer -> start of ioServer loop, iter %i ioRank %i \n",iter,ioRank); 
 #endif
 
 		MPI_Probe(source, tag, iocompParams->globalComm, &status); // Probe for additional messages
 #ifndef NDEBUG
-		fprintf(ioParams->debug,"ioServer -> MPI probe called \n"); 
+		fprintf(iocompParams->debug,"ioServer -> MPI probe called \n"); 
 #endif
 
 		MPI_Get_count(&status, MPI_DOUBLE, &test_count); // get count 
 #ifndef NDEBUG
-		fprintf(ioParams->debug,"ioServer -> MPI get count %i \n", test_count); 
+		fprintf(iocompParams->debug,"ioServer -> MPI get count %i \n", test_count); 
 #endif
 
 		/*
@@ -63,7 +63,7 @@ void ioServer(struct iocomp_params *iocompParams)
 		if(!test_count)
 		{
 #ifndef NDEBUG
-			fprintf(ioParams->debug,"ioServer -> ghost messaged recieved \n"); 	
+			fprintf(iocompParams->debug,"ioServer -> ghost messaged recieved \n"); 	
 #endif
 			int ghost;  
 			ierr = MPI_Recv(&ghost, 0, MPI_INT, source, tag,
@@ -133,14 +133,14 @@ void ioServer(struct iocomp_params *iocompParams)
 			} 
 
 #ifndef NDEBUG
-			fprintf(ioParams->debug,"ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
+			fprintf(iocompParams->debug,"ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
 #endif
 			ierr = MPI_Recv(recv, test_count, MPI_DOUBLE, source, tag,
 					iocompParams->globalComm,&status);
 			mpi_error_check(ierr); 
 
 #ifndef NDEBUG
-			fprintf(ioParams->debug,"ioServer -> Recv data coming from rank %i \n",source ); 
+			fprintf(iocompParams->debug,"ioServer -> Recv data coming from rank %i \n",source ); 
 #endif
 
 			/*
@@ -148,7 +148,7 @@ void ioServer(struct iocomp_params *iocompParams)
 			 * Parameters passed using iocompParams  
 			 */ 
 #ifndef NDEBUG
-			fprintf(ioParams->debug,"ioServer -> Send to ioLibraries \n"); 
+			fprintf(iocompParams->debug,"ioServer -> Send to ioLibraries \n"); 
 #endif
 			ioLibraries(recv, iocompParams); 
 		}  

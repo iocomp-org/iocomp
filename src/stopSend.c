@@ -28,7 +28,7 @@ void stopSend(struct iocomp_params *iocompParams)
 				iocompParams->globalComm); // every rank sends its portion of data 
 		mpi_error_check(ierr); 
 #ifndef NDEBUG
-		fprintf(ioParams.debug,"stopSend -> Ghost message sent \n"); 
+		fprintf(iocompParams->debug,"stopSend -> Ghost message sent \n"); 
 #endif
 	}
 	/*
@@ -45,7 +45,7 @@ void stopSend(struct iocomp_params *iocompParams)
 #endif 
 
 #ifndef NDEBUG
-		fprintf(ioParams.debug,"stopSend -> adios2 finalised with HT flag=%i \n", iocompParams->hyperthreadFlag); 
+		fprintf(iocompParams->debug,"stopSend -> adios2 finalised with HT flag=%i \n", iocompParams->hyperthreadFlag); 
 #endif
 		// delete file function is called in ioServer
 		// for non HT implementation, files should be deleted after the data is sent

@@ -29,7 +29,7 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 		tag = globalRank; // tag should be rank of computeServer
 
 #ifndef NDEBUG
-		fprintf(ioParams->debug,"dataSend -> Sending data starts from compProcessor with globalRank %i\
+		fprintf(iocompParams->debug,"dataSend -> Sending data starts from compProcessor with globalRank %i\
 to ioProcessor with globalRank  %i  \n", globalRank, dest); 
 #endif
 
@@ -38,7 +38,7 @@ to ioProcessor with globalRank  %i  \n", globalRank, dest);
 		mpi_error_check(ierr); 
 
 #ifndef NDEBUG
-		fprintf(ioParams->debug,"dataSend -> Sending data stop \n"); 
+		fprintf(iocompParams->debug,"dataSend -> Sending data stop \n"); 
 #endif
 	}
 	else
@@ -56,7 +56,7 @@ to ioProcessor with globalRank  %i  \n", globalRank, dest);
 			iocompParams->previousCount = localDataSize; 
 		}
 #ifndef NDEBUG
-		fprintf(ioParams->debug,"dataSend -> Hyperthread flag deactivated, go to ioLibraries with\
+		fprintf(iocompParams->debug,"dataSend -> Hyperthread flag deactivated, go to ioLibraries with\
 localDataSize %ld \n", localDataSize); 
 #endif
 			ioLibraries(data,iocompParams); // otherwise go straight to writing using ioLibraries 

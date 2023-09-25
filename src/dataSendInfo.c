@@ -3,13 +3,6 @@
 
 void dataSendInfo(struct iocomp_params *iocompParams)
 {	
-	// check if test flags have a value between -1 and 4 before broadcasting 
-	for(int i = 0; i < NUM_WIN; i++)
-	{
-		assert(iocompParams->wintestflags[i] > -2); 
-		assert(iocompParams->wintestflags[i] < 5); 
-	}
-
 #ifndef NDEBUG 
 	fprintf(iocompParams->debug, "dataSend -> Before MPI bcast, iocompParams->wintestflags "); 
 	for(int i = 0; i < NUM_WIN; i++)
@@ -19,6 +12,14 @@ void dataSendInfo(struct iocomp_params *iocompParams)
 	} 
 	fprintf(iocompParams->debug, "\n"); 
 #endif 
+
+	// check if test flags have a value between -1 and 4 before broadcasting 
+	for(int i = 0; i < NUM_WIN; i++)
+	{
+		assert(iocompParams->wintestflags[i] > -2); 
+		assert(iocompParams->wintestflags[i] < 5); 
+	}
+
 	// broadcast them to ioserver 
 	MPI_Bcast( iocompParams->wintestflags, NUM_WIN, MPI_INT, 0, iocompParams->newComm); 
 #ifndef NDEBUG 

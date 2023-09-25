@@ -23,7 +23,7 @@ void initDebugFile(struct iocomp_params *iocompParams, int globalRank)
 	iocompParams->debug = fopen(iocompParams->debugFile,"a");
 	if(iocompParams->debug == NULL)
 	{
-		error_check(EXIT_FAILURE); 
+		mpi_error_check(EXIT_FAILURE); 
 		printf("Value of errno: %d\n", errno);
 	}
 } 
