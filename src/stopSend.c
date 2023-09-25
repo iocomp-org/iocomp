@@ -24,9 +24,6 @@ void stopSend(struct iocomp_params *iocompParams)
 
 		double ghost = 0.0; 
 
-#ifdef VERBOSE_2
-		printf("stopSend -> Sending data starts from compProcessor with globalRank %i to ioProcessor with globalRank  %i  \n", globalRank, dest); 
-#endif
 		ierr = MPI_Send(&ghost, 0 , MPI_DOUBLE, dest, tag,
 				iocompParams->globalComm); // every rank sends its portion of data 
 		mpi_error_check(ierr); 

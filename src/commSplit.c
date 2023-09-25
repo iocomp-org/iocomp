@@ -28,7 +28,6 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 
 #ifndef NDEBUG
 	fprintf(ioParams->debug,"commSplit -> comm duplicate \n"); 
-	VERBOSE_2(iocompParams->debug_out,"commSplit -> comm duplicate \n"); 
 #endif
 
 	// header file for printing ordering 
@@ -76,7 +75,6 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		}
 #ifndef NDEBUG
 		fprintf(ioParams->debug,"commSplit -> colour assigned based on HIGH LOW ordering \n"); 
-		VERBOSE_2(iocompParams->debug_out,"commSplit -> colour assigned based on HIGH LOW ordering \n"); 
 #endif
 
 		/*
@@ -95,7 +93,6 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 			mpi_error_check(ierr); 
 #ifndef NDEBUG
 			fprintf(ioParams->debug,"commSplit -> MPI compServerComm initialised \n"); 
-			VERBOSE_2(iocompParams->debug_out,"commSplit -> MPI compServerComm initialised \n"); 
 #endif
 		} 
 
@@ -106,21 +103,9 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 			mpi_error_check(ierr); 
 #ifndef NDEBUG
 			fprintf(ioParams->debug,"commSplit -> MPI ioServerComm initialised \n"); 
-			VERBOSE_2(iocompParams->debug_out,"commSplit -> MPI ioServerComm initialised \n"); 
 #endif
 		} 
 
-
-#ifdef VERBOSE_2
-		if ( iocompParams->colour == ioColour )
-		{
-			fprintf(ioParams->debug,"commSplit -> Hello from ioServeComm with rank %i and colour %i \n", ioRank, iocompParams->colour); 
-		} 
-		else( iocompParams->colour == compColour )
-		{
-			fprintf(ioParams->debug,"commSplit -> Hello from computecomm with rank %i and colour %i \n", computeRank, iocompParams->colour); 
-		} 
-#endif
 	}
 
 
