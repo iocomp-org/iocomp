@@ -25,16 +25,6 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	strcat(iocompParams->DEBUG_FILE,".out"); 
 	printf("debug file name %s\n",iocompParams->DEBUG_FILE); 
 
-	iocompParams->debug_out=fopen(iocompParams->DEBUG_FILE,"w+"); // create new file 
-	if(iocompParams->debug_out==NULL)
-	{
-		printf("debug file not created \n"); 
-		exit(1); 
-	}
-	// fprintf(iocompParams->debug_out, "iocompInit \n"); 
-	// VERBOSE_1(myGlobalrank, "iocompInit -> Start of intercomm_init\n"); 
-	VERBOSE_2(iocompParams->debug_out, "iocompInit -> Start of intercomm_init\n"); 
-#endif
 
 	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
 	iocompParams->NDIM = NUM_DIM; // set number of dimensions
@@ -105,12 +95,33 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 * If the shared flag is on and process is ioserver then ioServer initialises
 	 * shared windows. 
 	 */ 
-	if( (sharedFlag == true) && (iocompParams->colour == ioColour) )
+	else if(sharedFlag == true)
 	{
-		iocompParams->sharedFlag = true; 
-		ioServer_shared(iocompParams);
-		MPI_Finalize(); 
-	}
+		/*
+		 * Assuming IO process and Compute Process are mapped to physical and SMT cores
+		 * if size = 10 then IO rank would be 5,6,..9
+		 * and compute rank would be 0,1,..4
+		 * Assign similar colours to corresponding I/O and compute Process
+		 * i.e. rank 0 and rank 5 would have same colour and then same MPI
+		 * Communicator 
+		 */  
+		// colour = globalRank%(globalSize/2); // IO rank and comp rank have same colour
+		colour = (int)globalRank/2; // IO rank and comp rank have same colour
+		ierr = MPI_Comm_split(MPI_COMM_WORLD, colour, globalRank, &ioParams.newComm); 
+		error_check(ierr); 
+
+		int newRank; 
+		ierr = MPI_Comm_rank(ioParams.newComm,&newRank); 
+		error_check(ierr); 
+
+		if(iocompParams->colour == ioColour)
+		{
+			// I/O server 
+			iocompParams->sharedFlag = true; 
+			ioServer_shared(iocompParams);
+			MPI_Finalize(); 
+		}
+	} 
 
 	/*
 	 * Return comp server comm to compute processes if HT flag is on
