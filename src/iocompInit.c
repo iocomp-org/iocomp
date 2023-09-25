@@ -17,14 +17,11 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 {
 	int myGlobalrank; 
 	MPI_Comm_rank(comm, &myGlobalrank); 
+
 #ifndef NDEBUG
-	char rank_str[10]; 
-	sprintf(rank_str, "%d", myGlobalrank);
-
-	strcat(iocompParams->DEBUG_FILE,rank_str ); 
-	strcat(iocompParams->DEBUG_FILE,".out"); 
-	printf("debug file name %s\n",iocompParams->DEBUG_FILE); 
-
+	initDebugFile(&iocompParams, myGlobalRank);
+	fprintf(ioParams.debug, "MPI initialised \n");
+#endif 
 
 	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
 	iocompParams->NDIM = NUM_DIM; // set number of dimensions
@@ -106,13 +103,13 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 		 * Communicator 
 		 */  
 		// colour = globalRank%(globalSize/2); // IO rank and comp rank have same colour
-		colour = (int)globalRank/2; // IO rank and comp rank have same colour
-		ierr = MPI_Comm_split(MPI_COMM_WORLD, colour, globalRank, &ioParams.newComm); 
-		error_check(ierr); 
+		int colour = (int)myGlobalrank/2; // IO rank and comp rank have same colour
+		int ierr = MPI_Comm_split(MPI_COMM_WORLD, colour, myGlobalrank, &iocompParams->newComm); 
+		mpi_error_check(ierr); 
 
 		int newRank; 
-		ierr = MPI_Comm_rank(ioParams.newComm,&newRank); 
-		error_check(ierr); 
+		ierr = MPI_Comm_rank(iocompParams->newComm,&newRank); 
+		mpi_error_check(ierr); 
 
 		if(iocompParams->colour == ioColour)
 		{
