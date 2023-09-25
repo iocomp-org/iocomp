@@ -73,7 +73,7 @@ void highlowOrdering(struct iocomp_params *iocompParams)
 	// check if colour is compColour or ioColour. 
 	assert(iocompParams->colour == 0 || iocompParams->colour == 1); 
 #ifndef NDEBUG
-	VERBOSE_1(globalRank,"highLowOrdering -> ranks assigned their colours %i with global rank %i \n", iocompParams->colour, globalRank); 
+	fprintf(ioParams->debug,"highLowOrdering -> ranks assigned their colours %i with global rank %i \n", iocompParams->colour, globalRank); 
 #endif
 } 
 

@@ -28,6 +28,6 @@ void mpiRead(struct iocomp_params *iocompParams, double* iodata_test)
 	fclose(fp);
 	printf("file closed \n"); 
 #ifndef NDEBUG
-		VERBOSE_1(ioRank,"file object closed\n"); 
+		fprintf(ioParams->debug,"file object closed\n"); 
 #endif 
 }
