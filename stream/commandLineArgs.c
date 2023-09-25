@@ -5,6 +5,15 @@
 
 void commandLineArgs(struct stream_params* streamParams, int argc, char** argv)
 {
+	
+	// default arguments 
+	streamParams->HT_flag = 0; 
+	streamParams->sharedFlag = 0;  
+	streamParams->nx = 10; 
+	streamParams->ny = 10; 
+	streamParams->io = 0; 
+	
+	// loop for command line arguments 
 	for(int i = 0; i < argc; i++)
 	{
 		if(strcmp(argv[i], "HT") == 0) 

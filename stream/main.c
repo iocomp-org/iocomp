@@ -24,9 +24,6 @@ int main(int argc, char** argv)
 	 * HT option switches on comm splitting 
 	 * size option can set size of array during runtime 
    */ 
-	streamParams.nx = 10; 
-	streamParams.ny = 10; 
-	streamParams.io = 0; 
 	
 	/*	
 	 * initialise stream param structs using command line parameters
@@ -43,6 +40,11 @@ int main(int argc, char** argv)
     if (streamParams.HT_flag)
 		{
       puts ("HT flag is set to on");
+			printf("size of array %i x %i IO num %i \n", streamParams.nx, streamParams.ny, streamParams.io); 
+		} 
+    else if (streamParams.sharedFlag)
+		{
+      puts ("Shared flag is set to on");
 			printf("size of array %i x %i IO num %i \n", streamParams.nx, streamParams.ny, streamParams.io); 
 		} 
     else 

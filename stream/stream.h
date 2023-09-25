@@ -54,12 +54,12 @@ void add(struct iocomp_params *iocompParams, struct stream_params* streamParams,
 void triad(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a, double* b ); 
 // waiting functions 
 void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
-void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
+void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* b); 
 void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
 void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
 // sending functions 
 void copy_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c); 
-void scale_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* b); 
+void scale_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* b); 
 void add_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c); 
 void triad_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* a); 
 //values check function 

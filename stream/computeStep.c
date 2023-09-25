@@ -28,9 +28,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	 * otherwise return the malloced arrays with localDataSize 
 	 */ 
 	winInits(iocompParams, streamParams->localDataSize); 
-	a = ioParams->array[0];
-	c = ioParams->array[1];
-	b = ioParams->array[2];
+	a = iocompParams->array[0];
+	c = iocompParams->array[1];
+	b = iocompParams->array[2];
 
 	for(int i = 0; i < streamParams->localDataSize; i++)
 	{
@@ -96,22 +96,22 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		if(iter > 0)
 		{
-			// winWaitInfo(ioParams, b); 
+			// winWaitInfo(iocompParams, b); 
 			streamParams->mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE],b); 
 			dataWait(iocompParams,&streamParams->requestArray[SCALE], b);
 			// streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY],); 
-			// winTestInfo(ioParams, c); 
-			// winTestInfo(ioParams, a); 
+			// winTestInfo(iocompParams, c); 
+			// winTestInfo(iocompParams, a); 
 		}
 		else
 		{
-			winActivateInfo(ioParams, b); 
+			winActivateInfo(iocompParams, b); 
 		}
-		dataSendInfo(ioParams);
-		dataSendStart(ioParams, b); 
+		dataSendInfo(iocompParams);
+		dataSendStart(iocompParams, b); 
 		scale(iocompParams, streamParams, iter, c, b);
-		// scale(ioParams,iter, a,b,c); 
-		dataSendEnd(ioParams, b); 	
+		// scale(iocompParams,iter, a,b,c); 
+		dataSendEnd(iocompParams, b); 	
 
 		if(iter%WRITE_FREQ==0)
 		{
@@ -144,7 +144,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 //		} 
 	} // end avg loop 
 
-	triad_wait(iocompParams, streamParams, iter-1); // catch any triad sending after loop ends 
+	// triad_wait(iocompParams, streamParams, iter-1); // catch any triad sending after loop ends 
 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
 #ifndef NDEBUG

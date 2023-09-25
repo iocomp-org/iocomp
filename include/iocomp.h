@@ -183,7 +183,11 @@ extern "C" {
 	void ioServer_shared(struct iocomp_params *iocompParams); 
 	void fileWrite(struct iocomp_params *iocompParams, double* iodata, int* loopCounter, int windowNum); 
 	void fileNameInit(struct iocomp_params *iocompParams, char filenames[NUM_WIN][100]); 
-	void wininits(struct iocomp_params *iocompParams, int localdatasize); 
+	void winInits(struct iocomp_params *iocompParams, int localdatasize); 
+	void dataSendEnd(struct iocomp_params *iocompParams, double* array); 
+	void dataSendStart(struct iocomp_params *iocompParams, double* array); 
+	void dataSendInfo(struct iocomp_params *iocompParams); 
+	void winActivateInfo(struct iocomp_params *iocompParams, double* array); 
 
 #ifdef __cplusplus
 }
