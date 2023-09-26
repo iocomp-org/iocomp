@@ -8,8 +8,10 @@
 
 void winInits(struct iocomp_params *iocompParams, int localDataSize)
 {
+	printf("winInits entered \n"); 
 	if(iocompParams->sharedFlag == true)
 	{
+		printf("Wintest flags true \n"); 
 		/* 
 		 * initialise window test flags with 0 
 		 * assign them 1 if ready for writing 
@@ -35,6 +37,7 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 	}
 	else
 	{
+		printf("Wintest flags not true \n"); 
 		/*
 		 * otherwise malloc using the number of elements and double filesize  
 		 */ 

@@ -99,6 +99,8 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 		fprintf(iocompParams->debug,"iocompInit -> shared flag true, MPI comm split into pairs of compute and IO server \n"); 
 #endif
 
+		iocompParams->sharedFlag = true; 
+		printf("params shared flag set to be true \n "); 
 		int newRank; 
 		ierr = MPI_Comm_rank(iocompParams->newComm,&newRank); 
 		mpi_error_check(ierr);
@@ -129,7 +131,6 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #ifndef NDEBUG
 			fprintf(iocompParams->debug,"iocompInit -> Program now entering IO shared server \n"); 
 #endif
-			iocompParams->sharedFlag = true; 
 			ioServer_shared(iocompParams);
 			MPI_Finalize(); 
 		}
