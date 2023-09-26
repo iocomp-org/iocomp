@@ -101,16 +101,12 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 
 		iocompParams->sharedFlag = true; 
 		printf("params shared flag set to be true \n "); 
+
+		// find new rank for the pair communicator between IO and Compute rank 
 		int newRank; 
 		ierr = MPI_Comm_rank(iocompParams->newComm,&newRank); 
 		mpi_error_check(ierr);
 	
-		// Initialise wintestflags 	
-		for(int i = 0; i < NUM_WIN; i++)
-		{
-			iocompParams->wintestflags[i] = 0; 
-		} 
-
 		// allocate groups 
 		/*
 		 * groups newComm communicator's rank 0 and 1 into a group
@@ -131,6 +127,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #ifndef NDEBUG
 			fprintf(iocompParams->debug,"iocompInit -> Program now entering IO shared server \n"); 
 #endif
+			printf("Befoer ioServer shared \n"); 
 			ioServer_shared(iocompParams);
 			MPI_Finalize(); 
 		}

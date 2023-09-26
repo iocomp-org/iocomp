@@ -8,10 +8,11 @@
 
 void winInits(struct iocomp_params *iocompParams, int localDataSize)
 {
-	printf("winInits entered \n"); 
 	if(iocompParams->sharedFlag == true)
 	{
-		printf("Wintest flags true \n"); 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug,"winInits->shared flag true");
+#endif
 		/* 
 		 * initialise window test flags with 0 
 		 * assign them 1 if ready for writing 
@@ -19,9 +20,10 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 		for(int i = 0; i < NUM_WIN; i++)
 		{
 			iocompParams->wintestflags[i] = 0; 
-			printf("Wintest flags for window %i = %i \n", i, iocompParams->wintestflags[i]); 
+#ifndef NDEBUG
+			fprintf(iocompParams->debug,"winInits->Wintest flags for window %i = %i \n", i, iocompParams->wintestflags[i]);
+#endif
 		} 
-
 		int ierr; 
 		// allocate shared windows 
 		for(int i = 0; i < NUM_WIN; i++)
@@ -29,15 +31,15 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 			ierr = MPI_Win_allocate_shared(sizeof(double)*localDataSize, sizeof(double), MPI_INFO_NULL, iocompParams->newComm, &iocompParams->array[i], &iocompParams->winMap[i]); 
 			mpi_error_check(ierr);
 		}
-		// initialise wintestflags 
-		for(int j = 0; j < NUM_WIN; j++)
-		{
-			iocompParams->wintestflags[j] = 0;
-		}
+#ifndef NDEBUG
+		fprintf(iocompParams->debug,"winInits->after window shared allocated");
+#endif
 	}
 	else
 	{
-		printf("Wintest flags not true \n"); 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug,"winInits->shared flag not true ");
+#endif
 		/*
 		 * otherwise malloc using the number of elements and double filesize  
 		 */ 
@@ -46,6 +48,9 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 			iocompParams->array[i] = (double*)malloc(localDataSize*sizeof(double)); 
 			assert(iocompParams->array[i] != NULL); 
 		}
+#ifndef NDEBUG
+		fprintf(iocompParams->debug,"winInits->Arrays malloced");
+#endif
 	} 
 
 } 

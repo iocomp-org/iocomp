@@ -14,32 +14,22 @@
 void ioServer_shared(struct iocomp_params *iocompParams)
 {
 
+
 	// allocate windows 
 	double* array[NUM_WIN]; 
 	MPI_Win win_ptr[NUM_WIN]; 
 	int soi = sizeof(double); 
 
-	// initialise IO Params structure 
-	iocompParams->ioComm = iocompParams->ioServerComm; 
-	int ioRank, ierr; 
-	ierr = MPI_Comm_rank(iocompParams->ioComm, &ioRank); 
-	mpi_error_check(ierr); 
-
-	// Allocate cartesian communicator, adios2 objects	
-	ioServerInitialise(iocompParams); 
-
-	// Initialise array parameters for each process write into a global file  
-	arrayParamsInit(iocompParams, iocompParams->ioServerComm); 
-
 	// allocate shared windows 
 	for(int i = 0; i < NUM_WIN; i++)
 	{
-		ierr = MPI_Win_allocate_shared(0, soi, MPI_INFO_NULL, iocompParams->newComm, &array[i], &win_ptr[i]); 
+		int ierr = MPI_Win_allocate_shared(0, soi, MPI_INFO_NULL, iocompParams->newComm, &array[i], &win_ptr[i]); 
 		mpi_error_check(ierr);
 #ifndef NDEBUG 
 		fprintf(iocompParams->debug, "ioServer -> MPI allocated window %i \n", i); 
 #endif 
-	} 
+	}
+	printf("ioserver - after windows allocated \n"); 
 
 	// allocate arrays using window pointers 
 	for(int i = 0; i < NUM_WIN; i++)
@@ -53,23 +43,30 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 		fprintf(iocompParams->debug, "ioServer -> MPI shared query %i \n", i); 
 #endif 
 	} 
+	printf("ioserver - after arrays initialised \n"); 
 
-	// groups 
-	MPI_Group comm_group, group;
-	int ranks[2]; 
-	for (int j=0; j<2; j++) {
-		ranks[j] = j;   
-	}
-	MPI_Comm_group(iocompParams->newComm,&comm_group);
+	// initialise IO Params structure 
+	iocompParams->ioComm = iocompParams->ioServerComm; 
+	int ioRank, ierr; 
+	ierr = MPI_Comm_rank(iocompParams->ioComm, &ioRank); 
+	mpi_error_check(ierr); 
 
-	/* Compute group consists of rank 0*/
-	MPI_Group_incl(comm_group,1,ranks,&group); 
+	printf("ioserver - before IO server init \n"); 
+	// Allocate cartesian communicator, adios2 objects	
+	ioServerInitialise(iocompParams); 
+	printf("ioserver - after IO server init \n"); 
+
+	// Initialise array parameters for each process write into a global file  
+	arrayParamsInit(iocompParams, iocompParams->ioServerComm); 
+	printf("ioserver - after array params init \n"); 
+
 	for(int i = 0; i < NUM_WIN; i++)
 	{
 		iocompParams->wintestflags[i] = 0; 
 	} 
 	// declare mult variable to test for completion among all windows 
 	int wintestmult = 1; 
+	printf("ioserver - after comm group init\n"); 
 
 #ifdef IOBW
 	for(int i = 0 ; i < NUM_WIN; i ++)
@@ -132,7 +129,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 					flag[i] = 1; 
 				}
 
-				ierr = MPI_Win_post(group, 0, win_ptr[i]);
+				ierr = MPI_Win_post(iocompParams->group, 0, win_ptr[i]);
 				mpi_error_check(ierr); 
 				flag[i] = 0; // window activated 
 #ifdef IOBW	
