@@ -40,8 +40,12 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 	} 
 #endif
 
-	if(iocompParams->hyperthreadFlag) // check if flag is true? 
+	if(iocompParams->hyperthreadFlag || iocompParams->sharedFlag) 
 	{
+		/* 
+		 * if HT flag or shared flag is activated the IO server and Comp server are
+		 * split 
+		 */ 
 		int ordering; // defines how IO and compute threads are going to organised 
 		ordering = HIGH_LOW; 
 		int globalRank, globalSize; 

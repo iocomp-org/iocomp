@@ -27,6 +27,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	iocompParams->NDIM = NUM_DIM; // set number of dimensions
 	iocompParams->ioLibNum = ioLibNum; // set selection of I/O library 
 	iocompParams->NODESIZE = fullNode; // set size of node for comm splitting 
+	iocompParams->sharedFlag = sharedFlag; // set flag for MPI shared memory usage 
 
 	/*
 	 * assert tests for input parameters 
@@ -45,43 +46,10 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #endif
 
 	/*
-	 * If HT flag is on, then called by io server, if HT flag off then called by
-	 * every process. This is because only ioServers have access to ioServerComm.
-	 * ioServerInitialise initialises cartesian communicator and adios2 objects,
-	 * and sets up other I/O related variables.
-	 */ 
-	if(!iocompParams->hyperthreadFlag || iocompParams->colour==ioColour) 
-	{
-		ioServerInitialise(iocompParams); 
-	} 
-
-	/*
-	 * If HT flag is on and process is ioserver then ioServer recieves data
-	 * and finalises adios2 object & mpi finalizes and program exits. 
-	 */ 
-	if(iocompParams->hyperthreadFlag && iocompParams->colour == ioColour)
-	{
-		int ioRank; 
-		MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
-#ifndef NDEBUG
-		fprintf(iocompParams->debug,"ioServerInitialise -> ioServer called\n"); 
-#endif
-		ioServer(iocompParams);
-#ifndef NDEBUG
-		fprintf(iocompParams->debug,"ioServerInitialise -> After ioServer\n"); 
-#endif
-		MPI_Finalize(); 
-#ifndef NDEBUG
-		fprintf(iocompParams->debug,"ioServerInitialise -> After finalize\n"); 
-#endif
-		exit(0); 
-	}
-
-	/*
 	 * If the shared flag is on and process is ioserver then ioServer initialises
 	 * shared windows. 
 	 */ 
-	else if(sharedFlag == true)
+	if(sharedFlag == true)
 	{
 		/*
 		 * Assuming IO process and Compute Process are mapped to physical and SMT cores
@@ -131,6 +99,44 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 			ioServer_shared(iocompParams);
 			MPI_Finalize(); 
 		}
+	} 
+	else
+	{
+
+
+	/*
+	 * If HT flag is on, then called by io server, if HT flag off then called by
+	 * every process. This is because only ioServers have access to ioServerComm.
+	 * ioServerInitialise initialises cartesian communicator and adios2 objects,
+	 * and sets up other I/O related variables.
+	 */ 
+	if(!iocompParams->hyperthreadFlag || iocompParams->colour==ioColour) 
+	{
+		ioServerInitialise(iocompParams); 
+	} 
+
+	/*
+	 * If HT flag is on and process is ioserver then ioServer recieves data
+	 * and finalises adios2 object & mpi finalizes and program exits. 
+	 */ 
+	if(iocompParams->hyperthreadFlag && iocompParams->colour == ioColour)
+	{
+		int ioRank; 
+		MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug,"ioServerInitialise -> ioServer called\n"); 
+#endif
+		ioServer(iocompParams);
+#ifndef NDEBUG
+		fprintf(iocompParams->debug,"ioServerInitialise -> After ioServer\n"); 
+#endif
+		MPI_Finalize(); 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug,"ioServerInitialise -> After finalize\n"); 
+#endif
+		exit(0); 
+	}
+	
 	} 
 
 	/*
