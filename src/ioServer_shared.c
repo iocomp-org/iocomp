@@ -100,7 +100,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	{
 		MPI_Bcast(iocompParams->wintestflags, NUM_WIN, MPI_INT, 0, iocompParams->newComm); 
 #ifndef NDEBUG 
-		fprintf(iocompParams->debug, "compServer -> after MPI bcast, iocompParams->wintestflags "); 
+		fprintf(iocompParams->debug, "ioServer -> after MPI bcast, iocompParams->wintestflags "); 
 		for(int i = 0; i < NUM_WIN; i++)
 		{
 			fprintf(iocompParams->debug, "[%i]", 

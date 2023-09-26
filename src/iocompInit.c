@@ -92,17 +92,43 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 		 * Communicator 
 		 */  
 		// colour = globalRank%(globalSize/2); // IO rank and comp rank have same colour
-		int colour = (int)myGlobalrank/2; // IO rank and comp rank have same colour
-		int ierr = MPI_Comm_split(MPI_COMM_WORLD, colour, myGlobalrank, &iocompParams->newComm); 
+		int pairColour = (int)myGlobalrank/2; // IO rank and comp rank have same colour
+		int ierr = MPI_Comm_split(MPI_COMM_WORLD, pairColour, myGlobalrank, &iocompParams->newComm); 
 		mpi_error_check(ierr); 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug,"iocompInit -> shared flag true, MPI comm split into pairs of compute and IO server \n"); 
+#endif
 
 		int newRank; 
 		ierr = MPI_Comm_rank(iocompParams->newComm,&newRank); 
-		mpi_error_check(ierr); 
-
-		if(iocompParams->colour == ioColour)
+		mpi_error_check(ierr);
+	
+		// Initialise wintestflags 	
+		for(int i = 0; i < NUM_WIN; i++)
 		{
-			// I/O server 
+			iocompParams->wintestflags[i] = 0; 
+		} 
+
+		// allocate groups 
+		/*
+		 * groups newComm communicator's rank 0 and 1 into a group
+		 * comp process initialises array and creates a window with that array
+		 */
+		MPI_Group comm_group;
+		int ranks[2];
+		for (int i=0;i<2;i++) {
+			ranks[i] = i;     //For forming groups, later
+		}
+		MPI_Comm_group(iocompParams->newComm,&comm_group);
+
+		/* I/O group consists of ranks 1 */
+		MPI_Group_incl(comm_group,1,ranks+1,&iocompParams->group);
+	
+		if(newRank != 0)
+		{
+#ifndef NDEBUG
+			fprintf(iocompParams->debug,"iocompInit -> Program now entering IO shared server \n"); 
+#endif
 			iocompParams->sharedFlag = true; 
 			ioServer_shared(iocompParams);
 			MPI_Finalize(); 

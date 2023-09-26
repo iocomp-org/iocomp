@@ -8,7 +8,7 @@
 
 void winInits(struct iocomp_params *iocompParams, int localDataSize)
 {
-	if(iocompParams->sharedFlag == 1)
+	if(iocompParams->sharedFlag == true)
 	{
 		/* 
 		 * initialise window test flags with 0 
@@ -17,6 +17,7 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 		for(int i = 0; i < NUM_WIN; i++)
 		{
 			iocompParams->wintestflags[i] = 0; 
+			printf("Wintest flags for window %i = %i \n", i, iocompParams->wintestflags[i]); 
 		} 
 
 		int ierr; 
@@ -26,21 +27,6 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 			ierr = MPI_Win_allocate_shared(sizeof(double)*localDataSize, sizeof(double), MPI_INFO_NULL, iocompParams->newComm, &iocompParams->array[i], &iocompParams->winMap[i]); 
 			mpi_error_check(ierr);
 		}
-		// allocate groups 
-		/*
-		 * groups newComm communicator's rank 0 and 1 into a group
-		 * comp process initialises array and creates a window with that array
-		 */
-		MPI_Group comm_group;
-		int ranks[2];
-		for (int i=0;i<2;i++) {
-			ranks[i] = i;     //For forming groups, later
-		}
-		MPI_Comm_group(iocompParams->newComm,&comm_group);
-
-		/* I/O group consists of ranks 1 */
-		MPI_Group_incl(comm_group,1,ranks+1,&iocompParams->group);
-
 		// initialise wintestflags 
 		for(int j = 0; j < NUM_WIN; j++)
 		{
