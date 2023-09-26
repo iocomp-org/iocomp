@@ -27,7 +27,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	 * Initialise shared windows associated with arrays *if* shared flag is true
 	 * otherwise return the malloced arrays with localDataSize 
 	 */ 
+	printf("before calling winInits \n"); 
 	winInits(iocompParams, streamParams->localDataSize); 
+	printf("after calling winInits \n"); 
 	a = iocompParams->array[0];
 	c = iocompParams->array[1];
 	b = iocompParams->array[2];
@@ -71,6 +73,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	{
 #ifndef NDEBUG
 		printf("stream -> stream loop starts\n"); 
+		fprintf(iocompParams->debug, "iocompInit -> stream loop starts \n");
 #endif
 
 		/*
@@ -96,10 +99,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		if(iter > 0)
 		{
-			// winWaitInfo(iocompParams, b); 
-			streamParams->mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE],b); 
-			dataWait(iocompParams,&streamParams->requestArray[SCALE], b);
-			// streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY],); 
+			winWaitInfo(iocompParams, b); 
 			// winTestInfo(iocompParams, c); 
 			// winTestInfo(iocompParams, a); 
 		}
@@ -109,15 +109,38 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		}
 		dataSendInfo(iocompParams);
 		dataSendStart(iocompParams, b); 
-		scale(iocompParams, streamParams, iter, c, b);
-		// scale(iocompParams,iter, a,b,c); 
+	 	// scale(iocompParams, streamParams, iter, c, b);
 		dataSendEnd(iocompParams, b); 	
 
-		if(iter%WRITE_FREQ==0)
-		{
-			// copy_wait(iocompParams, streamParams, iter);
-			scale_send(iocompParams, streamParams, iter, b );
-		} 
+
+//		if(iter > 0)
+//		{
+//			// winWaitInfo(iocompParams, b); 
+//			streamParams->mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE],b); 
+//			dataWait(iocompParams,&streamParams->requestArray[SCALE], b);
+//			// streamParams->mpiWaitFlag[COPY]=dataSendTest(iocompParams,&streamParams->requestArray[COPY],); 
+//			// winTestInfo(iocompParams, c); 
+//			// winTestInfo(iocompParams, a); 
+//		}
+//		else
+//		{
+//			winActivateInfo(iocompParams, b); 
+//		}
+//		dataSendInfo(iocompParams);
+//		printf("after data send info \n"); 
+//		dataSendStart(iocompParams, b); 
+//		printf("after data send start info \n"); 
+//		scale(iocompParams, streamParams, iter, c, b);
+//		printf("after scale \n"); 
+//		// scale(iocompParams,iter, a,b,c); 
+//		dataSendEnd(iocompParams, b); 	
+//		printf("after datasendend  \n"); 
+//
+//		if(iter%WRITE_FREQ==0)
+//		{
+//			// copy_wait(iocompParams, streamParams, iter);
+//			scale_send(iocompParams, streamParams, iter, b );
+//		} 
 
 //		/*
 //		 * ADD(C) + MPITEST(B)
@@ -147,6 +170,17 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	// triad_wait(iocompParams, streamParams, iter-1); // catch any triad sending after loop ends 
 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
+	/* send message to ioServer to free the windows and exit the recv loop */ 
+	winFreeInfo(iocompParams, a); 
+	winFreeInfo(iocompParams, c); 
+	winFreeInfo(iocompParams, b);
+	
+	dataSendInfo(iocompParams); 
+
+	dataSendComplete(iocompParams, a); 
+	dataSendComplete(iocompParams, c); 
+	dataSendComplete(iocompParams, b); 
+
 #ifndef NDEBUG
 	printf("After stopSend function\n"); 
 #endif

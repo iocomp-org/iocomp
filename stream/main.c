@@ -19,12 +19,6 @@ int main(int argc, char** argv)
 	struct stream_params streamParams; 
   struct iocomp_params iocompParams; 
 
-  /*
-   * Command line arguments using getoptlong 
-	 * HT option switches on comm splitting 
-	 * size option can set size of array during runtime 
-   */ 
-	
 	/*	
 	 * initialise stream param structs using command line parameters
 	 */ 
