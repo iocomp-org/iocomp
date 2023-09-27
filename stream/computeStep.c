@@ -56,9 +56,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	wallTime_start = MPI_Wtime(); 
 
 	int myrank, mysize;  
-	MPI_Comm_rank(comm, &myrank); 
-	MPI_Comm_size(comm, &mysize); 
-	streamParams->globalDataSize = mysize * streamParams->localDataSize; 
+	//MPI_Comm_rank(comm, &myrank); 
+	//MPI_Comm_size(comm, &mysize); 
+	//streamParams->globalDataSize = mysize * streamParams->localDataSize; 
 
 	/*
 	 * Initialise the timers 
