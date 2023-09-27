@@ -185,7 +185,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 
 	// triad_wait(iocompParams, streamParams, iter-1); // catch any triad sending after loop ends 
 
-	// stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
 //#ifndef NDEBUG
 //	printf("After stopSend function\n"); 
 //#endif
@@ -199,9 +198,10 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		// fprintf(iocompParams->debug, "stream->dataSendInfo for winFree assignment \n");
 #endif
 
+	stopSend(iocompParams); // send ghost message to stop MPI_Recvs and post win free for shared windows 
 	// dataSendComplete(iocompParams, a); 
 	// dataSendComplete(iocompParams, c); 
-	dataSendComplete(iocompParams, b); 
+	// dataSendComplete(iocompParams, b); 
 #ifndef NDEBUG
 		fprintf(iocompParams->debug, "stream->data send complete\n");
 #endif
