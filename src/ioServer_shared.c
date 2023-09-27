@@ -63,7 +63,9 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	} 
 	// declare mult variable to test for completion among all windows 
 	int wintestmult = 1; 
-	printf("ioserver - after comm group init\n"); 
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "ioServer -> after win test flags initialised\n"); 
+#endif 
 
 #ifdef IOBW
 	for(int i = 0 ; i < NUM_WIN; i ++)
@@ -202,16 +204,25 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 		{
 			ierr = MPI_Win_wait(win_ptr[i]); 
 			mpi_error_check(ierr); 
-			ioLibraries(array[i], iocompParams); 
 #ifndef NDEBUG 
-			fprintf(iocompParams->debug, "ioServer window:%i before win free reached\n",i); 
+			fprintf(iocompParams->debug, "ioServerShared-> window:%i ioLibraries called after win wait\n",i); 
 #endif 
+			ioLibraries(array[i], iocompParams); 
 		}
 		
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "ioServerShared-> window:%i before win free reached\n",i); 
+#endif 
 		ierr = MPI_Win_free(&win_ptr[i]);
 		mpi_error_check(ierr); 
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "ioServerShared-> window:%i after win free \n",i); 
+#endif 
 	} 
 
+#ifndef NDEBUG 
+	fprintf(iocompParams->debug, "ioServerShared-> all windows freed \n"); 
+#endif 
 	// Finalise ADIOS2 object
 	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
 	{

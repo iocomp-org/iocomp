@@ -25,13 +25,13 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams)
                     dimsf[iocompParams->NDIM];   // specifies the dimensions of dataset, dimsf[0] number of rows, dimsf[1] number of columns, dimsf[2] so on..
 
 #ifndef NDEBUG
-    printf("inits \n"); 
+    fprintf(iocompParams->debug,"inits \n"); 
 #endif
 
     herr_t status = H5open();
 		mpi_error_check(status); 
 #ifndef NDEBUG
-    printf("After H5open\n"); 
+    fprintf(iocompParams->debug,"After H5open\n"); 
 #endif
     MPI_Info info  = MPI_INFO_NULL; 
 
@@ -47,20 +47,38 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams)
 #ifndef NDEBUG
         assert(dimsf[i] > 0); 
         assert(count[i] > 0); 
-				printf("dimsf %llu %llu \n", dimsf[0], dimsf[1]); 
-				printf("count %llu %llu \n", count[0], count[1]); 
-				printf("offset %llu %llu \n", offset[0], offset[1]); 
 #endif
     }
+		
+#ifndef NDEBUG 
+	fprintf(iocompParams->debug, "HDF5 Write-> array specifiers \n"); 
+	fprintf(iocompParams->debug,"dimsf"); 
+	for(int i = 0; i < iocompParams->NDIM; i++)
+	{
+		fprintf(iocompParams->debug, "[%llu]", dimsf[i]); 
+	} 
+	fprintf(iocompParams->debug, "\n"); 
+	fprintf(iocompParams->debug,"count"); 
+	for(int i = 0; i < iocompParams->NDIM; i++)
+	{
+		fprintf(iocompParams->debug, "[%llu]", count[i]); 
+	} 
+	fprintf(iocompParams->debug, "\n"); 
+	fprintf(iocompParams->debug,"offset"); 
+	for(int i = 0; i < iocompParams->NDIM; i++)
+	{
+		fprintf(iocompParams->debug, "[%llu]", offset[i]); 
+	} 
+	fprintf(iocompParams->debug, "\n"); 
+#endif 
 
-    /* 
-     * Set up file access property list with parallel I/O access
-     */
-
+	/* 
+	 * Set up file access property list with parallel I/O access
+	 */
     plist_id = H5Pcreate(H5P_FILE_ACCESS); 
     H5Pset_fapl_mpio(plist_id, iocompParams->cartcomm, info);
 #ifndef NDEBUG
-    printf("file access \n"); 
+    fprintf(iocompParams->debug,"file access \n"); 
 #endif
 
     /*
@@ -70,13 +88,12 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams)
     file_id = H5Fcreate(iocompParams->FILENAMES[iocompParams->ioLibNum], H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
     H5Pclose(plist_id);
 #ifndef NDEBUG
-    printf("property list \n"); 
+    fprintf(iocompParams->debug,"property list \n"); 
 #endif
 
     /*
      * Create the dataspace for the dataset.
      */
-
     filespace = H5Screate_simple(iocompParams->NDIM, dimsf, NULL); 
     dset_id = H5Dcreate(file_id, dsetname, H5T_NATIVE_DOUBLE, filespace, 
             H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT); 
@@ -86,36 +103,24 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams)
      * Each process defines dataset in memory and writes it to the hyperslab
      * in the file.
      */
-
     memspace = H5Screate_simple(iocompParams->NDIM, count, NULL); 
     
     /*
      * Select hyperslab in the file.
      */
-
     filespace = H5Dget_space(dset_id); // makes a copy of the dataspace FOR the dataset dset_id
     H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, NULL, count, NULL); 
 
     /*
      * Create property list for collective dataset write.
      */
-
     plist_id = H5Pcreate(H5P_DATASET_XFER); // sets data transfer mode.
     H5Pset_dxpl_mpio(plist_id, H5FD_MPIO_COLLECTIVE); // sets data transfer mode.
 		
-#ifndef NDEBUG
-    printf("print values for iodata written by HDF5 \n"); 
-		for(int i = 0; i < (int)iocompParams->localArray[0]; i++)
-		{
-			for(int j = 0; j < (int)iocompParams->localArray[1]; j++)
-				printf("%lf,",iodata[i*(int)iocompParams->localArray[0] + j]); 
-			printf("\n"); 
-		}
-#endif
     status = H5Dwrite (dset_id, H5T_NATIVE_DOUBLE, memspace, filespace, 
             plist_id, iodata);
 #ifndef NDEBUG
-    printf("property list collective data writes \n"); 
+    fprintf(iocompParams->debug,"property list collective data writes \n"); 
 #endif
 
     // Free resources

@@ -96,8 +96,12 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 			MPI_Group_incl(comm_group,1,ranks,&iocompParams->group);
 
 			ioServer_shared(iocompParams);
-			MPI_Finalize(); 
-			exit(0); 
+
+//			MPI_Finalize(); 
+//#ifndef NDEBUG 
+//			fprintf(iocompParams->debug, "iocompInit-> after MPI finalize \n"); 
+//#endif 
+			// exit(0); 
 		}
 		else
 		{
