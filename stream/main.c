@@ -60,8 +60,6 @@ int main(int argc, char** argv)
 
 	int newRank; 
 	MPI_Comm_rank(iocompParams.newComm, &newRank); 
-	if(newRank == 0)
-	{
 		/*
 		 * initialises the local array sizes 
 		 * multiplying by size1 x size2
@@ -97,7 +95,6 @@ int main(int argc, char** argv)
 		//#ifndef NDEBUG
 		//  printf("stream-> after results output \n"); 
 		//#endif
-	} 	
 #ifndef NDEBUG
 	fprintf(iocompParams.debug,"stream->Before MPI finalize rank %i\n", newRank);
 #endif

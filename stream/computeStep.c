@@ -18,9 +18,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	/*
 	 * mallocing the pointers 
 	 */ 
-	// double* a = NULL; // initialise data pointer  
 	double* b = NULL; // initialise data pointer  
-	// double* c = NULL; // initialise data pointer  
+	double* c = NULL; // initialise data pointer  
+	double* a = NULL; // initialise data pointer  
 	
 	/*
 	 * Initialise a, b, c. 
@@ -28,12 +28,16 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	 * otherwise return the malloced arrays with localDataSize 
 	 */ 
 	winInits(iocompParams, streamParams->localDataSize); 
-	double a[100]; 
-	double c[100]; 
 	// a = iocompParams->array[0];
 	// c = iocompParams->array[1];
 	// b = iocompParams->array[2];
 	b = iocompParams->array[0];
+	
+	// tempororary mallocing of c for testing with scale array 
+	c = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
+	malloc_check(c); 
+	a = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
+	malloc_check(a); 
 
 	for(int i = 0; i < streamParams->localDataSize; i++)
 	{
@@ -210,14 +214,16 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	// arrays  
 	// free(a); 
 	// free(b); 
-	// free(c); 
+	free(a); 
+	a = NULL; 
+	free(c); 
+	c = NULL; 
 	// a = NULL; 
 	// b = NULL; 
 //#ifndef NDEBUG
 //		fprintf(iocompParams->debug, "stream->arrays freed\n");
 //#endif
 
-	// c = NULL; 
 #ifndef NDEBUG
 		fprintf(iocompParams->debug, "stream->compute step completed\n");
 #endif
