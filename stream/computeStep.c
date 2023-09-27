@@ -12,7 +12,7 @@
 void computeStep(struct iocomp_params *iocompParams, struct stream_params *streamParams, MPI_Comm comm)
 {
 #ifndef NDEBUG
-	printf("stream -> Starting computeStep \n"); 
+		fprintf(iocompParams->debug, "stream-> starting compute step  \n");
 #endif
 
 	/*
@@ -28,9 +28,8 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	 * otherwise return the malloced arrays with localDataSize 
 	 */ 
 	winInits(iocompParams, streamParams->localDataSize); 
-	printf("stream -> after calling winInits \n"); 
-	double a[10]; 
-	double c[10]; 
+	double a[100]; 
+	double c[100]; 
 	// a = iocompParams->array[0];
 	// c = iocompParams->array[1];
 	// b = iocompParams->array[2];
@@ -98,28 +97,28 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * WAIT(C)
 		 * SEND(B)
 		 */ 
-//		if(iter > 0)
-//		{
-//			winWaitInfo(iocompParams, b); 
-//			// winTestInfo(iocompParams, c); 
-//			// winTestInfo(iocompParams, a); 
-//		}
-//		else
-//		{
-//			winActivateInfo(iocompParams, b); 
-//		}
-//		// dataSendInfo(iocompParams);
-//#ifndef NDEBUG
-//		fprintf(iocompParams->debug, "stream-> after data send info \n");
-//#endif
-		// dataSendStart(iocompParams, b); 
+		if(iter > 0)
+		{
+			winWaitInfo(iocompParams, b); 
+			// winTestInfo(iocompParams, c); 
+			// winTestInfo(iocompParams, a); 
+		}
+		else
+		{
+			winActivateInfo(iocompParams, b); 
+		}
+		dataSendInfo(iocompParams);
 #ifndef NDEBUG
-		// fprintf(iocompParams->debug, "stream-> after data send start\n");
+		fprintf(iocompParams->debug, "stream-> after data send info \n");
 #endif
-	 	// scale(iocompParams, streamParams, iter, c, b);
-		// dataSendEnd(iocompParams, b); 	
+		dataSendStart(iocompParams, b); 
 #ifndef NDEBUG
-		// fprintf(iocompParams->debug, "stream->dataSendEnd function \n");
+		fprintf(iocompParams->debug, "stream-> after data send start\n");
+#endif
+		scale(iocompParams, streamParams, iter, c, b);
+		dataSendEnd(iocompParams, b); 	
+#ifndef NDEBUG
+		fprintf(iocompParams->debug, "stream->dataSendEnd function \n");
 #endif
 
 
@@ -205,18 +204,23 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 
 	//wallTime_end = MPI_Wtime(); 
 	//streamParams->wallTimer=wallTime_end - wallTime_start; 
+	
 
+	// abstracting function needed to free the arrays, as MPI winfree frees the
+	// arrays  
 	// free(a); 
-	printf("stream-> before arrays freed\n");
 	// free(b); 
 	// free(c); 
 	// a = NULL; 
-	b = NULL; 
-#ifndef NDEBUG
-		fprintf(iocompParams->debug, "stream->arrays freed\n");
-#endif
+	// b = NULL; 
+//#ifndef NDEBUG
+//		fprintf(iocompParams->debug, "stream->arrays freed\n");
+//#endif
 
 	// c = NULL; 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug, "stream->compute step completed\n");
+#endif
 } 
 
 

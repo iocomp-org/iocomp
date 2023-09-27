@@ -9,7 +9,7 @@
 void scale(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* c, double* b)
 {
 #ifndef NDEBUG
-	printf("stream -> SCALE starts\n"); 
+		fprintf(iocompParams->debug, "stream -> SCALE starts\n");
 #endif
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
