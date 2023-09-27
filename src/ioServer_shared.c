@@ -55,6 +55,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	// Local data size needs to be obtained somehow. 
 	// Setting it to 100 for now.
 	iocompParams->localDataSize = 100; 
+
 	arrayParamsInit(iocompParams, iocompParams->ioServerComm); 
 
 	for(int i = 0; i < NUM_WIN; i++)
@@ -64,7 +65,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	// declare mult variable to test for completion among all windows 
 	int wintestmult = 1; 
 #ifndef NDEBUG 
-		fprintf(iocompParams->debug, "ioServer -> after win test flags initialised\n"); 
+	fprintf(iocompParams->debug, "ioServer -> after win test flags initialised\n"); 
 #endif 
 
 #ifdef IOBW
@@ -134,7 +135,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 				ierr = MPI_Win_post(iocompParams->group, 0, win_ptr[i]);
 				mpi_error_check(ierr); 
 #ifndef NDEBUG 
-					fprintf(iocompParams->debug, "ioServerShared->window %i after win post\n", i); 
+				fprintf(iocompParams->debug, "ioServerShared->window %i after win post\n", i); 
 #endif 
 				flag[i] = 0; // window activated 
 #ifdef IOBW	
@@ -209,7 +210,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 #endif 
 			ioLibraries(array[i], iocompParams); 
 		}
-		
+
 #ifndef NDEBUG 
 		fprintf(iocompParams->debug, "ioServerShared-> window:%i before win free reached\n",i); 
 #endif 
@@ -244,15 +245,15 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	verify(iocompParams); 
 #endif
 
-//#ifndef NODELETE
-//	MPI_Barrier(iocompParams->ioComm); 
-//	if(!ioRank)
-//	{
-//		deleteFiles(iocompParams); 
-//#ifndef NDEBUG 
-//		fprintf(iocompParams->debug, "ioServer->file/directory deleted \n"); 
-//#endif	
-//	} 
-//#endif 
+	//#ifndef NODELETE
+	//	MPI_Barrier(iocompParams->ioComm); 
+	//	if(!ioRank)
+	//	{
+	//		deleteFiles(iocompParams); 
+	//#ifndef NDEBUG 
+	//		fprintf(iocompParams->debug, "ioServer->file/directory deleted \n"); 
+	//#endif	
+	//	} 
+	//#endif 
 } 
 

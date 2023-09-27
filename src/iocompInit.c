@@ -96,12 +96,11 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 			MPI_Group_incl(comm_group,1,ranks,&iocompParams->group);
 
 			ioServer_shared(iocompParams);
-
-//			MPI_Finalize(); 
-//#ifndef NDEBUG 
-//			fprintf(iocompParams->debug, "iocompInit-> after MPI finalize \n"); 
-//#endif 
-			// exit(0); 
+			MPI_Finalize(); 
+#ifndef NDEBUG 
+			fprintf(iocompParams->debug, "iocompInit-> after MPI finalize \n"); 
+#endif 
+			exit(0); 
 		}
 		else
 		{
@@ -132,7 +131,8 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	if(!iocompParams->hyperthreadFlag || iocompParams->colour==ioColour) 
 	{
 		ioServerInitialise(iocompParams); 
-	} 
+	}
+
 
 	/*
 	 * If HT flag is on and process is ioserver then ioServer recieves data

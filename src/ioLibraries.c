@@ -15,10 +15,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 
 	MPI_Comm_size(iocompParams->ioServerComm, &ioSize);
 	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
-#ifndef NDEBUG
-	fprintf(iocompParams->debug,"ioLibraries -> initialise filenames \n");
-#endif
-
+	
 #ifndef NDEBUG
 	fprintf(iocompParams->debug,"ioLibraries -> Pass off to I/O libraries with ioLibNum %i  \n", iocompParams->ioLibNum);
 #endif
