@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 	 */ 
   MPI_Comm computeComm = iocompInit(&iocompParams,comm, streamParams.HT_flag, streamParams.io, NODESIZE, streamParams.sharedFlag); 
 #ifndef NDEBUG
-  printf("stream->After intercommInit\n"); 
+		fprintf(iocompParams.debug, "stream->After iocompInit\n");
 #endif
 
 	
@@ -65,12 +65,12 @@ int main(int argc, char** argv)
 	 */ 
 	streamParams.localDataSize = streamParams.nx*streamParams.ny;  
 #ifndef NDEBUG
-  printf("stream-> localdatasize initialised with %li \n", streamParams.localDataSize); 
+		fprintf(iocompParams.debug,"stream-> localdatasize initialised with %li \n", streamParams.localDataSize);
 #endif
 
   computeStep(&iocompParams, &streamParams, computeComm); // do compute 
 #ifndef NDEBUG
-  printf("stream-> after computeStep \n"); 
+		fprintf(iocompParams.debug,"stream-> after computeStep \n");
 #endif
 
   /*  
@@ -82,23 +82,23 @@ int main(int argc, char** argv)
   int computeRank;
   MPI_Comm_rank(computeComm, &computeRank); 
 
-	// reduce results across computeComm and get max timers
-	reduceResults(&streamParams, computeComm); 
-
-	if(computeRank == 0)
-	{
-			resultsOutput(&streamParams, computeComm); // output avg timers to csv file 
-			fullResultsOutput(&streamParams); // output all timers to csv files
-	}   
-	
-#ifndef NDEBUG
-  printf("stream-> after results output \n"); 
-#endif
+//	// reduce results across computeComm and get max timers
+//	reduceResults(&streamParams, computeComm); 
+//
+//	if(computeRank == 0)
+//	{
+//			resultsOutput(&streamParams, computeComm); // output avg timers to csv file 
+//			fullResultsOutput(&streamParams); // output all timers to csv files
+//	}   
+//	
+//#ifndef NDEBUG
+//  printf("stream-> after results output \n"); 
+//#endif
 
   MPI_Finalize(); 
 #ifndef NDEBUG
-  printf("MPI finalize\n"); 
-#endif   
+		fprintf(iocompParams.debug,"stream->MPI finalize\n");
+#endif
 
   return 0; 
 } 

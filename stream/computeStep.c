@@ -18,21 +18,23 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	/*
 	 * mallocing the pointers 
 	 */ 
-	double* a = NULL; // initialise data pointer  
+	// double* a = NULL; // initialise data pointer  
 	double* b = NULL; // initialise data pointer  
-	double* c = NULL; // initialise data pointer  
+	// double* c = NULL; // initialise data pointer  
 	
 	/*
 	 * Initialise a, b, c. 
 	 * Initialise shared windows associated with arrays *if* shared flag is true
 	 * otherwise return the malloced arrays with localDataSize 
 	 */ 
-	printf("before calling winInits \n"); 
 	winInits(iocompParams, streamParams->localDataSize); 
-	printf("after calling winInits \n"); 
-	a = iocompParams->array[0];
-	c = iocompParams->array[1];
-	b = iocompParams->array[2];
+	printf("stream -> after calling winInits \n"); 
+	double a[10]; 
+	double c[10]; 
+	// a = iocompParams->array[0];
+	// c = iocompParams->array[1];
+	// b = iocompParams->array[2];
+	b = iocompParams->array[0];
 
 	for(int i = 0; i < streamParams->localDataSize; i++)
 	{
@@ -72,8 +74,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	for(iter = 0; iter< AVGLOOPCOUNT; iter++) // averaging 
 	{
 #ifndef NDEBUG
-		printf("stream -> stream loop starts\n"); 
-		fprintf(iocompParams->debug, "iocompInit -> stream loop starts \n");
+		fprintf(iocompParams->debug, "stream-> stream loop starts \n");
 #endif
 
 		/*
@@ -97,20 +98,29 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * WAIT(C)
 		 * SEND(B)
 		 */ 
-		if(iter > 0)
-		{
-			winWaitInfo(iocompParams, b); 
-			// winTestInfo(iocompParams, c); 
-			// winTestInfo(iocompParams, a); 
-		}
-		else
-		{
-			winActivateInfo(iocompParams, b); 
-		}
-		dataSendInfo(iocompParams);
-		dataSendStart(iocompParams, b); 
+//		if(iter > 0)
+//		{
+//			winWaitInfo(iocompParams, b); 
+//			// winTestInfo(iocompParams, c); 
+//			// winTestInfo(iocompParams, a); 
+//		}
+//		else
+//		{
+//			winActivateInfo(iocompParams, b); 
+//		}
+//		// dataSendInfo(iocompParams);
+//#ifndef NDEBUG
+//		fprintf(iocompParams->debug, "stream-> after data send info \n");
+//#endif
+		// dataSendStart(iocompParams, b); 
+#ifndef NDEBUG
+		// fprintf(iocompParams->debug, "stream-> after data send start\n");
+#endif
 	 	// scale(iocompParams, streamParams, iter, c, b);
-		dataSendEnd(iocompParams, b); 	
+		// dataSendEnd(iocompParams, b); 	
+#ifndef NDEBUG
+		// fprintf(iocompParams->debug, "stream->dataSendEnd function \n");
+#endif
 
 
 //		if(iter > 0)
@@ -166,34 +176,47 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 //			triad_send(iocompParams, streamParams, iter, a);
 //		} 
 	} // end avg loop 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug, "stream-> after end of avg loop\n");
+#endif
 
 	// triad_wait(iocompParams, streamParams, iter-1); // catch any triad sending after loop ends 
 
-	stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
+	// stopSend(iocompParams); // send ghost message to stop MPI_Recvs 
+//#ifndef NDEBUG
+//	printf("After stopSend function\n"); 
+//#endif
 	/* send message to ioServer to free the windows and exit the recv loop */ 
-	winFreeInfo(iocompParams, a); 
-	winFreeInfo(iocompParams, c); 
+	// winFreeInfo(iocompParams, a); 
+	// winFreeInfo(iocompParams, c); 
 	winFreeInfo(iocompParams, b);
 	
 	dataSendInfo(iocompParams); 
-
-	dataSendComplete(iocompParams, a); 
-	dataSendComplete(iocompParams, c); 
-	dataSendComplete(iocompParams, b); 
-
 #ifndef NDEBUG
-	printf("After stopSend function\n"); 
+		// fprintf(iocompParams->debug, "stream->dataSendInfo for winFree assignment \n");
 #endif
 
-	wallTime_end = MPI_Wtime(); 
-	streamParams->wallTimer=wallTime_end - wallTime_start; 
+	// dataSendComplete(iocompParams, a); 
+	// dataSendComplete(iocompParams, c); 
+	dataSendComplete(iocompParams, b); 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug, "stream->data send complete\n");
+#endif
 
-	free(a); 
-	free(b); 
-	free(c); 
-	a = NULL; 
+	//wallTime_end = MPI_Wtime(); 
+	//streamParams->wallTimer=wallTime_end - wallTime_start; 
+
+	// free(a); 
+	printf("stream-> before arrays freed\n");
+	// free(b); 
+	// free(c); 
+	// a = NULL; 
 	b = NULL; 
-	c = NULL; 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug, "stream->arrays freed\n");
+#endif
+
+	// c = NULL; 
 } 
 
 
