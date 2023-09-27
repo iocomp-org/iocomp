@@ -38,8 +38,9 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 		ierr = MPI_Win_shared_query(win_ptr[i], 0, &arraySize, &dispUnit, &array[i]); 
 		mpi_error_check(ierr); 
 #ifndef NDEBUG 
-		fprintf(iocompParams->debug, "ioServer -> MPI shared query %i \n", i); 
+		fprintf(iocompParams->debug, "ioServer -> MPI shared query for window %i arraysize is %li \n", i, arraySize); 
 #endif 
+		iocompParams->localDataSize = arraySize/sizeof(double); // mpi shared query gives the size in bytes 
 	} 
 
 	// initialise IO Params structure 
@@ -50,11 +51,6 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 
 	// Allocate cartesian communicator, adios2 objects	
 	ioServerInitialise(iocompParams); 
-
-	// Initialise array parameters for each process write into a global file  
-	// Local data size needs to be obtained somehow. 
-	// Setting it to 100 for now.
-	iocompParams->localDataSize = 100; 
 
 	arrayParamsInit(iocompParams, iocompParams->ioServerComm); 
 
