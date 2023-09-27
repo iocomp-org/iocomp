@@ -41,7 +41,14 @@ void dataSendStart(struct iocomp_params *iocompParams, double* array)
 		if(iocompParams->array[i] == array)
 		{
 			// match array with windows and issue win complete 
-			MPI_Win_start(iocompParams->group, 0, iocompParams->winMap[i]); 
+#ifndef NDEBUG 
+			fprintf(iocompParams->debug, "dataSendStart -> Before mpi win start for window %i \n ", i); 
+#endif 
+			int ierr = MPI_Win_start(iocompParams->group, 0, iocompParams->winMap[i]); 
+			mpi_error_check(ierr); 
+#ifndef NDEBUG 
+			fprintf(iocompParams->debug, "dataSendStart -> After mpi win start for window %i \n ", i); 
+#endif 
 		}
 	}
 } 

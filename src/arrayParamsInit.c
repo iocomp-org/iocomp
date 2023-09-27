@@ -39,6 +39,9 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	int root; 
 	size_t dim[2] = {0,0}; // setting this to be 2 dimensions   
 	root = (int)pow(iocompParams->localDataSize,power);
+#ifndef NDEBUG
+	fprintf(iocompParams->debug,"arrayParamsInit -> local data size %ld \n", iocompParams->localDataSize); 
+#endif
 
 	// if its a perfect square 
 	if(pow(root,iocompParams->NDIM) == iocompParams->localDataSize)

@@ -68,7 +68,6 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #endif
 
 		iocompParams->sharedFlag = true; 
-		printf("params shared flag set to be true \n "); 
 
 		// find new rank for the pair communicator between IO and Compute rank 
 		int newRank; 
@@ -95,15 +94,13 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #ifndef NDEBUG
 			fprintf(iocompParams->debug,"iocompInit -> Program now entering IO shared server \n"); 
 #endif
-			printf("Befoer ioServer shared \n"); 
 			ioServer_shared(iocompParams);
 			MPI_Finalize(); 
+			exit(0); 
 		}
 	} 
 	else
 	{
-
-
 	/*
 	 * If HT flag is on, then called by io server, if HT flag off then called by
 	 * every process. This is because only ioServers have access to ioServerComm.
