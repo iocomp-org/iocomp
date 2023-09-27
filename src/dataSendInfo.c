@@ -4,7 +4,7 @@
 void dataSendInfo(struct iocomp_params *iocompParams)
 {	
 #ifndef NDEBUG 
-	fprintf(iocompParams->debug, "dataSend -> Before MPI bcast, iocompParams->wintestflags "); 
+	fprintf(iocompParams->debug, "dataSend -> Before MPI bcast, iocompParams->wintestflags"); 
 	for(int i = 0; i < NUM_WIN; i++)
 	{
 		fprintf(iocompParams->debug, "[%i]", 

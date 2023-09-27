@@ -74,30 +74,48 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 		ierr = MPI_Comm_rank(iocompParams->newComm,&newRank); 
 		mpi_error_check(ierr);
 	
-		// allocate groups 
-		/*
-		 * groups newComm communicator's rank 0 and 1 into a group
-		 * comp process initialises array and creates a window with that array
-		 */
-		MPI_Group comm_group;
-		int ranks[2];
-		for (int i=0;i<2;i++) {
-			ranks[i] = i;     //For forming groups, later
-		}
-		MPI_Comm_group(iocompParams->newComm,&comm_group);
-
-		/* I/O group consists of ranks 1 */
-		MPI_Group_incl(comm_group,1,ranks+1,&iocompParams->group);
 	
 		if(newRank != 0)
 		{
 #ifndef NDEBUG
 			fprintf(iocompParams->debug,"iocompInit -> Program now entering IO shared server \n"); 
 #endif
+			// allocate groups 
+			/*
+			 * groups newComm communicator's rank 0 and 1 into a group
+			 * comp process initialises array and creates a window with that array
+			 */
+			MPI_Group comm_group;
+			int ranks[2];
+			for (int i=0;i<2;i++) {
+				ranks[i] = i;     //For forming groups, later
+			}
+			MPI_Comm_group(iocompParams->newComm,&comm_group);
+
+			/* I/O group consists of ranks 1 */
+			MPI_Group_incl(comm_group,1,ranks,&iocompParams->group);
+
 			ioServer_shared(iocompParams);
 			MPI_Finalize(); 
 			exit(0); 
 		}
+		else
+		{
+			// allocate groups 
+			/*
+			 * groups newComm communicator's rank 0 and 1 into a group
+			 * comp process initialises array and creates a window with that array
+			 */
+			MPI_Group comm_group;
+			int ranks[2];
+			for (int i=0;i<2;i++) {
+				ranks[i] = i;     //For forming groups, later
+			}
+			MPI_Comm_group(iocompParams->newComm,&comm_group);
+
+			/* I/O group consists of ranks 1 */
+			MPI_Group_incl(comm_group,1,ranks+1,&iocompParams->group);
+		} 
 	} 
 	else
 	{

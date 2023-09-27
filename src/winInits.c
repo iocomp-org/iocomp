@@ -32,13 +32,13 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 			mpi_error_check(ierr);
 		}
 #ifndef NDEBUG
-		fprintf(iocompParams->debug,"winInits->after window shared allocated");
+		fprintf(iocompParams->debug,"winInits->after window shared allocated \n");
 #endif
 	}
 	else
 	{
 #ifndef NDEBUG
-		fprintf(iocompParams->debug,"winInits->shared flag not true ");
+		fprintf(iocompParams->debug,"winInits->shared flag not true \n ");
 #endif
 		/*
 		 * otherwise malloc using the number of elements and double filesize  
@@ -49,7 +49,7 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 			assert(iocompParams->array[i] != NULL); 
 		}
 #ifndef NDEBUG
-		fprintf(iocompParams->debug,"winInits->Arrays malloced");
+		fprintf(iocompParams->debug,"winInits->Arrays malloced \n");
 #endif
 	} 
 
