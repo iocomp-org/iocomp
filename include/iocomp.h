@@ -21,7 +21,7 @@ extern "C" {
 #define NUM_DIM 2
 
 // define number of shared memory windows 
-#define NUM_WIN 3
+#define NUM_WIN 1
 
 // define window control integers 
 #define WIN_DEACTIVATE 0 
@@ -31,7 +31,7 @@ extern "C" {
 #define WIN_FREE -1
 
 // define avg loop count of stream kernels
-#define AVGLOOPCOUNT 2
+#define AVGLOOPCOUNT 1
 // define number of compute cycles per avg loop count 
 #define COMPLOOPCOUNT 1
 
@@ -135,6 +135,12 @@ extern "C" {
 		char WRITEFILE[NUM_WIN][AVGLOOPCOUNT][100]; 
 
 		bool sharedFlag; 
+		// file object for debug 
+#ifndef NDEBUG
+		char debugFile[100]; 
+		FILE* debug; 
+#endif 
+
 
 	}; 
 	extern struct iocomp_params iocompParams; 
@@ -188,6 +194,14 @@ extern "C" {
 	void dataSendStart(struct iocomp_params *iocompParams, double* array); 
 	void dataSendInfo(struct iocomp_params *iocompParams); 
 	void winActivateInfo(struct iocomp_params *iocompParams, double* array); 
+	void winTestInfo(struct iocomp_params *iocompParams, double* array); 
+	void winFreeInfo(struct iocomp_params *iocompParams, double* array); 
+	void dataSendComplete(struct iocomp_params *iocompParams, double* array); 
+	void winWaitInfo(struct iocomp_params *iocompParams, double* array); 
+	void ioServer_sharedAllocate(struct iocomp_params *iocompParams); 
+
+	// debug file 
+	void initDebugFile(struct iocomp_params *iocompParams, int globalRank); 
 
 #ifdef __cplusplus
 }
