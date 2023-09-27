@@ -31,6 +31,17 @@ void stopSend(struct iocomp_params *iocompParams)
 		fprintf(iocompParams->debug,"stopSend -> Ghost message sent \n"); 
 #endif
 	}
+	else if(iocompParams->sharedFlag)
+	{
+		for(int i = 0; i < NUM_WIN; i++)
+		{
+			int ierr = MPI_Win_free(&iocompParams->winMap[i]);
+			mpi_error_check(ierr); 
+		} 
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "stopSend->MPI windows freed\n"); 
+#endif
+	} 
 	/*
 	 * if HT flag is off, then adios2 object should be finalised 
 	 * as the ioServer finalises the adios2 object 
