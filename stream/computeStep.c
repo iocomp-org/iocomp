@@ -28,6 +28,8 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	 * otherwise return the malloced arrays with localDataSize 
 	 */ 
 	winInits(iocompParams, streamParams->localDataSize); 
+
+
 	// a = iocompParams->array[0];
 	// c = iocompParams->array[1];
 	// b = iocompParams->array[2];
@@ -39,13 +41,17 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	a = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 	malloc_check(a); 
 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug, "stream->arrays malloced \n");
+#endif
+
 	for(int i = 0; i < streamParams->localDataSize; i++)
 	{
 		a[i] = 1.0; 
 		b[i] = 2.0; 
 		c[i] = 0.0; 
 	}
-
+	
 	double wallTime_start, wallTime_end; 
 	wallTime_start = MPI_Wtime(); 
 
@@ -103,7 +109,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		if(iter > 0)
 		{
-			winWaitInfo(iocompParams, b); 
+			scale_wait(iocompParams, streamParams, iter, b); 
 			// winTestInfo(iocompParams, c); 
 			// winTestInfo(iocompParams, a); 
 		}
@@ -120,6 +126,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		fprintf(iocompParams->debug, "stream-> after data send start\n");
 #endif
 		scale(iocompParams, streamParams, iter, c, b);
+
+		scale_send(iocompParams, streamParams, iter, b );
+
 		dataSendEnd(iocompParams, b); 	
 #ifndef NDEBUG
 		fprintf(iocompParams->debug, "stream->dataSendEnd function \n");
@@ -191,8 +200,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	/* send message to ioServer to free the windows and exit the recv loop */ 
 	// winFreeInfo(iocompParams, a); 
 	// winFreeInfo(iocompParams, c); 
-	winFreeInfo(iocompParams, b);
+	// winFreeInfo(iocompParams, b);
 	
+	scale_wait(iocompParams, streamParams, iter, b); 
 	dataSendInfo(iocompParams); 
 #ifndef NDEBUG
 		// fprintf(iocompParams->debug, "stream->dataSendInfo for winFree assignment \n");

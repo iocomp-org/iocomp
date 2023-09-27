@@ -58,8 +58,8 @@ int main(int argc, char** argv)
 	fprintf(iocompParams.debug, "stream->After iocompInit\n");
 #endif
 
-	int newRank; 
-	MPI_Comm_rank(iocompParams.newComm, &newRank); 
+	// int newRank; 
+	// MPI_Comm_rank(iocompParams.newComm, &newRank); 
 		/*
 		 * initialises the local array sizes 
 		 * multiplying by size1 x size2
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
 		//  printf("stream-> after results output \n"); 
 		//#endif
 #ifndef NDEBUG
-	fprintf(iocompParams.debug,"stream->Before MPI finalize rank %i\n", newRank);
+	fprintf(iocompParams.debug,"stream->Before MPI finalize rank \n");
 #endif
 	ierr = MPI_Finalize(); 
 	mpi_error_check(ierr); 
