@@ -41,6 +41,18 @@ to ioProcessor with globalRank  %i  \n", globalRank, dest);
 		fprintf(iocompParams->debug,"dataSend -> Sending data stop \n"); 
 #endif
 	}
+	else if(iocompParams->sharedFlag)
+	{
+		// get the window test flag for the array 
+		for(int i = 0; i < NUM_WIN; i++)
+		{
+			if(iocompParams->array[i] == data)
+			{
+				// match array with windows and issue win complete 
+				MPI_Win_complete(iocompParams->winMap[i]); 
+			}
+		}
+	} 
 	else
 	{
 		/*
