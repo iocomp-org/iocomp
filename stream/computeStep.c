@@ -117,14 +117,8 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		{
 			winActivateInfo(iocompParams, b); 
 		}
-		dataSendInfo(iocompParams);
-#ifndef NDEBUG
-		fprintf(iocompParams->debug, "stream-> after data send info \n");
-#endif
-		dataSendStart(iocompParams, b); 
-#ifndef NDEBUG
-		fprintf(iocompParams->debug, "stream-> after data send start\n");
-#endif
+		preDataSend(iocompParams, b); 
+
 		scale(iocompParams, streamParams, iter, c, b);
 
 		scale_send(iocompParams, streamParams, iter, b );
