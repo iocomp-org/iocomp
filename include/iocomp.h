@@ -199,6 +199,7 @@ extern "C" {
 	void dataSendComplete(struct iocomp_params *iocompParams, double* array); 
 	void winWaitInfo(struct iocomp_params *iocompParams, double* array); 
 	void ioServer_sharedAllocate(struct iocomp_params *iocompParams); 
+	void preDataSend(struct iocomp_params *iocompParams, double* array); 
 
 	// debug file 
 	void initDebugFile(struct iocomp_params *iocompParams, int globalRank); 
