@@ -53,8 +53,8 @@ void scale_send(struct iocomp_params *iocompParams, struct stream_params* stream
 	dataSend(b,iocompParams, &streamParams->requestArray[SCALE],streamParams->localDataSize); // send data off using dataSend
 	streamParams->sendTimer[SCALE][iter] = MPI_Wtime() - timerStart; // wait time for ADD
 #ifndef NDEBUG
-	printf("stream -> SCALE send finished with these values\n"); 
-	for(int i = 0; i< streamParams->localDataSize; i++){ printf("%lf",b[i]); }
-	printf("\n"); 
+//	printf("stream -> SCALE send finished with these values\n"); 
+//	for(int i = 0; i< streamParams->localDataSize; i++){ printf("%lf",b[i]); }
+//	printf("\n"); 
 #endif
 }

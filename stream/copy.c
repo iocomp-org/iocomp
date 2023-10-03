@@ -17,12 +17,12 @@ void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams
 		for(int i = 0; i< streamParams->localDataSize; i++)
 		{
 			c[i] = a[i]; 
-#ifdef MPI_TESTS
-			if( (iter+1)%WRITE_FREQ == 0 && iter > 0) // test for triad which sent message in previous loop
-			{
-				streamParams->mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]);
-			} 
-#endif 
+//#ifdef MPI_TESTS
+//			if( (iter+1)%WRITE_FREQ == 0 && iter > 0) // test for triad which sent message in previous loop
+//			{
+//				streamParams->mpiWaitFlag[TRIAD] = dataSendTest(iocompParams,&streamParams->requestArray[TRIAD]);
+//			} 
+//#endif 
 		}
 	} 
 	streamParams->compTimer[COPY][iter] = MPI_Wtime() - timerStart;  // computeTime for COPY 
@@ -54,8 +54,8 @@ void copy_send(struct iocomp_params *iocompParams, struct stream_params* streamP
 	dataSend(c,iocompParams, &streamParams->requestArray[COPY],streamParams->localDataSize); // send data off using dataSend
 	streamParams->sendTimer[COPY][k] = MPI_Wtime() - timerStart; // wait time for ADD
 #ifndef NDEBUG
-	printf("stream -> COPY send finished with values\n"); 
-	for(int i = 0; i< streamParams->localDataSize; i++){ printf("%lf",c[i]); }
-	printf("\n"); 
+//	printf("stream -> COPY send finished with values\n"); 
+//	for(int i = 0; i< streamParams->localDataSize; i++){ printf("%lf",c[i]); }
+//	printf("\n"); 
 #endif
 }

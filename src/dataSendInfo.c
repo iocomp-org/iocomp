@@ -6,7 +6,7 @@ void dataSendInfo(struct iocomp_params *iocompParams)
 	if(iocompParams->sharedFlag)
 	{
 #ifndef NDEBUG 
-		fprintf(iocompParams->debug, "dataSend -> Before MPI bcast, iocompParams->wintestflags"); 
+		fprintf(iocompParams->debug, "dataSendInfo -> Before MPI bcast, iocompParams->wintestflags :"); 
 		for(int i = 0; i < NUM_WIN; i++)
 		{
 			fprintf(iocompParams->debug, "[%i]", 
@@ -24,6 +24,9 @@ void dataSendInfo(struct iocomp_params *iocompParams)
 
 		// broadcast them to ioserver 
 		MPI_Bcast( iocompParams->wintestflags, NUM_WIN, MPI_INT, 0, iocompParams->newComm); 
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "dataSendInfo -> After MPI bcast \n"); 
+#endif 
 	} 
 } 
 

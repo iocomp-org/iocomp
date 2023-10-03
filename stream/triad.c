@@ -18,25 +18,25 @@ void triad(struct iocomp_params *iocompParams, struct stream_params* streamParam
 		for(int i = 0; i< streamParams->localDataSize; i++) // triad kernel 
 		{
 			a[i] = b[i] + c[i] * constant;  
-#ifdef MPI_TESTS
-			if(iter%WRITE_FREQ == 0) // only when scale sends data 
-			{
-				streamParams->mpiWaitFlag[ADD]=dataSendTest(iocompParams,&streamParams->requestArray[ADD]);  
-			} 
-#endif 
+//#ifdef MPI_TESTS
+//			if(iter%WRITE_FREQ == 0) // only when scale sends data 
+//			{
+//				streamParams->mpiWaitFlag[ADD]=dataSendTest(iocompParams,&streamParams->requestArray[ADD]);  
+//			} 
+//#endif 
 		}
 	} 
 	streamParams->compTimer[TRIAD][iter] = MPI_Wtime() - timerStart;  // computeTime for TRIAD 
 }
 
-void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter)
+void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* array)
 {
 #ifndef NDEBUG
 	printf("stream -> TRIAD wait starts \n"); 
 #endif
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
-	dataWait(iocompParams,&streamParams->requestArray[TRIAD]);
+	dataWait(iocompParams,&streamParams->requestArray[TRIAD], array);
 	streamParams->waitTimer[TRIAD][iter] = MPI_Wtime() - timerStart; // wait time for TRIAD
 #ifndef NDEBUG
 	printf("stream -> TRIAD wait end \n"); 
@@ -53,8 +53,8 @@ void triad_send(struct iocomp_params *iocompParams, struct stream_params* stream
 	dataSend(a,iocompParams, &streamParams->requestArray[TRIAD],streamParams->localDataSize); // send data off using dataSend
 	streamParams->sendTimer[TRIAD][iter] = MPI_Wtime() - timerStart; // wait time for ADD
 #ifndef NDEBUG
-	printf("stream -> TRIAD send finished\n"); 
-	for(int i = 0; i< streamParams->localDataSize; i++){ printf("%lf",a[i]); }
-	printf("\n"); 
+//	printf("stream -> TRIAD send finished\n"); 
+//	for(int i = 0; i< streamParams->localDataSize; i++){ printf("%lf",a[i]); }
+//	printf("\n"); 
 #endif
 }

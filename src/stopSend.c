@@ -33,6 +33,9 @@ void stopSend(struct iocomp_params *iocompParams)
 	}
 	else if(iocompParams->sharedFlag)
 	{
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "stopSend->Before MPI windows freed\n"); 
+#endif
 		for(int i = 0; i < NUM_WIN; i++)
 		{
 			int ierr = MPI_Win_free(&iocompParams->winMap[i]);

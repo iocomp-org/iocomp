@@ -24,7 +24,7 @@ LIBS +=   -L$(IOCOMP_DIR)/lib -liocomp  -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5  -L$(
 
 # define C source files 
 # SRCS = $(wildcard *.c)
-SRCS = $(filter-out add.c copy.c triad.c, $(wildcard *.c))
+SRCS = $(filter-out copy.c, $(wildcard *.c))
 # define executable file  
 MAIN = test 
 
