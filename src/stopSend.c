@@ -33,6 +33,14 @@ void stopSend(struct iocomp_params *iocompParams)
 	}
 	else if(iocompParams->sharedFlag)
 	{
+		
+		// send win free message to control arrays 
+		for(int i = 0; i < NUM_WIN; i++)
+		{
+			iocompParams->wintestflags[i] = WIN_FREE;  
+		}
+		dataSendInfo(iocompParams);
+
 #ifndef NDEBUG 
 		fprintf(iocompParams->debug, "stopSend->Before MPI windows freed\n"); 
 #endif

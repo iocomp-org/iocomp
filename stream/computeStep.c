@@ -29,7 +29,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	 */ 
 	winInits(iocompParams, streamParams->localDataSize); 
 
-
 	a = iocompParams->array[2];
 	c = iocompParams->array[1];
 	b = iocompParams->array[0];
@@ -170,11 +169,12 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	fprintf(iocompParams->debug, "stream-> after end of avg loop\n");
 #endif
 
-	winFreeInfo(iocompParams, a); 
-	winFreeInfo(iocompParams, c); 
-	winFreeInfo(iocompParams, b);
-
-	dataSendInfo(iocompParams); 
+	if(streamParams->HT_flag)
+	{
+		scale_wait(iocompParams, streamParams, iter, b); 
+		add_wait(iocompParams, streamParams, iter, c); 
+		triad_wait(iocompParams, streamParams, iter, a); 
+	} 
 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs and post win free for shared windows 
 #ifndef NDEBUG
