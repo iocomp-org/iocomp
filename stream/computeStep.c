@@ -129,11 +129,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 
 		scale_send(iocompParams, streamParams, iter, b );
 
-		dataSendEnd(iocompParams, b); 	
-#ifndef NDEBUG
-		fprintf(iocompParams->debug, "stream->dataSendEnd function \n");
-#endif
-
 
 //		if(iter > 0)
 //		{
