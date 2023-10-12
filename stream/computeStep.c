@@ -130,6 +130,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		{
 			add_wait(iocompParams, streamParams, iter, c); 
 			winTestInfo(iocompParams, a); 
+			winTestInfo(iocompParams, b); 
 		}
 		else
 		{
@@ -175,7 +176,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		add_wait(iocompParams, streamParams, iter, c); 
 		triad_wait(iocompParams, streamParams, iter, a); 
 	} 
-
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs and post win free for shared windows 
 #ifndef NDEBUG
 	fprintf(iocompParams->debug, "stream->data send complete\n");

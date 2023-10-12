@@ -31,7 +31,7 @@ extern "C" {
 #define WIN_FREE -1
 
 // define avg loop count of stream kernels
-#define AVGLOOPCOUNT 1
+#define AVGLOOPCOUNT 2
 // define number of compute cycles per avg loop count 
 #define COMPLOOPCOUNT 1
 

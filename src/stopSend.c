@@ -41,17 +41,17 @@ void stopSend(struct iocomp_params *iocompParams)
 		}
 		dataSendInfo(iocompParams);
 
-#ifndef NDEBUG 
-		fprintf(iocompParams->debug, "stopSend->Before MPI windows freed\n"); 
-#endif
 		for(int i = 0; i < NUM_WIN; i++)
 		{
+#ifndef NDEBUG 
+			fprintf(iocompParams->debug, "stopSend->window:%i Before win free\n", i); 
+#endif
 			int ierr = MPI_Win_free(&iocompParams->winMap[i]);
 			mpi_error_check(ierr); 
-		} 
 #ifndef NDEBUG 
-		fprintf(iocompParams->debug, "stopSend->MPI windows freed\n"); 
+			fprintf(iocompParams->debug, "stopSend->window:%i After win free\n", i); 
 #endif
+		} 
 	} 
 	/*
 	 * if HT flag is off, then adios2 object should be finalised 

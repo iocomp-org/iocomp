@@ -85,11 +85,14 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 				 */ 
 				if(iocompParams->wintestflags[i]==WIN_WAIT && flag[i]==0)  
 				{
+#ifndef NDEBUG 
+					fprintf(iocompParams->debug, "ioServer window:%i flag value:%i before win wait implemented\n", i, flag[i]); 
+#endif 
 					// wait for window completion 
 					ierr = MPI_Win_wait(iocompParams->winMap[i]); 
 					mpi_error_check(ierr); 
 #ifndef NDEBUG 
-					fprintf(iocompParams->debug, "ioServer window:%i flag negative and win wait implemented\n", i); 
+					fprintf(iocompParams->debug, "ioServer window:%i flag value:%i after  win wait implemented\n", i, flag[i]); 
 #endif 
 					ioLibraries(iocompParams->array[i], iocompParams); 
 					flag[i] = 1; 
@@ -109,13 +112,13 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 				ierr = MPI_Win_test(iocompParams->winMap[i], &flag[i]); 
 				mpi_error_check(ierr);
 #ifndef NDEBUG 
-				fprintf(iocompParams->debug, "ioServerShared->window:%i after win test\n",i); 
+				fprintf(iocompParams->debug, "ioServerShared->window:%i after win test with flag:%i\n",i, flag[i]); 
 #endif 
 				// if window is available to print then print and end timer 
 				if(flag[i])
 				{
 #ifndef NDEBUG 
-					fprintf(iocompParams->debug, "ioServerShared->window:%i flag positive \n",i); 
+					fprintf(iocompParams->debug, "ioServerShared->window:%i flag positive value:%i \n",i, flag[i]); 
 #endif
 					ioLibraries(iocompParams->array[i], iocompParams); 
 				}
@@ -127,15 +130,16 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 				ierr = MPI_Win_test(iocompParams->winMap[i], &flag[i]); 
 				mpi_error_check(ierr);
 #ifndef NDEBUG 
-				fprintf(iocompParams->debug, "ioServerShared->window:%i after win test\n",i); 
+				fprintf(iocompParams->debug, "ioServerShared->window:%i after win test flag value:%i\n",i, flag[i]); 
 #endif 
 				// if window is available to print then print and end timer 
 				if(flag[i])
 				{
 #ifndef NDEBUG 
-					fprintf(iocompParams->debug, "ioServerShared->window:%i flag positive \n",i); 
+					fprintf(iocompParams->debug, "ioServerShared->window:%i flag value:%i \n",i, flag[i]); 
 #endif
 					ioLibraries(iocompParams->array[i], iocompParams); 
+					flag[i] = 1; 
 
 				}
 			} 
@@ -166,12 +170,16 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 		// wait for completion of all windows 
 		if(flag[i] == 0)
 		{
+#ifndef NDEBUG 
+			fprintf(iocompParams->debug, "ioServerShared->window:%i Before win wait \n",i); 
+#endif 
 			ierr = MPI_Win_wait(iocompParams->winMap[i]); 
 			mpi_error_check(ierr); 
 #ifndef NDEBUG 
-			fprintf(iocompParams->debug, "ioServerShared-> window:%i ioLibraries called after win wait\n",i); 
+			fprintf(iocompParams->debug, "ioServerShared-> window:%i After win wait\n",i); 
 #endif 
 			ioLibraries(iocompParams->array[i], iocompParams); 
+			flag[i] = 1; 
 		}
 
 #ifndef NDEBUG 

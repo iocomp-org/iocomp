@@ -3,8 +3,8 @@
 
 #define NDIM 2  // power to size
 #define KERNELS 4
-#define AVGLOOPCOUNT 1 // number of average cycles 
-#define COMPLOOPCOUNT 1 // number of compute cycles per each averaging cycle 
+// #define AVGLOOPCOUNT 1 // number of average cycles 
+// #define COMPLOOPCOUNT 1 // number of compute cycles per each averaging cycle 
 #define WRITE_FREQ 1 // frequency of writing 
 #define TEST_FREQ 11 // frequency of MPI tests 
 #define COPY		0
