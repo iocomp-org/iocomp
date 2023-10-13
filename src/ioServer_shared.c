@@ -19,6 +19,9 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	int ioRank, ierr; 
 	ierr = MPI_Comm_rank(iocompParams->ioComm, &ioRank); 
 	mpi_error_check(ierr); 
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "ioServer->IO server comm initialised IO rank %i\n", ioRank); 
+#endif 
 
 	// allocate shared windows and their pointers 
 	ioServer_sharedAllocate(iocompParams); 

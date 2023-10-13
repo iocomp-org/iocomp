@@ -15,8 +15,9 @@
 MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, 
 		int ioLibNum, int fullNode, bool sharedFlag)
 {
-	int myGlobalrank; 
+	int myGlobalrank, ierr;  
 	MPI_Comm_rank(comm, &myGlobalrank); 
+	iocompParams->globalComm = comm; 
 
 #ifndef NDEBUG
 	initDebugFile(iocompParams, myGlobalrank);
@@ -36,14 +37,6 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	assert(iocompParams->ioLibNum >= 0);
 	assert(iocompParams->NODESIZE > 0); 
 
-	/*
-	 * comm split splits communicators in 2, assigns colour to ranks
-	 * assigns communicators in struct for both cases  
-	 */ 
-	comm_split(iocompParams, comm); 
-#ifndef NDEBUG
-	fprintf(iocompParams->debug, "iocompInit -> communicator split up and colour assigned \n"); 
-#endif
 
 	/*
 	 * If the shared flag is on and process is ioserver then ioServer initialises
@@ -51,34 +44,21 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 */ 
 	if(sharedFlag == true)
 	{
-		/*
-		 * Assuming IO process and Compute Process are mapped to physical and SMT cores
-		 * if size = 10 then IO rank would be 5,6,..9
-		 * and compute rank would be 0,1,..4
-		 * Assign similar colours to corresponding I/O and compute Process
-		 * i.e. rank 0 and rank 5 would have same colour and then same MPI
-		 * Communicator 
-		 */  
-		// colour = globalRank%(globalSize/2); // IO rank and comp rank have same colour
-		int pairColour = (int)myGlobalrank/2; // IO rank and comp rank have same colour
-		int ierr = MPI_Comm_split(MPI_COMM_WORLD, pairColour, myGlobalrank, &iocompParams->newComm); 
-		mpi_error_check(ierr); 
-#ifndef NDEBUG
-		fprintf(iocompParams->debug,"iocompInit -> shared flag true, MPI comm split into pairs of compute and IO server \n"); 
-#endif
 
 		iocompParams->sharedFlag = true; 
+
+		// split communicators 
+		commSplit_shared(iocompParams);  
 
 		// find new rank for the pair communicator between IO and Compute rank 
 		int newRank; 
 		ierr = MPI_Comm_rank(iocompParams->newComm,&newRank); 
 		mpi_error_check(ierr);
 
-
 		if(newRank != 0)
 		{
 #ifndef NDEBUG
-			fprintf(iocompParams->debug,"iocompInit -> Program now entering IO shared server \n"); 
+			fprintf(iocompParams->debug,"iocompInit -> Before assigining groups for io server \n"); 
 #endif
 			// allocate groups 
 			/*
@@ -94,8 +74,14 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 
 			/* I/O group consists of ranks 1 */
 			MPI_Group_incl(comm_group,1,ranks,&iocompParams->group);
+#ifndef NDEBUG
+			fprintf(iocompParams->debug,"iocompInit -> After assigning groups for io server\n"); 
+#endif
 
 			ioServer_shared(iocompParams);
+#ifndef NDEBUG
+			fprintf(iocompParams->debug,"iocompInit -> After ioServer shared exits \n"); 
+#endif
 			MPI_Finalize(); 
 #ifndef NDEBUG 
 			fprintf(iocompParams->debug, "iocompInit-> after MPI finalize \n"); 
@@ -117,10 +103,21 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 
 			/* I/O group consists of ranks 1 */
 			MPI_Group_incl(comm_group,1,ranks+1,&iocompParams->group);
+#ifndef NDEBUG
+			fprintf(iocompParams->debug,"iocompInit -> After assigning groups for comp server\n"); 
+#endif
 		} 
 	} 
 	else
 	{
+		/*
+		 * comm split splits communicators in 2, assigns colour to ranks
+		 * assigns communicators in struct for both cases  
+		 */ 
+		comm_split(iocompParams, comm); 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug, "iocompInit -> communicator split up and colour assigned \n"); 
+#endif
 		/*
 		 * If HT flag is on, then called by io server, if HT flag off then called by
 		 * every process. This is because only ioServers have access to ioServerComm.
