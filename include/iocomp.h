@@ -31,7 +31,7 @@ extern "C" {
 #define WIN_FREE -1
 
 // define avg loop count of stream kernels
-#define AVGLOOPCOUNT 2
+#define AVGLOOPCOUNT 10
 // define number of compute cycles per avg loop count 
 #define COMPLOOPCOUNT 1
 
@@ -133,6 +133,8 @@ extern "C" {
 		double *array[NUM_WIN]; 
 		// filenames 
 		char WRITEFILE[NUM_WIN][AVGLOOPCOUNT][100]; 
+		
+		int flag[NUM_WIN];
 
 		bool sharedFlag; 
 		// file object for debug 
@@ -200,6 +202,9 @@ extern "C" {
 	void winWaitInfo(struct iocomp_params *iocompParams, double* array); 
 	void ioServer_sharedAllocate(struct iocomp_params *iocompParams); 
 	void preDataSend(struct iocomp_params *iocompParams, double* array); 
+	void winFree(struct iocomp_params *iocompParams, int i); 
+	void winPost(struct iocomp_params *iocompParams, int i); 
+	void winTest(struct iocomp_params *iocompParams, int i); 
 
 	// debug file 
 	void initDebugFile(struct iocomp_params *iocompParams, int globalRank); 

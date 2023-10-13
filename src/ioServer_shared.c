@@ -11,67 +11,6 @@
 #include <math.h>
 #include "../include/iocomp.h"
 
-
-void winWait(struct iocomp_params *iocompParams, int i)
-{
-#ifndef NDEBUG 
-	fprintf(iocompParams->debug, "ioServer window:%i flag value:%i before win wait implemented\n", i, iocompParams->flag[i]); 
-#endif 
-	// wait for window completion 
-	ierr = MPI_Win_wait(iocompParams->winMap[i]); 
-	mpi_error_check(ierr); 
-#ifndef NDEBUG 
-	fprintf(iocompParams->debug, "ioServer window:%i flag value:%i after  win wait implemented\n", i, iocompParams->flag[i]); 
-#endif 
-	ioLibraries(iocompParams->array[i], iocompParams); 
-	iocompParams->flag[i] = 1; 
-} 
-
-void winTest(struct iocomp_params *iocompParams, int i) 
-{
-	ierr = MPI_Win_test(iocompParams->winMap[i], &iocompParams->flag[i]); 
-	mpi_error_check(ierr);
-#ifndef NDEBUG 
-	fprintf(iocompParams->debug, "ioServerShared->window:%i after win test with flag:%i\n",i, iocompParams->flag[i]); 
-#endif 
-	// if window is available to print then print and end timer 
-	if(iocompParams->flag[i])
-	{
-#ifndef NDEBUG 
-		fprintf(iocompParams->debug, "ioServerShared->window:%i flag positive value:%i \n",i, iocompParams->flag[i]); 
-#endif
-		ioLibraries(iocompParams->array[i], iocompParams); 
-	}
-
-}
-
-void winPost(struct iocomp_params *iocompParams, int i) 
-{
-	ierr = MPI_Win_post(iocompParams->group, 0, iocompParams->winMap[i]);
-	mpi_error_check(ierr); 
-#ifndef NDEBUG 
-	fprintf(iocompParams->debug, "ioServerShared->window %i after win post\n", i); 
-#endif 
-	iocompParams->flag[i] = 0; // window activated 
-#ifdef IOBW	
-	iocompParams->winTime_start[i] = MPI_Wtime();
-#endif 
-
-} 
-
-void winFree(struct iocomp_params *iocompParams, int i)
-{
-#ifndef NDEBUG 
-	fprintf(iocompParams->debug, "ioServerShared-> window:%i before win free reached\n",i); 
-#endif 
-	ierr = MPI_Win_free(&iocompParams->winMap[i]);
-	mpi_error_check(ierr); 
-#ifndef NDEBUG 
-	fprintf(iocompParams->debug, "ioServerShared-> window:%i after win free \n",i); 
-#endif 
-}
-
-
 void ioServer_shared(struct iocomp_params *iocompParams)
 {
 
@@ -114,7 +53,6 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 		iocompParams->flag[i] = -1; 
 	} 
 
-	// Test for window completion 
 	for(;;)  
 	{
 #ifndef NDEBUG 
@@ -131,7 +69,6 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 		fprintf(iocompParams->debug, "\n"); 
 #endif 
 
-		// iterate across all windows 
 		for(int i = 0; i < NUM_WIN; i++)
 		{
 			if(iocompParams->wintestflags[i] > WIN_TEST) // anything over 0 means go for printing 
