@@ -73,8 +73,8 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 		int newRank; 
 		ierr = MPI_Comm_rank(iocompParams->newComm,&newRank); 
 		mpi_error_check(ierr);
-	
-	
+
+
 		if(newRank != 0)
 		{
 #ifndef NDEBUG
@@ -104,7 +104,6 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 		}
 		else
 		{
-			// allocate groups 
 			/*
 			 * groups newComm communicator's rank 0 and 1 into a group
 			 * comp process initialises array and creates a window with that array
@@ -122,40 +121,40 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	} 
 	else
 	{
-	/*
-	 * If HT flag is on, then called by io server, if HT flag off then called by
-	 * every process. This is because only ioServers have access to ioServerComm.
-	 * ioServerInitialise initialises cartesian communicator and adios2 objects,
-	 * and sets up other I/O related variables.
-	 */ 
-	if(!iocompParams->hyperthreadFlag || iocompParams->colour==ioColour) 
-	{
-		ioServerInitialise(iocompParams); 
-	}
+		/*
+		 * If HT flag is on, then called by io server, if HT flag off then called by
+		 * every process. This is because only ioServers have access to ioServerComm.
+		 * ioServerInitialise initialises cartesian communicator and adios2 objects,
+		 * and sets up other I/O related variables.
+		 */ 
+		if(!iocompParams->hyperthreadFlag || iocompParams->colour==ioColour) 
+		{
+			ioServerInitialise(iocompParams); 
+		}
 
 
-	/*
-	 * If HT flag is on and process is ioserver then ioServer recieves data
-	 * and finalises adios2 object & mpi finalizes and program exits. 
-	 */ 
-	if(iocompParams->hyperthreadFlag && iocompParams->colour == ioColour)
-	{
-		int ioRank; 
-		MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
+		/*
+		 * If HT flag is on and process is ioserver then ioServer recieves data
+		 * and finalises adios2 object & mpi finalizes and program exits. 
+		 */ 
+		if(iocompParams->hyperthreadFlag && iocompParams->colour == ioColour)
+		{
+			int ioRank; 
+			MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 #ifndef NDEBUG
-		fprintf(iocompParams->debug,"ioServerInitialise -> ioServer called\n"); 
+			fprintf(iocompParams->debug,"ioServerInitialise -> ioServer called\n"); 
 #endif
-		ioServer(iocompParams);
+			ioServer(iocompParams);
 #ifndef NDEBUG
-		fprintf(iocompParams->debug,"ioServerInitialise -> After ioServer\n"); 
+			fprintf(iocompParams->debug,"ioServerInitialise -> After ioServer\n"); 
 #endif
-		MPI_Finalize(); 
+			MPI_Finalize(); 
 #ifndef NDEBUG
-		fprintf(iocompParams->debug,"ioServerInitialise -> After finalize\n"); 
+			fprintf(iocompParams->debug,"ioServerInitialise -> After finalize\n"); 
 #endif
-		exit(0); 
-	}
-	
+			exit(0); 
+		}
+
 	} 
 
 	/*

@@ -205,6 +205,7 @@ extern "C" {
 	void winFree(struct iocomp_params *iocompParams, int i); 
 	void winPost(struct iocomp_params *iocompParams, int i); 
 	void winTest(struct iocomp_params *iocompParams, int i); 
+	void winWait(struct iocomp_params *iocompParams, int i); 
 
 	// debug file 
 	void initDebugFile(struct iocomp_params *iocompParams, int globalRank); 

@@ -1,7 +1,7 @@
 #include "../include/iocomp.h"
 void winTest(struct iocomp_params *iocompParams, int i) 
 {
-	ierr = MPI_Win_test(iocompParams->winMap[i], &iocompParams->flag[i]); 
+	int ierr = MPI_Win_test(iocompParams->winMap[i], &iocompParams->flag[i]); 
 	mpi_error_check(ierr);
 #ifndef NDEBUG 
 	fprintf(iocompParams->debug, "ioServerShared->window:%i after win test with flag:%i\n",i, iocompParams->flag[i]); 
