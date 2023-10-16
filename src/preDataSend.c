@@ -7,7 +7,7 @@ void preDataSend(struct iocomp_params *iocompParams, double* array)
 	if(iocompParams->sharedFlag)
 	{
 #ifndef NDEBUG 
-		fprintf(iocompParams->debug, "dataSend -> Before MPI bcast, iocompParams->wintestflags"); 
+		fprintf(iocompParams->debug, "preDataSend -> Before MPI bcast, iocompParams->wintestflags"); 
 		for(int i = 0; i < NUM_WIN; i++)
 		{
 			fprintf(iocompParams->debug, "[%i]", 
@@ -26,7 +26,7 @@ void preDataSend(struct iocomp_params *iocompParams, double* array)
 		// broadcast them to ioserver 
 		MPI_Bcast( iocompParams->wintestflags, NUM_WIN, MPI_INT, 0, iocompParams->newComm); 
 #ifndef NDEBUG 
-		fprintf(iocompParams->debug, "dataSendStart -> After MPI broadcast  \n "); 
+		fprintf(iocompParams->debug, "preDataSend -> After MPI broadcast  \n"); 
 #endif 
 
 		// get the window test flag for the array 
@@ -36,12 +36,12 @@ void preDataSend(struct iocomp_params *iocompParams, double* array)
 			{
 				// match array with windows and issue win complete 
 #ifndef NDEBUG 
-				fprintf(iocompParams->debug, "dataSendStart -> Before mpi win start for window %i \n ", i); 
+				fprintf(iocompParams->debug, "preDataSend-> Before mpi win start for window %i \n", i); 
 #endif 
 				int ierr = MPI_Win_start(iocompParams->group, 0, iocompParams->winMap[i]); 
 				mpi_error_check(ierr); 
 #ifndef NDEBUG 
-				fprintf(iocompParams->debug, "dataSendStart -> After mpi win start for window %i \n ", i); 
+				fprintf(iocompParams->debug, "preDataSend-> After mpi win start for window %i \n", i); 
 #endif 
 			}
 		}

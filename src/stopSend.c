@@ -41,6 +41,10 @@ void stopSend(struct iocomp_params *iocompParams)
 		}
 		dataSendInfo(iocompParams);
 
+#ifndef NDEBUG
+		fprintf(iocompParams->debug,"stopSend -> Barrier reached before Win free called \n"); 
+#endif
+		MPI_Barrier(iocompParams->newComm); // wait till each process is free  
 		for(int i = 0; i < NUM_WIN; i++)
 		{
 #ifndef NDEBUG 

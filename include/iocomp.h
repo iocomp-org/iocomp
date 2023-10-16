@@ -21,7 +21,7 @@ extern "C" {
 #define NUM_DIM 2
 
 // define number of shared memory windows 
-#define NUM_WIN 3
+#define NUM_WIN 1
 
 // define window control integers 
 #define WIN_DEACTIVATE 0 
