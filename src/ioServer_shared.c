@@ -20,7 +20,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	ierr = MPI_Comm_rank(iocompParams->ioComm, &ioRank); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG 
-		fprintf(iocompParams->debug, "ioServer->IO server comm initialised IO rank %i\n", ioRank); 
+	fprintf(iocompParams->debug, "ioServer->IO server comm initialised IO rank %i\n", ioRank); 
 #endif 
 
 	// allocate shared windows and their pointers 
@@ -90,9 +90,11 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 				 * Initialise flag = 0 and start window timer 
 				 * Test for window completion 
 				 */ 
-				winPost(iocompParams, i); 
-
-				winTest(iocompParams, i); 
+				if(iocompParams->wintestflags[i]==WIN_ACTIVATE)  
+				{
+					winPost(iocompParams, i); 
+					winTest(iocompParams, i); 
+				} 
 			}
 
 			/* 
@@ -125,19 +127,22 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 #ifndef NDEBUG 
 	fprintf(iocompParams->debug, "ioServerShared -> loop server exited \n"); 
 #endif 
-	
+
 	/* 
 	 * Clean up after loop server exit, wait for data to be obtained and then free
 	 * the window 
 	 */ 
 	for(int i = 0; i < NUM_WIN; i++)
 	{
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "ioServerShared -> flag value %i for window %i\n", iocompParams->flag[i], i); 
+#endif 
 		// wait for completion of all windows 
 		if(iocompParams->flag[i] == 0)
 		{
 			winWait(iocompParams, i); 
 		}
-		
+
 		winFree(iocompParams, i); 
 	} 
 
