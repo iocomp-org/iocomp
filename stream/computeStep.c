@@ -109,6 +109,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		if(iter > 0)
 		{
 			scale_wait(iocompParams, streamParams, iter, b); 
+			winActivateInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
 			winTestInfo(iocompParams, a); 
 		}
@@ -129,6 +130,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		if(iter > 0)
 		{
 			add_wait(iocompParams, streamParams, iter, c); 
+			winActivateInfo(iocompParams, c); 
 			winTestInfo(iocompParams, a); 
 			winTestInfo(iocompParams, b); 
 		}
@@ -151,6 +153,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		if(iter > 0)
 		{
 			triad_wait(iocompParams, streamParams, iter, a); 
+			winActivateInfo(iocompParams, a); 
 			winTestInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
 		}

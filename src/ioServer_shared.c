@@ -143,6 +143,10 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 			winWait(iocompParams, i); 
 		}
 
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "ioServerShared-> MPI barrier activated\n"); 
+#endif 
+		// MPI_Barrier(iocompParams->newComm); // wait till each process is finished  
 		winFree(iocompParams, i); 
 	} 
 
