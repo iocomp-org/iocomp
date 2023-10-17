@@ -174,15 +174,15 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	verify(iocompParams); 
 #endif
 
-	//#ifndef NODELETE
-	//	MPI_Barrier(iocompParams->ioComm); 
-	//	if(!ioRank)
-	//	{
-	//		deleteFiles(iocompParams); 
-	//#ifndef NDEBUG 
-	//		fprintf(iocompParams->debug, "ioServer->file/directory deleted \n"); 
-	//#endif	
-	//	} 
-	//#endif 
+#ifndef NODELETE
+	MPI_Barrier(iocompParams->ioComm); 
+	if(!ioRank)
+	{
+		deleteFiles(iocompParams); 
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "ioServer->file/directory deleted \n"); 
+#endif	
+	} 
+#endif 
 } 
 
