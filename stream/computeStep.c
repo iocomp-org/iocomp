@@ -183,9 +183,11 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 #ifndef NDEBUG
 	fprintf(iocompParams->debug, "stream->data send complete\n");
 #endif
-
-	//wallTime_end = MPI_Wtime(); 
-	//streamParams->wallTimer=wallTime_end - wallTime_start; 
+	
+	winFinalise(iocompParams); // finalise arrays 
+	wallTime_end = MPI_Wtime(); 
+	assert(wallTime_end!=wallTime_start); 
+	streamParams->wallTimer=wallTime_end - wallTime_start; 
 
 #ifndef NDEBUG
 	fprintf(iocompParams->debug, "stream->compute step completed\n");

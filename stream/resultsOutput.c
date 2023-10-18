@@ -5,6 +5,7 @@
 #include "stdio.h"
 #include "mpi.h"
 #include "stream.h"
+#include "assert.h"
 #define filename "compute_write_time.csv"
 
 void averages(struct stream_params* streamParams)
