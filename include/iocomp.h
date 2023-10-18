@@ -207,6 +207,7 @@ extern "C" {
 	void winTest(struct iocomp_params *iocompParams, int i); 
 	void winWait(struct iocomp_params *iocompParams, int i); 
 	void commSplit_shared(struct iocomp_params *iocompParams); 
+	void winFinalise(struct iocomp_params *iocompParams); 
 
 	// debug file 
 	void initDebugFile(struct iocomp_params *iocompParams, int globalRank); 
