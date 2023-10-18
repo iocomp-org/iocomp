@@ -13,7 +13,7 @@
  * Initialises the library 
  */
 MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, 
-		int ioLibNum, int fullNode, bool sharedFlag)
+		int ioLibNum, int fullNode, bool sharedFlag, int numWin)
 {
 	int myGlobalrank, ierr;  
 	MPI_Comm_rank(comm, &myGlobalrank); 
@@ -29,6 +29,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	iocompParams->ioLibNum = ioLibNum; // set selection of I/O library 
 	iocompParams->NODESIZE = fullNode; // set size of node for comm splitting 
 	iocompParams->sharedFlag = sharedFlag; // set flag for MPI shared memory usage 
+	iocompParams->numWin = numWin; // set the number of windows  
 
 	/*
 	 * assert tests for input parameters 
@@ -37,6 +38,13 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	assert(iocompParams->ioLibNum >= 0);
 	assert(iocompParams->NODESIZE > 0); 
 
+	/* 
+	 * Initialise pointers with size of num win 
+	 */ 
+	iocompParams->wintestflags = malloc(iocompParams->numWin*sizeof(int)); 
+	iocompParams->winMap = malloc(iocompParams->numWin*sizeof(int)); 
+	iocompParams->flag = malloc(iocompParams->numWin*sizeof(int)); 
+	iocompParams->array = malloc(iocompParams->numWin*sizeof(double*)); 
 
 	/*
 	 * If the shared flag is on and process is ioserver then ioServer initialises

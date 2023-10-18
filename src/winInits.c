@@ -17,7 +17,7 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 		 * initialise window test flags with 0 
 		 * assign them 1 if ready for writing 
 		 */ 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			iocompParams->wintestflags[i] = 0; 
 #ifndef NDEBUG
@@ -26,7 +26,7 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 		} 
 		int ierr; 
 		// allocate shared windows 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			ierr = MPI_Win_allocate_shared(sizeof(double)*localDataSize, sizeof(double), MPI_INFO_NULL, iocompParams->newComm, &iocompParams->array[i], &iocompParams->winMap[i]); 
 			mpi_error_check(ierr);
@@ -43,7 +43,7 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 		/*
 		 * otherwise malloc using the number of elements and double filesize  
 		 */ 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			iocompParams->array[i] = (double*)malloc(localDataSize*sizeof(double)); 
 			assert(iocompParams->array[i] != NULL); 

@@ -5,7 +5,8 @@
 // each window can write to its own file, initialise write file name for
 // each window number 
 
-void fileNameInit(struct iocomp_params *iocompParams, char filenames[NUM_WIN][100])
+#define AVGLOOP 10 // temp define avg loop count 
+void fileNameInit(struct iocomp_params *iocompParams, char filenames[iocompParams->numWin][100])
 {
 
 		char EXT[10]; 
@@ -35,9 +36,9 @@ void fileNameInit(struct iocomp_params *iocompParams, char filenames[NUM_WIN][10
 		
 		// assign filename per window and per iteration in the format
 		// windowname_iteration.ext
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
-			for(int j = 0; j < AVGLOOPCOUNT; j++)
+			for(int j = 0; j < AVGLOOP; j++)
 			{
 				char iter[5]; 
 				sprintf(iter,  "%d", j);

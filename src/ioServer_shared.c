@@ -34,7 +34,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	// declare mult variable to test for completion among all windows 
 
 #ifdef IOBW
-	for(int i = 0 ; i < NUM_WIN; i ++)
+	for(int i = 0 ; i < iocompParams->numWin; i ++)
 	{
 		// initialise timers 
 		for(int j = 0; j < AVGLOOPCOUNT; j++)
@@ -51,7 +51,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	 * 0 means that window has been initialised 
 	 * 1 returned from win test means that the array has been written
 	 */ 
-	for(int i = 0; i< NUM_WIN; i++)
+	for(int i = 0; i< iocompParams->numWin; i++)
 	{
 		iocompParams->flag[i] = -1; 
 	} 
@@ -61,10 +61,10 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 #ifndef NDEBUG 
 		fprintf(iocompParams->debug, "ioServer->before MPI Bcast \n"); 
 #endif 
-		MPI_Bcast(iocompParams->wintestflags, NUM_WIN, MPI_INT, 0, iocompParams->newComm); 
+		MPI_Bcast(iocompParams->wintestflags, iocompParams->numWin, MPI_INT, 0, iocompParams->newComm); 
 #ifndef NDEBUG 
 		fprintf(iocompParams->debug, "ioServer -> after MPI bcast, iocompParams->wintestflags "); 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			fprintf(iocompParams->debug, "[%i]", 
 					iocompParams->wintestflags[i]); 
@@ -72,7 +72,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 		fprintf(iocompParams->debug, "\n"); 
 #endif 
 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			if(iocompParams->wintestflags[i] > WIN_TEST) // anything over 0 means go for printing 
 			{
@@ -88,11 +88,13 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 				/*
 				 * Start window with WIN POST. 
 				 * Initialise flag = 0 and start window timer 
+				 * Obtain file name from preDataSend 
 				 * Test for window completion 
 				 */ 
 				if(iocompParams->wintestflags[i]==WIN_ACTIVATE)  
 				{
 					winPost(iocompParams, i); 
+					MPI_Recv(&iocompParams->writeFile, 100, MPI_CHAR, 0, 0, iocompParams->newComm, MPI_STATUS_IGNORE); 
 					winTest(iocompParams, i); 
 				} 
 			}
@@ -110,7 +112,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 		 * exit condition true if all flags are assigned win free 
 		 */
 		int exitcheck; 
-		for(int j = 0; j < NUM_WIN; j++)
+		for(int j = 0; j < iocompParams->numWin; j++)
 		{
 			exitcheck = 0;  // reset value 
 			if(iocompParams->wintestflags[j] == WIN_FREE)
@@ -132,7 +134,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	 * Clean up after loop server exit, wait for data to be obtained and then free
 	 * the window 
 	 */ 
-	for(int i = 0; i < NUM_WIN; i++)
+	for(int i = 0; i < iocompParams->numWin; i++)
 	{
 #ifndef NDEBUG 
 		fprintf(iocompParams->debug, "ioServerShared -> flag value %i for window %i\n", iocompParams->flag[i], i); 

@@ -10,7 +10,7 @@ void dataSendComplete(struct iocomp_params *iocompParams, double* array)
 	fprintf(iocompParams->debug, "MPI win free comp server reached\n"); 
 #endif
 
-	for(int i = 0; i < NUM_WIN; i++)
+	for(int i = 0; i < iocompParams->numWin; i++)
 	{
 		if(iocompParams->array[i] == array)
 		{

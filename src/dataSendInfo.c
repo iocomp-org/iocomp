@@ -7,7 +7,7 @@ void dataSendInfo(struct iocomp_params *iocompParams)
 	{
 #ifndef NDEBUG 
 		fprintf(iocompParams->debug, "dataSendInfo -> Before MPI bcast, iocompParams->wintestflags :"); 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			fprintf(iocompParams->debug, "[%i]", 
 					iocompParams->wintestflags[i]); 
@@ -16,14 +16,14 @@ void dataSendInfo(struct iocomp_params *iocompParams)
 #endif 
 
 		// check if test flags have a value between -1 and 4 before broadcasting 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			assert(iocompParams->wintestflags[i] > -2); 
 			assert(iocompParams->wintestflags[i] < 5); 
 		}
 
 		// broadcast them to ioserver 
-		MPI_Bcast( iocompParams->wintestflags, NUM_WIN, MPI_INT, 0, iocompParams->newComm); 
+		MPI_Bcast( iocompParams->wintestflags, iocompParams->numWin, MPI_INT, 0, iocompParams->newComm); 
 #ifndef NDEBUG 
 		fprintf(iocompParams->debug, "dataSendInfo -> After MPI bcast \n"); 
 #endif 
@@ -35,7 +35,7 @@ void dataSendStart(struct iocomp_params *iocompParams, double* array)
 	if(iocompParams->sharedFlag)
 	{
 		// get the window test flag for the array 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			if(iocompParams->array[i] == array)
 			{
@@ -58,7 +58,7 @@ void dataSendEnd(struct iocomp_params *iocompParams, double* array)
 	if(iocompParams->sharedFlag)
 	{
 		// get the window test flag for the array 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			if(iocompParams->array[i] == array)
 			{

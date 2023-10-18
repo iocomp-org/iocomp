@@ -4,7 +4,7 @@ void ioServer_sharedAllocate(struct iocomp_params *iocompParams)
 	int soi = sizeof(double); 
 
 	// allocate shared windows 
-	for(int i = 0; i < NUM_WIN; i++)
+	for(int i = 0; i < iocompParams->numWin; i++)
 	{
 		int ierr = MPI_Win_allocate_shared(0, soi, MPI_INFO_NULL, iocompParams->newComm, &iocompParams->array[i], &iocompParams->winMap[i]); 
 		mpi_error_check(ierr);
@@ -14,7 +14,7 @@ void ioServer_sharedAllocate(struct iocomp_params *iocompParams)
 	}
 
 	// allocate arrays using window pointers 
-	for(int i = 0; i < NUM_WIN; i++)
+	for(int i = 0; i < iocompParams->numWin; i++)
 	{
 		long int arraySize; 
 		int dispUnit; 
@@ -27,7 +27,7 @@ void ioServer_sharedAllocate(struct iocomp_params *iocompParams)
 		iocompParams->localDataSize = arraySize/sizeof(double); // mpi shared query gives the size in bytes assuming every window is writing the same amount of data  
 	} 
 
-	for(int i = 0; i < NUM_WIN; i++)
+	for(int i = 0; i < iocompParams->numWin; i++)
 	{
 		iocompParams->wintestflags[i] = 0; 
 	} 

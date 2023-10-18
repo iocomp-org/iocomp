@@ -35,7 +35,7 @@ void stopSend(struct iocomp_params *iocompParams)
 	{
 		
 		// send win free message to control arrays 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			iocompParams->wintestflags[i] = WIN_FREE;  
 		}
@@ -45,7 +45,7 @@ void stopSend(struct iocomp_params *iocompParams)
 		fprintf(iocompParams->debug,"stopSend -> Barrier reached before Win free called \n"); 
 #endif
 		// MPI_Barrier(iocompParams->newComm); // wait till each process is free  
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 #ifndef NDEBUG 
 			fprintf(iocompParams->debug, "stopSend->window:%i Before win free\n", i); 

@@ -8,7 +8,7 @@ void preDataSend(struct iocomp_params *iocompParams, double* array)
 	{
 #ifndef NDEBUG 
 		fprintf(iocompParams->debug, "preDataSend -> Before MPI bcast, iocompParams->wintestflags"); 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			fprintf(iocompParams->debug, "[%i]", 
 					iocompParams->wintestflags[i]); 
@@ -17,20 +17,25 @@ void preDataSend(struct iocomp_params *iocompParams, double* array)
 #endif 
 
 		// check if test flags have a value between -1 and 4 before broadcasting 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			assert(iocompParams->wintestflags[i] > -2); 
 			assert(iocompParams->wintestflags[i] < 5); 
 		}
 
 		// broadcast them to ioserver 
-		MPI_Bcast( iocompParams->wintestflags, NUM_WIN, MPI_INT, 0, iocompParams->newComm); 
+		MPI_Bcast( iocompParams->wintestflags, iocompParams->numWin, MPI_INT, 0, iocompParams->newComm); 
+		/*
+		 * Send file name from Comp server to I/O server before win start
+		 */ 
+		ierr = MPI_Isend(fileName, 100, MPI_CHAR, 0, 0, iocompParams->newComm, MPI_STATUS_IGNORE);  
+
 #ifndef NDEBUG 
 		fprintf(iocompParams->debug, "preDataSend -> After MPI broadcast  \n"); 
 #endif 
 
 		// get the window test flag for the array 
-		for(int i = 0; i < NUM_WIN; i++)
+		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			if(iocompParams->array[i] == array)
 			{
