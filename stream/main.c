@@ -6,6 +6,8 @@
 #include "stream.h"
 #include "getopt.h"
 
+#define NUMWIN 3 
+
 int main(int argc, char** argv)
 {
 
@@ -53,7 +55,7 @@ int main(int argc, char** argv)
 	 * iocomp - iocompInit initialises the ioServer 
 	 * and initialises the compute comm 
 	 */ 
-	MPI_Comm computeComm = iocompInit(&iocompParams,comm, streamParams.HT_flag, streamParams.io, NODESIZE, streamParams.sharedFlag); 
+	MPI_Comm computeComm = iocompInit(&iocompParams,comm, streamParams.HT_flag, streamParams.io, NODESIZE, streamParams.sharedFlag, NUMWIN); 
 #ifndef NDEBUG
 	fprintf(iocompParams.debug, "stream->After iocompInit\n");
 #endif
@@ -91,9 +93,6 @@ int main(int argc, char** argv)
 	}   
 
 #ifndef NDEBUG
-	printf("stream-> after results output \n"); 
-#endif
-#ifndef NDEBUG
 	fprintf(iocompParams.debug,"stream->Before MPI finalize rank \n");
 #endif
 	ierr = MPI_Finalize(); 
@@ -101,7 +100,6 @@ int main(int argc, char** argv)
 #ifndef NDEBUG
 	fprintf(iocompParams.debug,"stream->MPI finalize\n");
 #endif
-
 
 	return 0; 
 

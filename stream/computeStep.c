@@ -55,6 +55,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	wallTime_start = MPI_Wtime(); 
 
 	int myrank, mysize;  
+	char fileWrite[5] = ""; 
 	//MPI_Comm_rank(comm, &myrank); 
 	//MPI_Comm_size(comm, &mysize); 
 	//streamParams->globalDataSize = mysize * streamParams->localDataSize; 
@@ -117,8 +118,8 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		{
 			winActivateInfo(iocompParams, b); 
 		}
-
-		preDataSend(iocompParams, b); 
+		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter);
+		preDataSend(iocompParams, b, fileWrite); 
 		scale(iocompParams, streamParams, iter, c, b);
 		scale_send(iocompParams, streamParams, iter, b);
 
@@ -140,7 +141,8 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 			winTestInfo(iocompParams, b); 
 		}
 
-		preDataSend(iocompParams, c); 
+		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter);
+		preDataSend(iocompParams, c, fileWrite); 
 		add(iocompParams, streamParams, iter, c, a, b);
 		add_send(iocompParams, streamParams, iter, c);
 
@@ -164,7 +166,8 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 			winTestInfo(iocompParams, c); 
 		}
 
-		preDataSend(iocompParams, a); 
+		snprintf(fileWrite, sizeof(fileWrite), "A_%i",iter);
+		preDataSend(iocompParams, a, fileWrite); 
 		triad(iocompParams, streamParams, iter, c, a, b);
 		triad_send(iocompParams, streamParams, iter, a);
 
