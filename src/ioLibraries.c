@@ -10,7 +10,7 @@
  * Purpose: define local, global, offsets for data for particular rank 
  * Then send this to the different I/O libraries. 
  */ 
-void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
+void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowNum)
 {
 	int ioSize, ioRank;
 
@@ -28,8 +28,8 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 			double timerStart; 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
-			strcat(iocompParams->writeFile, ".dat"); 
-			mpiiowrite(iodata, iocompParams);
+			strcat(iocompParams->writeFile[windowNum], ".dat"); 
+			mpiiowrite(iodata, iocompParams, windowNum);
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(iocompParams->ioServerComm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
@@ -40,8 +40,8 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
-			strcat(iocompParams->writeFile, ".h5"); 
-			phdf5write(iodata, iocompParams);
+			strcat(iocompParams->writeFile[windowNum], ".h5"); 
+			phdf5write(iodata, iocompParams, windowNum);
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(iocompParams->ioServerComm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
@@ -60,9 +60,9 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 			// adios2 calling hdf5 writes to a file with h5 extension 
 			if(iocompParams->ioLibNum==2)
 			{
-				strcat(iocompParams->writeFile, ".h5"); 
+				strcat(iocompParams->writeFile[windowNum], ".h5"); 
 			}
-			adioswrite(iodata, iocompParams);
+			adioswrite(iodata, iocompParams, windowNum);
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(iocompParams->ioServerComm);
 			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 

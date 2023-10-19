@@ -89,9 +89,9 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 				}
 
 				/*
+				 * Obtain file name from preDataSend 
 				 * Start window with WIN POST. 
 				 * Initialise flag = 0 and start window timer 
-				 * Obtain file name from preDataSend 
 				 * Test for window completion 
 				 */ 
 				if(iocompParams->wintestflags[i]==WIN_ACTIVATE)  
@@ -183,10 +183,13 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	MPI_Barrier(iocompParams->ioComm); 
 	if(!ioRank)
 	{
-		deleteFiles(iocompParams); 
+		for(int i = 0; i < iocompParams->numWin; i++)
+		{
+			deleteFiles(iocompParams, i); 
 #ifndef NDEBUG 
-		fprintf(iocompParams->debug, "ioServer->file/directory deleted \n"); 
+			fprintf(iocompParams->debug, "ioServer->file/directory %s deleted \n", iocompParams->writeFile[i]); 
 #endif	
+		} 
 	} 
 #endif 
 } 

@@ -10,7 +10,7 @@
 #include <hdf5_hl.h> 
 #include "../include/iocomp.h"
 
-void phdf5write(double* iodata, struct iocomp_params *iocompParams)
+void phdf5write(double* iodata, struct iocomp_params *iocompParams, int windowNum)
 {   
     // Variable initialisation
     char            dsetname[100] = "IntArray";
@@ -85,7 +85,7 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams)
      * Create a new file collectively and release property list identifier.
      */
 		 
-    file_id = H5Fcreate(iocompParams->writeFile, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
+    file_id = H5Fcreate(iocompParams->writeFile[windowNum], H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
 
 #ifndef NDEBUG
     fprintf(iocompParams->debug,"property list \n"); 

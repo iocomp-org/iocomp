@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include "../include/iocomp.h"
 
-void adios2Read(struct iocomp_params *iocompParams, double* iodata_test, int windowNum)
+void adios2Read(struct iocomp_params *iocompParams, double* iodata_test, char* fileName)
 {   
 	int											ierr; 	
 	float                   times = 0; 
@@ -17,7 +17,7 @@ void adios2Read(struct iocomp_params *iocompParams, double* iodata_test, int win
 	adios2_adios *adios = adios2_init_serial(); 
 	adios2_io *io = adios2_declare_io(adios, 
 			iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler declaration
-	adios2_engine *engine = adios2_open(io, iocompParams->writeFile[windowNum], adios2_mode_read);
+	adios2_engine *engine = adios2_open(io, fileName, adios2_mode_read);
 	adios2_variable *var_iodata = adios2_inquire_variable(io, "iodata"); 
 
 	/*

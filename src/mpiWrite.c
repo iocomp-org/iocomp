@@ -5,7 +5,7 @@
 #include <memory.h>
 #include "../include/iocomp.h"
 
-void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
+void mpiiowrite(double* iodata, struct iocomp_params *iocompParams, int windowNum)
 {   
 	int			i, ierr, nprocs, ioRank; 
 
@@ -43,7 +43,7 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 	fprintf(iocompParams->debug,"mpiWrite -> MPI cartget \n"); 
 #endif 
 	double openTime = MPI_Wtime(); 
-	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->writeFile,
+	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->writeFile[windowNum],
 			MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh); 
 	mpi_error_check(ierr); 
 	openTime = MPI_Wtime() - openTime; 
@@ -89,7 +89,7 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams)
 #endif       
 
 	// Open file
-	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->writeFile, 
+	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->writeFile[windowNum], 
 					MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG   

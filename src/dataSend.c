@@ -71,7 +71,7 @@ to ioProcessor with globalRank  %i  \n", globalRank, dest);
 		fprintf(iocompParams->debug,"dataSend -> Hyperthread flag deactivated, go to ioLibraries with\
 localDataSize %ld \n", localDataSize); 
 #endif
-			ioLibraries(data,iocompParams); // otherwise go straight to writing using ioLibraries 
+			ioLibraries(data,iocompParams, -1); // otherwise go straight to writing using ioLibraries 
 	}
 
 } 

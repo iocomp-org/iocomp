@@ -1,5 +1,7 @@
 #include "../include/iocomp.h"
 #include "assert.h" 
+#include <string.h>
+
 
 void preDataSend(struct iocomp_params *iocompParams, double* array, char* fileName)
 {
@@ -38,9 +40,9 @@ void preDataSend(struct iocomp_params *iocompParams, double* array, char* fileNa
 				/*
 				 * Send file name from Comp server to I/O server before win start
 				 */ 
-				int ierr = MPI_Send(fileName, 100, MPI_CHAR, 1, 0, iocompParams->newComm);  
+				int ierr = MPI_Send(fileName, strlen(fileName), MPI_CHAR, 1, 0, iocompParams->newComm);  
 				mpi_error_check(ierr); 
-				printf("file name sent  %s \n", fileName); 
+				printf("file name sent %s\n", fileName); 
 
 				// match array with windows and issue win complete 
 #ifndef NDEBUG 

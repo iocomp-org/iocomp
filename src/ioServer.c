@@ -150,7 +150,7 @@ void ioServer(struct iocomp_params *iocompParams)
 #ifndef NDEBUG
 			fprintf(iocompParams->debug,"ioServer -> Send to ioLibraries \n"); 
 #endif
-			ioLibraries(recv, iocompParams); 
+			ioLibraries(recv, iocompParams, -1); 
 		}  
 
 		iter++; 

@@ -3,21 +3,21 @@
 #include <stdbool.h>
 #include "../include/iocomp.h"
 
-void mpiRead(struct iocomp_params *iocompParams, double* iodata_test)
+void mpiRead(struct iocomp_params *iocompParams, double* iodata_test, char* writeFile)
 {
 	FILE *fp;
 	size_t num; 
-	fp = fopen(iocompParams->writeFile,"r");
+	fp = fopen(writeFile,"r");
 	int ioRank; 
 	int ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 	mpi_error_check(ierr); 
 
 	if (fp==NULL)
 	{
-		printf("Error: file %s not opening. Exiting \n", iocompParams->writeFile); 
+		printf("Error: file %s not opening. Exiting \n", writeFile); 
 		mpi_error_check(1); 
 	}
-	printf("file %s open \n", iocompParams->writeFile); 
+	printf("file %s open \n", writeFile); 
 	num = fread(iodata_test, sizeof(double), iocompParams->globalDataSize, fp);
 	printf("fread \n"); 
 	if(num!=iocompParams->globalDataSize)

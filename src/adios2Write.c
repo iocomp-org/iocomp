@@ -6,7 +6,7 @@
 #include <string.h>
 #include "../include/iocomp.h"
 
-void adioswrite(double* iodata, struct iocomp_params *iocompParams)
+void adioswrite(double* iodata, struct iocomp_params *iocompParams, int windowNum)
 {   
 	/* 
 	 * Assert tests to check for negative values 
@@ -31,7 +31,7 @@ void adioswrite(double* iodata, struct iocomp_params *iocompParams)
 #endif
 	}
 
-	adios2_engine *engine = adios2_open(iocompParams->io, iocompParams->writeFile, adios2_mode_write);
+	adios2_engine *engine = adios2_open(iocompParams->io, iocompParams->writeFile[windowNum], adios2_mode_write);
 #ifndef NDEBUG
 	printf("adios2Write->engine opened \n");
 #endif

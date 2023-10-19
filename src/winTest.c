@@ -1,17 +1,14 @@
 #include "../include/iocomp.h"
-void winTest(struct iocomp_params *iocompParams, int i) 
+void winTest(struct iocomp_params *iocompParams, int windowNum) 
 {
-	int ierr = MPI_Win_test(iocompParams->winMap[i], &iocompParams->flag[i]); 
+	int ierr = MPI_Win_test(iocompParams->winMap[windowNum], &iocompParams->flag[windowNum]); 
 	mpi_error_check(ierr);
-#ifndef NDEBUG 
-	fprintf(iocompParams->debug, "ioServerShared->window:%i after win test with flag:%i\n",i, iocompParams->flag[i]); 
-#endif 
 	// if window is available to print then print and end timer 
-	if(iocompParams->flag[i])
+	if(iocompParams->flag[windowNum])
 	{
 #ifndef NDEBUG 
-		fprintf(iocompParams->debug, "ioServerShared->window:%i flag positive value:%i \n",i, iocompParams->flag[i]); 
-#endif
-		ioLibraries(iocompParams->array[i], iocompParams); 
+		fprintf(iocompParams->debug, "ioServerShared->window:%i after win test with flag:%i\n",windowNum, iocompParams->flag[windowNum]); 
+#endif 
+		ioLibraries(iocompParams->array[windowNum], iocompParams, windowNum); 
 	}
 }
