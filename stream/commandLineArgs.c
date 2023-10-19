@@ -9,6 +9,7 @@ void commandLineArgs(struct stream_params* streamParams, int argc, char** argv)
 	// default arguments 
 	streamParams->HT_flag = 0; 
 	streamParams->sharedFlag = 0;  
+	streamParams->testFlag = 0;  
 	streamParams->nx = 10; 
 	streamParams->ny = 10; 
 	streamParams->io = 0; 
@@ -35,6 +36,10 @@ void commandLineArgs(struct stream_params* streamParams, int argc, char** argv)
 		else if(strcmp(argv[i], "--shared") == 0) 
 		{
 			streamParams->sharedFlag = 1;  
+		}
+		else if(strcmp(argv[i], "--test") == 0) 
+		{
+			streamParams->testFlag = 1;  
 		}
 	}
 }

@@ -3,8 +3,8 @@
 
 #define NDIM 2  // power to size
 #define KERNELS 4
-// #define AVGLOOPCOUNT 1 // number of average cycles 
-// #define COMPLOOPCOUNT 1 // number of compute cycles per each averaging cycle 
+#define AVGLOOPCOUNT 1 // number of average cycles 
+#define COMPLOOPCOUNT 1 // number of compute cycles per each averaging cycle 
 #define WRITE_FREQ 1 // frequency of writing 
 #define TEST_FREQ 11 // frequency of MPI tests 
 #define COPY		0
@@ -43,7 +43,7 @@ struct stream_params{
 	int writeFreq; // compute steps per writing
 	int numWrites; // max number of writes  
 	// command line args 
-	int HT_flag, sharedFlag; 
+	int HT_flag, sharedFlag, testFlag; 
 	int nx, ny, io; 
 }; 
 extern struct stream_params streamParams; 
@@ -78,5 +78,8 @@ void averages(struct stream_params* streamParams);
 double timer_start(int computeRank); 
 double timer_end(double timerStart, int computeRank ); 
 
+// verification 
+int verify(struct iocomp_params *iocompParams, struct stream_params* streamParams); 
+int valueCheck(struct iocomp_params *iocompParams, double* iodata_test, double val, char* filename); 
 // command line
 void commandLineArgs(struct stream_params* streamParams, int argc, char** argv); 

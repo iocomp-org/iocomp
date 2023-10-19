@@ -146,7 +146,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		add(iocompParams, streamParams, iter, c, a, b);
 		add_send(iocompParams, streamParams, iter, c);
 
-
 		/*
 		 * WAIT(A)
 		 * TRIAD(A)
