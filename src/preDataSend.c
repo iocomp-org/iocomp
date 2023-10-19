@@ -38,11 +38,14 @@ void preDataSend(struct iocomp_params *iocompParams, double* array, char* fileNa
 			if(iocompParams->array[i] == array)
 			{
 				/*
-				 * Send file name from Comp server to I/O server before win start
+				 * Send file name from Comp server to I/O server before win start, send
+				 * size + 1 for end character 
 				 */ 
-				int ierr = MPI_Send(fileName, strlen(fileName), MPI_CHAR, 1, 0, iocompParams->newComm);  
+				int ierr = MPI_Send(fileName, ((int)strlen(fileName)+1), MPI_CHAR, 1, 0, iocompParams->newComm);  
 				mpi_error_check(ierr); 
-				printf("file name sent %s\n", fileName); 
+#ifndef NDEBUG 
+				fprintf(iocompParams->debug, "file name sent %s with length %i\n", fileName, ((int)strlen(fileName)+1)) ; 
+#endif 
 
 				// match array with windows and issue win complete 
 #ifndef NDEBUG 

@@ -41,11 +41,11 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	/* 
 	 * Initialise pointers with size of num win 
 	 */ 
-	iocompParams->wintestflags = malloc(iocompParams->numWin*sizeof(int)); 
-	iocompParams->winMap = malloc(iocompParams->numWin*sizeof(int)); 
-	iocompParams->flag = malloc(iocompParams->numWin*sizeof(int)); 
-	iocompParams->array = malloc(iocompParams->numWin*sizeof(double*)); 
-	iocompParams->writeFile = malloc(iocompParams->numWin*sizeof(char*)); 
+	iocompParams->wintestflags = (int*)malloc(iocompParams->numWin*sizeof(int)); 
+	iocompParams->winMap =(int*)malloc(iocompParams->numWin*sizeof(int)); 
+	iocompParams->flag = (int*)malloc(iocompParams->numWin*sizeof(int)); 
+	iocompParams->array = (double**)malloc(iocompParams->numWin*sizeof(double*)); 
+	iocompParams->writeFile = (char**)malloc(iocompParams->numWin*sizeof(char*)); 
 
 	/*
 	 * If the shared flag is on and process is ioserver then ioServer initialises
@@ -95,6 +95,8 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #ifndef NDEBUG 
 			fprintf(iocompParams->debug, "iocompInit-> after MPI finalize \n"); 
 #endif 
+		  free(iocompParams->writeFile); 
+		  iocompParams->writeFile = NULL; 
 			exit(0); 
 		}
 		else
