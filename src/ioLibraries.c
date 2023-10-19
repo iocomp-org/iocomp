@@ -3,6 +3,7 @@
 #include <mpi.h>
 #include <math.h>
 #include <sys/time.h>
+#include <string.h>
 #include "../include/iocomp.h"
 
 /*
@@ -27,6 +28,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 			double timerStart; 
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
+			strcat(iocompParams->writeFile, ".dat"); 
 			mpiiowrite(iodata, iocompParams);
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(iocompParams->ioServerComm);
@@ -38,6 +40,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
+			strcat(iocompParams->writeFile, ".h5"); 
 			phdf5write(iodata, iocompParams);
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(iocompParams->ioServerComm);
@@ -54,6 +57,11 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams)
 #ifdef IOCOMP_TIMERS
 			if (!ioRank) {timerStart = MPI_Wtime();} 
 #endif 
+			// adios2 calling hdf5 writes to a file with h5 extension 
+			if(iocompParams->ioLibNum==2)
+			{
+				strcat(iocompParams->writeFile, ".h5"); 
+			}
 			adioswrite(iodata, iocompParams);
 #ifdef IOCOMP_TIMERS
 			MPI_Barrier(iocompParams->ioServerComm);

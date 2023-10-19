@@ -13,7 +13,7 @@
 
 void ioServer_shared(struct iocomp_params *iocompParams)
 {
-
+	
 	// initialise IO Params structure 
 	iocompParams->ioComm = iocompParams->ioServerComm; 
 	int ioRank, ierr; 
@@ -55,6 +55,9 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	{
 		iocompParams->flag[i] = -1; 
 	} 
+#ifndef NDEBUG 
+	fprintf(iocompParams->debug, "ioServer->flag initialised with -1\n"); 
+#endif 
 
 	for(;;)  
 	{
@@ -93,8 +96,8 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 				 */ 
 				if(iocompParams->wintestflags[i]==WIN_ACTIVATE)  
 				{
+					getFileName(iocompParams, i); 
 					winPost(iocompParams, i); 
-					MPI_Recv(&iocompParams->writeFile, 100, MPI_CHAR, 0, 0, iocompParams->newComm, MPI_STATUS_IGNORE); 
 					winTest(iocompParams, i); 
 				} 
 			}

@@ -7,17 +7,17 @@ void mpiRead(struct iocomp_params *iocompParams, double* iodata_test)
 {
 	FILE *fp;
 	size_t num; 
-	fp = fopen(iocompParams->FILENAMES[iocompParams->ioLibNum],"r");
+	fp = fopen(iocompParams->writeFile,"r");
 	int ioRank; 
 	int ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 	mpi_error_check(ierr); 
 
 	if (fp==NULL)
 	{
-		printf("Error: file %s not opening. Exiting \n", iocompParams->FILENAMES[iocompParams->ioLibNum]); 
+		printf("Error: file %s not opening. Exiting \n", iocompParams->writeFile); 
 		mpi_error_check(1); 
 	}
-	printf("file %s open \n", iocompParams->FILENAMES[iocompParams->ioLibNum]); 
+	printf("file %s open \n", iocompParams->writeFile); 
 	num = fread(iodata_test, sizeof(double), iocompParams->globalDataSize, fp);
 	printf("fread \n"); 
 	if(num!=iocompParams->globalDataSize)

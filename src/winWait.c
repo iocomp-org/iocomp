@@ -1,5 +1,5 @@
 #include "../include/iocomp.h"
-void winWait(struct iocomp_params *iocompParams, int i)
+void winWait(struct iocomp_params *iocompParams, int windowNum)
 {
 #ifndef NDEBUG 
 	fprintf(iocompParams->debug, "ioServer window:%i flag value:%i before win wait implemented\n", i, iocompParams->flag[i]); 

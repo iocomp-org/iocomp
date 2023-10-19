@@ -17,6 +17,6 @@ int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW
 void deleteFiles(struct iocomp_params* iocompParams)
 {
 	int ierr; 
-	ierr = nftw(iocompParams->FILENAMES[iocompParams->ioLibNum], unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
+	ierr = nftw(iocompParams->writeFile, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
 	mpi_error_check(ierr); 
 } 

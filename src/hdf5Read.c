@@ -17,7 +17,7 @@ void hdf5Read(struct iocomp_params *iocompParams, double* iodata_test)
 	herr_t status;
 
 	/* Open an existing file. */
-	file_id = H5Fopen(iocompParams->FILENAMES[iocompParams->ioLibNum], H5F_ACC_RDWR, H5P_DEFAULT);
+	file_id = H5Fopen(iocompParams->writeFile, H5F_ACC_RDWR, H5P_DEFAULT);
 
 	/* Open an existing dataset. */
 	dataset_id = H5Dopen2(file_id, DATASETNAME, H5P_DEFAULT);

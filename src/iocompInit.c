@@ -45,6 +45,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	iocompParams->winMap = malloc(iocompParams->numWin*sizeof(int)); 
 	iocompParams->flag = malloc(iocompParams->numWin*sizeof(int)); 
 	iocompParams->array = malloc(iocompParams->numWin*sizeof(double*)); 
+	iocompParams->writeFile = malloc(iocompParams->numWin*sizeof(char*)); 
 
 	/*
 	 * If the shared flag is on and process is ioserver then ioServer initialises

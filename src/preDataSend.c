@@ -1,7 +1,7 @@
 #include "../include/iocomp.h"
 #include "assert.h" 
 
-void preDataSend(struct iocomp_params *iocompParams, double* array)
+void preDataSend(struct iocomp_params *iocompParams, double* array, char* fileName)
 {
 
 	if(iocompParams->sharedFlag)
@@ -25,10 +25,6 @@ void preDataSend(struct iocomp_params *iocompParams, double* array)
 
 		// broadcast them to ioserver 
 		MPI_Bcast( iocompParams->wintestflags, iocompParams->numWin, MPI_INT, 0, iocompParams->newComm); 
-		/*
-		 * Send file name from Comp server to I/O server before win start
-		 */ 
-		ierr = MPI_Isend(fileName, 100, MPI_CHAR, 0, 0, iocompParams->newComm, MPI_STATUS_IGNORE);  
 
 #ifndef NDEBUG 
 		fprintf(iocompParams->debug, "preDataSend -> After MPI broadcast  \n"); 
@@ -39,11 +35,18 @@ void preDataSend(struct iocomp_params *iocompParams, double* array)
 		{
 			if(iocompParams->array[i] == array)
 			{
+				/*
+				 * Send file name from Comp server to I/O server before win start
+				 */ 
+				int ierr = MPI_Send(fileName, 100, MPI_CHAR, 1, 0, iocompParams->newComm);  
+				mpi_error_check(ierr); 
+				printf("file name sent  %s \n", fileName); 
+
 				// match array with windows and issue win complete 
 #ifndef NDEBUG 
 				fprintf(iocompParams->debug, "preDataSend-> Before mpi win start for window %i \n", i); 
 #endif 
-				int ierr = MPI_Win_start(iocompParams->group, 0, iocompParams->winMap[i]); 
+				ierr = MPI_Win_start(iocompParams->group, 0, iocompParams->winMap[i]); 
 				mpi_error_check(ierr); 
 #ifndef NDEBUG 
 				fprintf(iocompParams->debug, "preDataSend-> After mpi win start for window %i \n", i); 

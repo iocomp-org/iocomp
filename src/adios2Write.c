@@ -31,7 +31,7 @@ void adioswrite(double* iodata, struct iocomp_params *iocompParams)
 #endif
 	}
 
-	adios2_engine *engine = adios2_open(iocompParams->io, iocompParams->FILENAMES[iocompParams->ioLibNum], adios2_mode_write);
+	adios2_engine *engine = adios2_open(iocompParams->io, iocompParams->writeFile, adios2_mode_write);
 #ifndef NDEBUG
 	printf("adios2Write->engine opened \n");
 #endif
