@@ -171,7 +171,7 @@ extern "C" {
 	 * IO libraries write and read files 
 	 */ 
 	void mpiiowrite(double* iodata, struct iocomp_params *iocompParams, int windowNum);  
-	void mpiRead(struct iocomp_params *iocompParams, double* iodata_test, char* fileName); 
+	void mpiRead(double *readData, char* FILENAME, struct iocomp_params *iocompParams); 
 	void readBack(struct iocomp_params *iocompParams);  
 #ifndef NOHDF5 
 	void phdf5write(double* iodata, struct iocomp_params *iocompParams, int windowNum);  
