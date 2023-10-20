@@ -85,7 +85,7 @@ void ioServer(struct iocomp_params *iocompParams)
 			MPI_Barrier(iocompParams->ioServerComm); // wait for all files to finish writing  
 			if(ioRank == 0)
 			{
-				deleteFiles(iocompParams); // delete files 
+				deleteFiles(iocompParams, -1); // delete files 
 			} 
 #endif
 			break; 

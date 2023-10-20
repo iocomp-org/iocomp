@@ -80,7 +80,7 @@ void stopSend(struct iocomp_params *iocompParams)
 		MPI_Barrier(iocompParams->compServerComm); 
 		if(compRank == 0)
 		{
-			deleteFiles(iocompParams); // delete files 
+			deleteFiles(iocompParams, -1); // delete files 
 		} 
 #endif
 	}

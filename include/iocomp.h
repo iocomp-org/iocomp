@@ -176,6 +176,7 @@ extern "C" {
 #ifndef NOHDF5 
 	void phdf5write(double* iodata, struct iocomp_params *iocompParams, int windowNum);  
 	void hdf5Read(struct iocomp_params *iocompParams, double* iodata_test, char* fileName); 
+	void phdf5Read(double *readData, char* fileName, struct iocomp_params *iocompParams); 
 #endif 
 #ifndef NOADIOS2
 	void adioswrite(double* iodata, struct iocomp_params *iocompParams, int windowNum); 
