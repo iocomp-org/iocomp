@@ -12,6 +12,8 @@
 #define ADD			2
 #define TRIAD		3
 #define NODESIZE 128
+#define CONSTANT 5
+#define NUMWIN 3 
 
 
 // number of iterations for averaging the stream tests 
@@ -79,7 +81,7 @@ double timer_start(int computeRank);
 double timer_end(double timerStart, int computeRank ); 
 
 // verification 
-int verify(struct iocomp_params *iocompParams, struct stream_params* streamParams); 
+void verify(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm); 
 int valueCheck(struct iocomp_params *iocompParams, double* iodata_test, double val, char* filename); 
 // command line
 void commandLineArgs(struct stream_params* streamParams, int argc, char** argv); 

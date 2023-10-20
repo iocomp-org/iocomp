@@ -6,7 +6,6 @@
 #include "stream.h"
 #include "getopt.h"
 
-#define NUMWIN 3 
 
 int main(int argc, char** argv)
 {

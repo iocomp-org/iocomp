@@ -4,7 +4,6 @@
 #include "stdio.h"
 #include "mpi.h"
 #include "stream.h"
-#define constant 3.0 
 
 void triad(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* c, double* a, double* b )
 {
@@ -17,7 +16,7 @@ void triad(struct iocomp_params *iocompParams, struct stream_params* streamParam
 	{
 		for(int i = 0; i< streamParams->localDataSize; i++) // triad kernel 
 		{
-			a[i] = b[i] + c[i] * constant;  
+			a[i] = b[i] + c[i] * CONSTANT;  
 //#ifdef MPI_TESTS
 //			if(iter%WRITE_FREQ == 0) // only when scale sends data 
 //			{
