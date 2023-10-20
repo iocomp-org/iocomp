@@ -84,7 +84,11 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	 */ 
 	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
 	{
+#if ADIOS2_USE_MPI
 		iocompParams->adios = adios2_init_config_mpi(config_file, iocompParams->cartcomm); 
+#else 
+		iocompParams->adios = adios2_init();  
+#endif 
 		iocompParams->io = adios2_declare_io(iocompParams->adios, 
 				iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler declaration
 #ifndef NDEBUG
