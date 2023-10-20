@@ -16,24 +16,24 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 	MPI_Comm_rank(comm, &myRank); 
 
 	/* 
-	* for simplicity initialise IO communicator with the compute communicator 
-	* Initialise cartesian comm
-	* Initiliase array offset and dimensions 
-	*/ 
+	 * for simplicity initialise IO communicator with the compute communicator 
+	 * Initialise cartesian comm
+	 * Initiliase array offset and dimensions 
+	 */ 
 	iocompParams->ioServerComm = comm;
 	ioServerInitialise(iocompParams);
 	arrayParamsInit(iocompParams, comm); 
 
 	// adios2 initialise object and i/o variable 
-//	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
-//	{
-//#if ADIOS2_USE_MPI
-//		iocompParams->adios_read = adios2_init_config_mpi(CONFIG_FILE_ADIOS2, iocompParams->cartcomm);  
-//#else 
-//		iocompParams->adios_read = adios2_init();  
-//#endif 
-//		adios2_set_engine(iocompParams->io,ioParams->ADIOS2_IOENGINES[ioParams->ioLibNum-2]); 
-//	} 
+	//	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
+	//	{
+	//#if ADIOS2_USE_MPI
+	//		iocompParams->adios_read = adios2_init_config_mpi(CONFIG_FILE_ADIOS2, iocompParams->cartcomm);  
+	//#else 
+	//		iocompParams->adios_read = adios2_init();  
+	//#endif 
+	//		adios2_set_engine(iocompParams->io,ioParams->ADIOS2_IOENGINES[ioParams->ioLibNum-2]); 
+	//	} 
 
 	double a , b, c, val; 
 
@@ -62,7 +62,7 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 #ifndef NDEBUG
 		fprintf(iocompParams->debug, "a[%i] = %lf, b[%i] = %lf, c[%i] = %lf \n", iter, a, iter, b, iter, c); 
 #endif 
-		
+
 		// read data from the different windows; 
 		// b, c, a is the order of windows 
 		for(int windowNum = 0; windowNum < NUMWIN; windowNum++)
@@ -82,19 +82,19 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 				printf("filename %s \n", readFile[windowNum]); 
 				phdf5Read(readData, readFile[windowNum], iocompParams); 
 			} 
-	//		else if( (streamParams->io == 2) || (streamParams->io == 3) || (streamParams->io == 4))
-	//		{
-	//			if(streamParams->io == 2)
-	//			{
-	//				snprintf(readFile[windowNum], sizeof(readFile[i]), "%s_%i.h5", windowName[windowNum], iter);
-	//			}
-	//			else
-	//			{
-	//				snprintf(readFile[windowNum], sizeof(readFile[i]), "%s_%i", windowName[windowNum], iter);
-	//			} 
-	//			adios2Read(readData, FILENAME, iocompParams); 
-	//		} 
-			
+			else if( (streamParams->io == 2) || (streamParams->io == 3) || (streamParams->io == 4))
+			{
+				if(streamParams->io == 2)
+				{
+					snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "%s_%i.h5", windowName[windowNum], iter);
+				}
+				else
+				{
+					snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "%s_%i", windowName[windowNum], iter);
+				} 
+				adios2Read(readData, readFile[windowNum], iocompParams); 
+			} 
+
 			// obtain value from the window numbers
 			if(windowNum == 0)
 			{

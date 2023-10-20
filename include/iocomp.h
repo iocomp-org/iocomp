@@ -180,7 +180,7 @@ extern "C" {
 #endif 
 #ifndef NOADIOS2
 	void adioswrite(double* iodata, struct iocomp_params *iocompParams, int windowNum); 
-	void adios2Read(struct iocomp_params *iocompParams, double* iodata_test, char* fileName); 
+	void adios2Read(double* iodata, char* FILENAME, struct iocomp_params *iocompParams); 
 #endif 
 
 	// Shared memory additions 
