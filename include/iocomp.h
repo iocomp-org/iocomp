@@ -144,7 +144,8 @@ extern "C" {
 
 	void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowNum); 
 	void timing_int(double time_diff, double global_data_size, int irep, int MAXLOOP_AVGIO, int local_n, char* filename, MPI_Comm comm);
-	void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize); // function to send data using MPI_Isend 
+	// void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize); // function to send data using MPI_Isend 
+	void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize, char* fileName); 
 	void ioServer(struct iocomp_params *iocompParams); 
 	int getPair(struct iocomp_params *iocompParams); 
 	void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);
@@ -156,7 +157,7 @@ extern "C" {
 	void ioServerInitialise(struct iocomp_params *iocompParams); // initialise ioServer if ioProcessor 
 	void testData(struct iocomp_params *iocompParams, int testFlag); // test data structures with flag to switch on/off  
 	void stopSend(struct iocomp_params *iocompParams); // ghost send function that signals MPI_Sends are stopping
-	void dataWait(struct iocomp_params *iocompParams, MPI_Request *request, double* array); // wrapper function to implement waiting of data IF HT flag is activated 
+	void dataWait(struct iocomp_params *iocompParams,MPI_Request *request, double* array, char* fileName); 
 	int dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request, double* array); // wrapper function to implement testing of send data IF HT flag is on 
 
 	// checks 
@@ -166,6 +167,7 @@ extern "C" {
 	// delete files and directories  
 	// int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf); 
 	void deleteFiles(struct iocomp_params* iocompParams, int windowNum); 
+	void sendFileName(struct iocomp_params *iocompParams, char* fileName); 
 
 	/*
 	 * IO libraries write and read files 
