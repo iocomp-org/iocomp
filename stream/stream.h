@@ -45,7 +45,7 @@ struct stream_params{
 	int writeFreq; // compute steps per writing
 	int numWrites; // max number of writes  
 	// command line args 
-	int HT_flag, sharedFlag, testFlag; 
+	bool HT_flag, sharedFlag, testFlag; 
 	int nx, ny, io; 
 }; 
 extern struct stream_params streamParams; 

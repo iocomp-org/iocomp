@@ -19,7 +19,7 @@ void commandLineArgs(struct stream_params* streamParams, int argc, char** argv)
 	{
 		if(strcmp(argv[i], "--HT") == 0) 
 		{
-			streamParams->HT_flag = 1; 
+			streamParams->HT_flag = true; 
 		} 
 		else if(strcmp(argv[i], "--nx") == 0) 
 		{
@@ -35,7 +35,7 @@ void commandLineArgs(struct stream_params* streamParams, int argc, char** argv)
 		}
 		else if(strcmp(argv[i], "--shared") == 0) 
 		{
-			streamParams->sharedFlag = 1;  
+			streamParams->sharedFlag = true;  
 		}
 		else if(strcmp(argv[i], "--test") == 0) 
 		{
