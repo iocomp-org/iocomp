@@ -51,7 +51,7 @@ void add_send(struct iocomp_params *iocompParams, struct stream_params* streamPa
 	// wait for data from ADD(C) to be sent
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
-	dataSend(c,iocompParams, &streamParams->requestArray[ADD],streamParams->localDataSize,"ADD" ); // send data off using dataSend
+	dataSend(c,iocompParams, &streamParams->requestArray[ADD],streamParams->localDataSize); // send data off using dataSend
 	streamParams->sendTimer[ADD][iter] = MPI_Wtime() - timerStart; // wait time for ADD
 #ifndef NDEBUG
 //	printf("stream -> ADD send finished with these values\n"); 

@@ -59,7 +59,6 @@ int main(int argc, char** argv)
 #endif
 	int computeRank;
 	MPI_Comm_rank(computeComm, &computeRank); 
-	printf("stream->After iocompInit\n");
 
 	/*
 	 * initialises the local array sizes 

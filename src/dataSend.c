@@ -6,7 +6,7 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
-void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize, char* fileName)
+void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize)
 {
 
 	int ierr; 
@@ -17,8 +17,6 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 	mpi_error_check(ierr); 
 
 	iocompParams->localDataSize = localDataSize; // assign size of local array 
-
-	printf("datasending filename %s \n", fileName); // DELETE FILENAME stuff. Not needed.  
 
 	if(iocompParams->hyperthreadFlag) // check if flag is true? 
 	{

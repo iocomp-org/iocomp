@@ -49,7 +49,7 @@ void triad_send(struct iocomp_params *iocompParams, struct stream_params* stream
 #endif
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
-	dataSend(a,iocompParams, &streamParams->requestArray[TRIAD],streamParams->localDataSize, "TRIAD"); // send data off using dataSend
+	dataSend(a,iocompParams, &streamParams->requestArray[TRIAD],streamParams->localDataSize); // send data off using dataSend
 	streamParams->sendTimer[TRIAD][iter] = MPI_Wtime() - timerStart; // wait time for ADD
 #ifndef NDEBUG
 //	fprintf(iocompParams->debug,"stream -> TRIAD send finished\n"); 
