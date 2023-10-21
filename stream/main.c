@@ -49,7 +49,6 @@ int main(int argc, char** argv)
 		} 
 	} 
 
-
 	/*
 	 * iocomp - iocompInit initialises the ioServer 
 	 * and initialises the compute comm 
@@ -93,9 +92,8 @@ int main(int argc, char** argv)
 	 * writes results to csv file 
 	 * else if HT flag is off, then 0 of global rank 
 	 * writes results to csv file 
+	 * reduce results across computeComm and get max timers
 	 */ 
-
-	// reduce results across computeComm and get max timers
 	reduceResults(&streamParams, computeComm); 
 
 	if(computeRank == 0)
