@@ -28,7 +28,7 @@ void add(struct iocomp_params *iocompParams, struct stream_params* streamParams,
 	streamParams->compTimer[ADD][iter] = MPI_Wtime() - timerStart;  // computeTime for ADD 
 }
 
-void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* array)
+void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* array, char* fileWrite)
 {
 #ifndef NDEBUG
 	fprintf(iocompParams->debug,"stream -> ADD wait\n"); 
@@ -36,7 +36,7 @@ void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamPa
 	// wait for data from ADD(C) to be sent
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
-	dataWait(iocompParams,&streamParams->requestArray[ADD], array);
+	dataWait(iocompParams,&streamParams->requestArray[ADD], array, fileWrite);
 	streamParams->waitTimer[ADD][iter] = MPI_Wtime() - timerStart; // wait time for ADD
 #ifndef NDEBUG
 	fprintf(iocompParams->debug,"stream -> ADD finished\n"); 
@@ -51,7 +51,7 @@ void add_send(struct iocomp_params *iocompParams, struct stream_params* streamPa
 	// wait for data from ADD(C) to be sent
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
-	dataSend(c,iocompParams, &streamParams->requestArray[ADD],streamParams->localDataSize); // send data off using dataSend
+	dataSend(c,iocompParams, &streamParams->requestArray[ADD],streamParams->localDataSize,"ADD" ); // send data off using dataSend
 	streamParams->sendTimer[ADD][iter] = MPI_Wtime() - timerStart; // wait time for ADD
 #ifndef NDEBUG
 //	printf("stream -> ADD send finished with these values\n"); 

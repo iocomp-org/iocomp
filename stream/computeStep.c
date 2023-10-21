@@ -28,6 +28,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	 * otherwise return the malloced arrays with localDataSize 
 	 */ 
 	winInits(iocompParams, streamParams->localDataSize); 
+	MPI_Barrier(MPI_COMM_WORLD); 
 
 	a = iocompParams->array[2];
 	c = iocompParams->array[1];
@@ -107,9 +108,10 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * SCALE(B) 
 		 * SEND(B)
 		 */ 
+		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter);
 		if(iter > 0)
 		{
-			scale_wait(iocompParams, streamParams, iter, b); 
+			scale_wait(iocompParams, streamParams, iter, b, fileWrite); 
 			winActivateInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
 			winTestInfo(iocompParams, a); 
@@ -118,19 +120,20 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		{
 			winActivateInfo(iocompParams, b); 
 		}
-		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter);
 		preDataSend(iocompParams, b, fileWrite); 
 		scale(iocompParams, streamParams, iter, c, b);
 		scale_send(iocompParams, streamParams, iter, b);
+		printf("SCALE \n"); 
 
 		/*
 		 * WAIT(C) 
 		 * ADD(C)
 		 * SEND(C) 
 		 */ 
+		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter);
 		if(iter > 0)
 		{
-			add_wait(iocompParams, streamParams, iter, c); 
+			add_wait(iocompParams, streamParams, iter, c, fileWrite); 
 			winActivateInfo(iocompParams, c); 
 			winTestInfo(iocompParams, a); 
 			winTestInfo(iocompParams, b); 
@@ -140,20 +143,20 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 			winActivateInfo(iocompParams, c); 
 			winTestInfo(iocompParams, b); 
 		}
-
-		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter);
 		preDataSend(iocompParams, c, fileWrite); 
 		add(iocompParams, streamParams, iter, c, a, b);
 		add_send(iocompParams, streamParams, iter, c);
+		printf("ADD \n"); 
 
 		/*
 		 * WAIT(A)
 		 * TRIAD(A)
 		 * SEND(A)
 		 */ 
+		snprintf(fileWrite, sizeof(fileWrite), "A_%i",iter);
 		if(iter > 0)
 		{
-			triad_wait(iocompParams, streamParams, iter, a); 
+			triad_wait(iocompParams, streamParams, iter, a, fileWrite); 
 			winActivateInfo(iocompParams, a); 
 			winTestInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
@@ -164,11 +167,10 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 			winTestInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
 		}
-
-		snprintf(fileWrite, sizeof(fileWrite), "A_%i",iter);
 		preDataSend(iocompParams, a, fileWrite); 
 		triad(iocompParams, streamParams, iter, c, a, b);
 		triad_send(iocompParams, streamParams, iter, a);
+		printf("TRIAD \n"); 
 
 	} // end avg loop 
 #ifndef NDEBUG
@@ -177,15 +179,18 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 
 	if(streamParams->HT_flag)
 	{
-		scale_wait(iocompParams, streamParams, iter, b); 
-		add_wait(iocompParams, streamParams, iter, c); 
-		triad_wait(iocompParams, streamParams, iter, a); 
+		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter);
+		scale_wait(iocompParams, streamParams, iter, b, fileWrite); 
+		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter);
+		add_wait(iocompParams, streamParams, iter, c, fileWrite); 
+		snprintf(fileWrite, sizeof(fileWrite), "A_%i",iter);
+		triad_wait(iocompParams, streamParams, iter, a, fileWrite); 
 	} 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs and post win free for shared windows 
 #ifndef NDEBUG
 	fprintf(iocompParams->debug, "stream->data send complete\n");
 #endif
-	
+
 	winFinalise(iocompParams); // finalise arrays 
 	wallTime_end = MPI_Wtime(); 
 	assert(wallTime_end!=wallTime_start); 

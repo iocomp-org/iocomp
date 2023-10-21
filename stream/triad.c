@@ -28,14 +28,14 @@ void triad(struct iocomp_params *iocompParams, struct stream_params* streamParam
 	streamParams->compTimer[TRIAD][iter] = MPI_Wtime() - timerStart;  // computeTime for TRIAD 
 }
 
-void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* array)
+void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* array, char* fileWrite)
 {
 #ifndef NDEBUG
 	fprintf(iocompParams->debug,"stream -> TRIAD wait starts \n"); 
 #endif
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
-	dataWait(iocompParams,&streamParams->requestArray[TRIAD], array);
+	dataWait(iocompParams,&streamParams->requestArray[TRIAD], array, fileWrite);
 	streamParams->waitTimer[TRIAD][iter] = MPI_Wtime() - timerStart; // wait time for TRIAD
 #ifndef NDEBUG
 	fprintf(iocompParams->debug,"stream -> TRIAD wait end \n"); 
@@ -49,7 +49,7 @@ void triad_send(struct iocomp_params *iocompParams, struct stream_params* stream
 #endif
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
-	dataSend(a,iocompParams, &streamParams->requestArray[TRIAD],streamParams->localDataSize); // send data off using dataSend
+	dataSend(a,iocompParams, &streamParams->requestArray[TRIAD],streamParams->localDataSize, "TRIAD"); // send data off using dataSend
 	streamParams->sendTimer[TRIAD][iter] = MPI_Wtime() - timerStart; // wait time for ADD
 #ifndef NDEBUG
 //	fprintf(iocompParams->debug,"stream -> TRIAD send finished\n"); 

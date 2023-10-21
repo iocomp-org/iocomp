@@ -60,6 +60,7 @@ int main(int argc, char** argv)
 #endif
 	int computeRank;
 	MPI_Comm_rank(computeComm, &computeRank); 
+	printf("stream->After iocompInit\n");
 
 	/*
 	 * initialises the local array sizes 
@@ -69,7 +70,7 @@ int main(int argc, char** argv)
 #ifndef NDEBUG
 	fprintf(iocompParams.debug,"stream-> localdatasize initialised with %li \n", streamParams.localDataSize);
 #endif
-
+	
 	computeStep(&iocompParams, &streamParams, computeComm); // do compute 
 #ifndef NDEBUG
 	fprintf(iocompParams.debug,"stream-> after computeStep \n");

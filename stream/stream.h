@@ -55,10 +55,10 @@ void scale(struct iocomp_params *iocompParams, struct stream_params* streamParam
 void add(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a, double* b); 
 void triad(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a, double* b ); 
 // waiting functions 
-void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
-void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* b); 
-void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* array); 
-void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* array); 
+void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, char* fileWrite); 
+void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* b, char* fileWrite); 
+void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* array, char* fileWrite); 
+void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* array, char* fileWrite); 
 // sending functions 
 void copy_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c); 
 void scale_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* b); 

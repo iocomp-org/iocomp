@@ -28,14 +28,14 @@ void copy(struct iocomp_params *iocompParams, struct stream_params* streamParams
 	streamParams->compTimer[COPY][iter] = MPI_Wtime() - timerStart;  // computeTime for COPY 
 }
 
-void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k)
+void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, char* fileWrite)
 {
 #ifndef NDEBUG
 	fprintf(iocompParams->debug,"stream -> COPY wait starts \n"); 
 #endif
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
-	dataWait(iocompParams,&streamParams->requestArray[COPY]);
+	dataWait(iocompParams,&streamParams->requestArray[COPY], fileWrite);
 	streamParams->waitTimer[COPY][k] = MPI_Wtime() - timerStart; // wait time for COPY
 #ifndef NDEBUG
 	fprintf(iocompParams->debug,"stream -> COPY wait end \n"); 
@@ -51,7 +51,7 @@ void copy_send(struct iocomp_params *iocompParams, struct stream_params* streamP
 	// wait for data from ADD(C) to be sent
 	double timerStart = 0.0; 
 	timerStart = MPI_Wtime(); 
-	dataSend(c,iocompParams, &streamParams->requestArray[COPY],streamParams->localDataSize); // send data off using dataSend
+	dataSend(c,iocompParams, &streamParams->requestArray[COPY],streamParams->localDataSize, "COPY"); // send data off using dataSend
 	streamParams->sendTimer[COPY][k] = MPI_Wtime() - timerStart; // wait time for ADD
 #ifndef NDEBUG
 //	printf("stream -> COPY send finished with values\n"); 
