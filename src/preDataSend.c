@@ -5,7 +5,6 @@
 
 void preDataSend(struct iocomp_params *iocompParams, double* array, char* fileName)
 {
-
 	if(iocompParams->sharedFlag)
 	{
 #ifndef NDEBUG 
@@ -59,5 +58,41 @@ void preDataSend(struct iocomp_params *iocompParams, double* array, char* fileNa
 			}
 		}
 	}
+	else 
+	{
+		//		/*
+		//		 * First get the number of the array and then send the array 
+		//		 */ 
+		//		for(int i = 0; i < iocompParams->numWin; i++)
+		//		{
+		//			if(iocompParams->array[i] == array)
+		//			{
+		//				if(iocompParams->hyperthreadFlag)
+		//				{
+		//					/*
+		//					 * For HT version, with splitting, Send file name from Comp server 
+		//					 * to I/O server before win start, send size + 1 for end character. 
+		//					 */ 
+		//					int dest, tag; 
+		//					dest = getPair(iocompParams); // destination for sending data. 
+		//					int globalRank; 
+		//					ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank);
+		//					mpi_error_check(ierr); 
+		//					tag = globalRank ;
+		//#ifndef NDEBUG 
+		//					fprintf(iocompParams->debug, "preDataSend->Going to send filename to dest %i with tag %i\n", dest, tag) ; 
+		//#endif 
+		//					int ierr = MPI_Send(fileName, ((int)strlen(fileName)+1), MPI_CHAR, dest, tag, iocompParams->globalComm);  
+		//					mpi_error_check(ierr); 
+		//#ifndef NDEBUG 
+		//					fprintf(iocompParams->debug, "preDataSend->file name sent %s with length %i\n", fileName, ((int)strlen(fileName)+1)) ; 
+		//#endif 
+		//				} 
+		/*
+		 * For non splitting version, the library simply assigns the value to the
+		 * structure. 
+		 */ 
+		iocompParams->writeFile[0] = fileName; 
+	} 
 } 
 

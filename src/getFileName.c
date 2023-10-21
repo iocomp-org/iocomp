@@ -8,36 +8,78 @@
 
 void getFileName(struct iocomp_params *iocompParams, int i)
 {
-	MPI_Status status;
-	int size; 
-	int ierr; 
-
-	// Probe for an incoming message from I/O process
-	ierr = MPI_Probe(0, 0, iocompParams->newComm, &status);
-	mpi_error_check(ierr); 
 #ifndef NDEBUG 
-	fprintf(iocompParams->debug, "MPI probe \n"); 
-#endif 
-	
-	// When probe returns, get size of filename 
-	ierr = MPI_Get_count(&status, MPI_CHAR, &size);
-	mpi_error_check(ierr); 
-#ifndef NDEBUG 
-	fprintf(iocompParams->debug, "MPI get count with size %i\n", size); 
+		fprintf(iocompParams->debug, "getFileName -> entered \n"); 
 #endif 
 
-	// Allocate a pointer to the double pointer plus space for extensions  
-	iocompParams->writeFile[i] = (char*)malloc(sizeof(char) * (size + 5));
-	assert(iocompParams->writeFile[i]!=NULL); 
+	// only applicable for the splitting route 
+	if(iocompParams->hyperthreadFlag == 1 || iocompParams->sharedFlag == 1)  
+	{
+		MPI_Status status;
+		int size; 
+		int ierr; 
+		int source, tag; 
+		MPI_Comm comm; 	
 #ifndef NDEBUG 
-	fprintf(iocompParams->debug, "getFileName -> MPI write file malloced  \n");
+		fprintf(iocompParams->debug, "getFileName -> after if statement \n"); 
 #endif 
 
-	// Receive the filename message with the allocated buffer
-	ierr = MPI_Recv(iocompParams->writeFile[i], size, MPI_CHAR, 0, 0, iocompParams->newComm, MPI_STATUS_IGNORE); 
-	mpi_error_check(ierr); 
+		/*
+		 * ht flag operations and shared flag operation have different sources and
+		 * communicators.  
+		 */ 
+		if(iocompParams->hyperthreadFlag)
+		{
+			source = getPair(iocompParams); 
+			int globalRank; 
+			MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
+			// tag = globalRank; 
+			tag = 5; 
+			comm = iocompParams->globalComm; 
+		}
+		else
+		{
+			source = 0; 
+			tag = 0; 
+			comm = iocompParams->newComm; 
+		} 
+
+		// Probe for an incoming message from I/O process
 #ifndef NDEBUG 
-	fprintf(iocompParams->debug, "File name %s with size %i for window number %i \n", iocompParams->writeFile[i], size, i );
+		fprintf(iocompParams->debug, "getFileName -> before MPI probe \n"); 
 #endif 
+		ierr = MPI_Probe(source, tag, comm, &status);
+		mpi_error_check(ierr); 
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "getFileName -> MPI probe \n"); 
+#endif 
+
+		// When probe returns, get size of filename 
+		ierr = MPI_Get_count(&status, MPI_CHAR, &size);
+		mpi_error_check(ierr); 
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "getFileName -> MPI get count with size %i\n", size); 
+#endif 
+		
+		// if HT flag activated then only 1 write file is needed which will be sent
+		// to the IO libraries straight away 
+		if(iocompParams->hyperthreadFlag)
+		{
+			i = 0; 
+		}
+		// Allocate a pointer to the double pointer plus space for extensions 
+		iocompParams->writeFile[i] = (char*)malloc(sizeof(char) * (size + 10));
+		assert(iocompParams->writeFile[i]!=NULL); 
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "getFileName -> MPI write file malloced  \n");
+#endif 
+
+		// Receive the filename message with the allocated buffer
+		ierr = MPI_Recv(iocompParams->writeFile[i], size, MPI_CHAR, source, tag, comm, MPI_STATUS_IGNORE); 
+		mpi_error_check(ierr); 
+#ifndef NDEBUG 
+		fprintf(iocompParams->debug, "getFileName -> File name %s with size %i for window number %i \n", iocompParams->writeFile[i], size, i );
+#endif 
+	}
 } 
 

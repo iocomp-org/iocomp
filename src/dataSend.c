@@ -1,11 +1,12 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include "stdio.h"
 #include "mpi.h"
 #include "../include/iocomp.h"
 
-void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize)
+void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize, char* fileName)
 {
 
 	int ierr; 
@@ -16,6 +17,8 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 	mpi_error_check(ierr); 
 
 	iocompParams->localDataSize = localDataSize; // assign size of local array 
+
+	printf("datasending filename %s \n", fileName); // DELETE FILENAME stuff. Not needed.  
 
 	if(iocompParams->hyperthreadFlag) // check if flag is true? 
 	{
@@ -30,7 +33,7 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 
 #ifndef NDEBUG
 		fprintf(iocompParams->debug,"dataSend -> Sending data starts from compProcessor with globalRank %i\
-to ioProcessor with globalRank  %i  \n", globalRank, dest); 
+				to ioProcessor with globalRank  %i  \n", globalRank, dest); 
 #endif
 
 			ierr = MPI_Isend(data, iocompParams->localDataSize , MPI_DOUBLE, dest, tag,
@@ -69,9 +72,9 @@ to ioProcessor with globalRank  %i  \n", globalRank, dest);
 		}
 #ifndef NDEBUG
 		fprintf(iocompParams->debug,"dataSend -> Hyperthread flag deactivated, go to ioLibraries with\
-localDataSize %ld \n", localDataSize); 
+				localDataSize %ld \n", localDataSize); 
 #endif
-			ioLibraries(data,iocompParams, -1); // otherwise go straight to writing using ioLibraries 
+			ioLibraries(data,iocompParams, 0); // otherwise go straight to writing using ioLibraries 
 	}
 
 } 

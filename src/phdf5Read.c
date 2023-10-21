@@ -92,14 +92,6 @@ void phdf5Read(double *readData, char* fileName, struct iocomp_params *iocompPar
 		printf("ierr %i \n", ierr); 
 	} 
 
-#ifndef NDEBUG 
-	fprintf(iocompParams->debug,"File read data output\n"); 
-	for(int i = 0; i < iocompParams->localDataSize; i++)
-	{
-		fprintf(iocompParams->debug, "%lf, ", readData[i]); 
-	} 
-#endif 
-
 	/*
 	 * Close/release resources.
 	 */

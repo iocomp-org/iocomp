@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h> 
 #include "stdio.h"
 #include "mpi.h"
 #include "../include/iocomp.h"
@@ -18,6 +19,9 @@ void dataWait(struct iocomp_params *iocompParams,MPI_Request *request, double* a
 		// wait for the data to be sent from previous dataSend
 		int ierr = MPI_Wait(request, MPI_STATUS_IGNORE);  
 		mpi_error_check(ierr); 
+		
+		char fileName[10] = "Test"; 
+		sendFileName(iocompParams, fileName); 
 	}
 	else if(iocompParams->sharedFlag)
 	{
