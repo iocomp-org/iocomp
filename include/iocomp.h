@@ -145,7 +145,7 @@ extern "C" {
 	void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowNum); 
 	void timing_int(double time_diff, double global_data_size, int irep, int MAXLOOP_AVGIO, int local_n, char* filename, MPI_Comm comm);
 	// void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize); // function to send data using MPI_Isend 
-	void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize, char* fileName); 
+	void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize); 
 	void ioServer(struct iocomp_params *iocompParams); 
 	int getPair(struct iocomp_params *iocompParams); 
 	void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);

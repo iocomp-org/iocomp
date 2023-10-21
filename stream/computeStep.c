@@ -28,7 +28,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	 * otherwise return the malloced arrays with localDataSize 
 	 */ 
 	winInits(iocompParams, streamParams->localDataSize); 
-	MPI_Barrier(MPI_COMM_WORLD); 
 
 	a = iocompParams->array[2];
 	c = iocompParams->array[1];
@@ -123,7 +122,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		preDataSend(iocompParams, b, fileWrite); 
 		scale(iocompParams, streamParams, iter, c, b);
 		scale_send(iocompParams, streamParams, iter, b);
-		printf("SCALE \n"); 
 
 		/*
 		 * WAIT(C) 
@@ -146,7 +144,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		preDataSend(iocompParams, c, fileWrite); 
 		add(iocompParams, streamParams, iter, c, a, b);
 		add_send(iocompParams, streamParams, iter, c);
-		printf("ADD \n"); 
 
 		/*
 		 * WAIT(A)
@@ -170,7 +167,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		preDataSend(iocompParams, a, fileWrite); 
 		triad(iocompParams, streamParams, iter, c, a, b);
 		triad_send(iocompParams, streamParams, iter, a);
-		printf("TRIAD \n"); 
 
 	} // end avg loop 
 #ifndef NDEBUG
@@ -179,6 +175,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 
 	if(streamParams->HT_flag)
 	{
+		iter--; // iter has incremented value
 		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter);
 		scale_wait(iocompParams, streamParams, iter, b, fileWrite); 
 		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter);
