@@ -13,7 +13,7 @@ bar=$(IFS=, ; echo "${vals[*]}")
 #else 
 #srun  --hint=nomultithread  --distribution=block:block  --nodes=${SLURM_NNODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --HT --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
 #fi 
-srun ${EXE} --nx ${NX} --ny ${NY} --io ${IO} --shared > test.out 
+srun ${EXE} --nx ${NX} --ny ${NY} --io ${IO} --${FLAG} > test.out 
 
 echo "JOB ID"  $SLURM_JOBID >> test.out
 echo "JOB NAME" ${SLURM_JOB_NAME} >> test.out

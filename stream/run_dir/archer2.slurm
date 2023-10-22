@@ -18,7 +18,7 @@ module load gdb4hpc/4.14.6
 
 
 # different directories and their paths
-export IOCOMP_DIR=/work/e609/e609/shr203/opt/gnu/8.0.0/iocomp
+export IOCOMP_DIR=/work/e609/e609/shr203/opt/gnu/8.0.0/iocomp/2.0.0
 export LD_LIBRARY_PATH=${IOCOMP_DIR}/lib:${LD_LIBRARY_PATH} 
 export ADIOS2_DIR=/work/e609/e609/shr203/opt/gnu/8.0.0/ADIOS2
 export LD_LIBRARY_PATH=${ADIOS2_DIR}/lib64:${LD_LIBRARY_PATH} 
@@ -67,7 +67,7 @@ echo "Job started " $(date +"%T") "size " ${SIZE} MiB # start time
 
 for IO in $(seq ${IO_START} ${IO_END})
 do 
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}
+  export PARENT_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${FLAG}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}
 
   # Case 1 
   # source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
