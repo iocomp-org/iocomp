@@ -111,7 +111,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		if(iter > 0)
 		{
-			printf("file write before scale wait %s \n", fileWrite_SCALE); 
+			printf("SCALE file name %s \n", fileWrite_SCALE); 
 			scale_wait(iocompParams, streamParams, iter, b, fileWrite_SCALE); 
 			winActivateInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
@@ -133,7 +133,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		if(iter > 0)
 		{
-			printf("file write before add wait %s \n", fileWrite_ADD); 
+			printf("ADD file name %s \n", fileWrite_ADD); 
 			add_wait(iocompParams, streamParams, iter, c, fileWrite_ADD); 
 			winActivateInfo(iocompParams, c); 
 			winTestInfo(iocompParams, a); 
@@ -156,7 +156,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		if(iter > 0)
 		{
-			printf("file write before triad wait %s \n", fileWrite_TRIAD); 
+			printf("TRIAD file name %s \n", fileWrite_TRIAD); 
 			triad_wait(iocompParams, streamParams, iter, a, fileWrite_TRIAD); 
 			winActivateInfo(iocompParams, a); 
 			winTestInfo(iocompParams, b); 
@@ -180,15 +180,8 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 
 	if(streamParams->HT_flag)
 	{
-//		iter--; // iter has incremented value
-//		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter);
-//		printf("file write before scale wait %s \n", fileWrite); 
 		scale_wait(iocompParams, streamParams, iter, b, fileWrite_SCALE); 
-//		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter);
-//		printf("file write before add wait %s \n", fileWrite); 
 		add_wait(iocompParams, streamParams, iter, c, fileWrite_ADD); 
-//		snprintf(fileWrite, sizeof(fileWrite), "A_%i",iter);
-//		printf("file write before triad wait %s \n", fileWrite); 
 		triad_wait(iocompParams, streamParams, iter, a, fileWrite_TRIAD); 
 	} 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs and post win free for shared windows 
