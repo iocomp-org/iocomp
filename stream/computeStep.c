@@ -55,7 +55,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	wallTime_start = MPI_Wtime(); 
 
 	int myrank, mysize;  
-	char fileWrite[5] = ""; 
+	char fileWrite_ADD[10] = ""; 
+	char fileWrite_SCALE[10] = ""; 
+	char fileWrite_TRIAD[10] = ""; 
 	//MPI_Comm_rank(comm, &myrank); 
 	//MPI_Comm_size(comm, &mysize); 
 	//streamParams->globalDataSize = mysize * streamParams->localDataSize; 
@@ -107,11 +109,10 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * SCALE(B) 
 		 * SEND(B)
 		 */ 
-		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter-1);
 		if(iter > 0)
 		{
-			printf("file write before scale wait %s \n", fileWrite); 
-			scale_wait(iocompParams, streamParams, iter, b, fileWrite); 
+			printf("file write before scale wait %s \n", fileWrite_SCALE); 
+			scale_wait(iocompParams, streamParams, iter, b, fileWrite_SCALE); 
 			winActivateInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
 			winTestInfo(iocompParams, a); 
@@ -120,7 +121,8 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		{
 			winActivateInfo(iocompParams, b); 
 		}
-		preDataSend(iocompParams, b, fileWrite); 
+		snprintf(fileWrite_SCALE, sizeof(fileWrite_SCALE), "B_%i",iter);
+		preDataSend(iocompParams, b, fileWrite_SCALE); 
 		scale(iocompParams, streamParams, iter, c, b);
 		scale_send(iocompParams, streamParams, iter, b);
 
@@ -129,11 +131,10 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * ADD(C)
 		 * SEND(C) 
 		 */ 
-		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter-1);
 		if(iter > 0)
 		{
-			printf("file write before add wait %s \n", fileWrite); 
-			add_wait(iocompParams, streamParams, iter, c, fileWrite); 
+			printf("file write before add wait %s \n", fileWrite_ADD); 
+			add_wait(iocompParams, streamParams, iter, c, fileWrite_ADD); 
 			winActivateInfo(iocompParams, c); 
 			winTestInfo(iocompParams, a); 
 			winTestInfo(iocompParams, b); 
@@ -143,7 +144,8 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 			winActivateInfo(iocompParams, c); 
 			winTestInfo(iocompParams, b); 
 		}
-		preDataSend(iocompParams, c, fileWrite); 
+		snprintf(fileWrite_ADD, sizeof(fileWrite_ADD), "C_%i",iter);
+		preDataSend(iocompParams, c, fileWrite_ADD); 
 		add(iocompParams, streamParams, iter, c, a, b);
 		add_send(iocompParams, streamParams, iter, c);
 
@@ -152,11 +154,10 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * TRIAD(A)
 		 * SEND(A)
 		 */ 
-		snprintf(fileWrite, sizeof(fileWrite), "A_%i",iter-1);
 		if(iter > 0)
 		{
-			printf("file write before triad wait %s \n", fileWrite); 
-			triad_wait(iocompParams, streamParams, iter, a, fileWrite); 
+			printf("file write before triad wait %s \n", fileWrite_TRIAD); 
+			triad_wait(iocompParams, streamParams, iter, a, fileWrite_TRIAD); 
 			winActivateInfo(iocompParams, a); 
 			winTestInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
@@ -167,7 +168,8 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 			winTestInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
 		}
-		preDataSend(iocompParams, a, fileWrite); 
+		snprintf(fileWrite_TRIAD, sizeof(fileWrite_TRIAD), "A_%i",iter);
+		preDataSend(iocompParams, a, fileWrite_TRIAD); 
 		triad(iocompParams, streamParams, iter, c, a, b);
 		triad_send(iocompParams, streamParams, iter, a);
 
@@ -178,16 +180,16 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 
 	if(streamParams->HT_flag)
 	{
-		iter--; // iter has incremented value
-		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter);
-		printf("file write before scale wait %s \n", fileWrite); 
-		scale_wait(iocompParams, streamParams, iter, b, fileWrite); 
-		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter);
-		printf("file write before add wait %s \n", fileWrite); 
-		add_wait(iocompParams, streamParams, iter, c, fileWrite); 
-		snprintf(fileWrite, sizeof(fileWrite), "A_%i",iter);
-		printf("file write before triad wait %s \n", fileWrite); 
-		triad_wait(iocompParams, streamParams, iter, a, fileWrite); 
+//		iter--; // iter has incremented value
+//		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter);
+//		printf("file write before scale wait %s \n", fileWrite); 
+		scale_wait(iocompParams, streamParams, iter, b, fileWrite_SCALE); 
+//		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter);
+//		printf("file write before add wait %s \n", fileWrite); 
+		add_wait(iocompParams, streamParams, iter, c, fileWrite_ADD); 
+//		snprintf(fileWrite, sizeof(fileWrite), "A_%i",iter);
+//		printf("file write before triad wait %s \n", fileWrite); 
+		triad_wait(iocompParams, streamParams, iter, a, fileWrite_TRIAD); 
 	} 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs and post win free for shared windows 
 #ifndef NDEBUG
