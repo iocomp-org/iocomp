@@ -107,9 +107,10 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * SCALE(B) 
 		 * SEND(B)
 		 */ 
-		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter);
+		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter-1);
 		if(iter > 0)
 		{
+			printf("file write before scale wait %s \n", fileWrite); 
 			scale_wait(iocompParams, streamParams, iter, b, fileWrite); 
 			winActivateInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
@@ -128,9 +129,10 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * ADD(C)
 		 * SEND(C) 
 		 */ 
-		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter);
+		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter-1);
 		if(iter > 0)
 		{
+			printf("file write before add wait %s \n", fileWrite); 
 			add_wait(iocompParams, streamParams, iter, c, fileWrite); 
 			winActivateInfo(iocompParams, c); 
 			winTestInfo(iocompParams, a); 
@@ -150,9 +152,10 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 * TRIAD(A)
 		 * SEND(A)
 		 */ 
-		snprintf(fileWrite, sizeof(fileWrite), "A_%i",iter);
+		snprintf(fileWrite, sizeof(fileWrite), "A_%i",iter-1);
 		if(iter > 0)
 		{
+			printf("file write before triad wait %s \n", fileWrite); 
 			triad_wait(iocompParams, streamParams, iter, a, fileWrite); 
 			winActivateInfo(iocompParams, a); 
 			winTestInfo(iocompParams, b); 
@@ -177,10 +180,13 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	{
 		iter--; // iter has incremented value
 		snprintf(fileWrite, sizeof(fileWrite), "B_%i",iter);
+		printf("file write before scale wait %s \n", fileWrite); 
 		scale_wait(iocompParams, streamParams, iter, b, fileWrite); 
 		snprintf(fileWrite, sizeof(fileWrite), "C_%i",iter);
+		printf("file write before add wait %s \n", fileWrite); 
 		add_wait(iocompParams, streamParams, iter, c, fileWrite); 
 		snprintf(fileWrite, sizeof(fileWrite), "A_%i",iter);
+		printf("file write before triad wait %s \n", fileWrite); 
 		triad_wait(iocompParams, streamParams, iter, a, fileWrite); 
 	} 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs and post win free for shared windows 

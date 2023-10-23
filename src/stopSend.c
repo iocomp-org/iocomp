@@ -76,11 +76,11 @@ void stopSend(struct iocomp_params *iocompParams)
 		// delete file function is called in ioServer
 		// for non HT implementation, files should be deleted after the data is sent
 		// through 
-#ifndef NDELETE 
+#ifndef NODELETE 
 		MPI_Barrier(iocompParams->compServerComm); 
 		if(compRank == 0)
 		{
-			deleteFiles(iocompParams, -1); // delete files 
+			deleteFiles(iocompParams, 0); // delete files 
 		} 
 #endif
 	}

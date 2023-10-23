@@ -156,6 +156,12 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #ifndef NDEBUG
 			fprintf(iocompParams->debug,"ioServerInitialise -> After ioServer\n"); 
 #endif
+#ifdef TESTING
+			// all files have been written, testing can commence. 
+			printf("IO server barrier reached\n"); 
+		  MPI_Barrier(comm);  
+#endif 
+			printf("before finalize \n"); 
 			MPI_Finalize(); 
 #ifndef NDEBUG
 			fprintf(iocompParams->debug,"ioServerInitialise -> After finalize\n"); 

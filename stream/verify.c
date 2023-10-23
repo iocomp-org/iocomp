@@ -6,10 +6,18 @@
 #include <math.h>
 #include "stream.h"
 #include "../include/iocomp.h"
+#define CONFIG_FILE_ADIOS2 "config.xml"
+
+// small fn to check if file exists
+#include <sys/stat.h>   // stat
+#include <stdbool.h>    // bool type
+bool file_exists (char *filename) {
+  struct stat   buffer;   
+  return (stat (filename, &buffer) == 0);
+}
 
 void verify(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm)
 {
-	MPI_Barrier(comm); 
 	printf("Verification testing started \n"); 
 
 	int myRank; 
@@ -24,16 +32,16 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 	ioServerInitialise(iocompParams);
 	arrayParamsInit(iocompParams, comm); 
 
-	// adios2 initialise object and i/o variable 
-	//	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
-	//	{
-	//#if ADIOS2_USE_MPI
-	//		iocompParams->adios_read = adios2_init_config_mpi(CONFIG_FILE_ADIOS2, iocompParams->cartcomm);  
-	//#else 
-	//		iocompParams->adios_read = adios2_init();  
-	//#endif 
-	//		adios2_set_engine(iocompParams->io,ioParams->ADIOS2_IOENGINES[ioParams->ioLibNum-2]); 
-	//	} 
+	//  adios2 initialise object and i/o variable 
+	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
+	{
+#if ADIOS2_USE_MPI
+		iocompParams->adios = adios2_init_config_mpi(CONFIG_FILE_ADIOS2, iocompParams->cartcomm);  
+#else 
+		iocompParams->adios = adios2_init();  
+#endif 
+		adios2_set_engine(iocompParams->io,iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); 
+	} 
 
 	double a , b, c, val; 
 
@@ -74,13 +82,28 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 			{
 				snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "%s_%i.dat", windowName[windowNum], iter);
 				printf("filename %s \n", readFile[windowNum]); 
-				mpiRead(readData, readFile[windowNum], iocompParams); 
+				if(file_exists(readFile[windowNum])) 
+				{
+					mpiRead(readData, readFile[windowNum], iocompParams); 
+				} 
+				else
+				{
+					printf("filename %s does not exist.\n", readFile[windowNum]); 
+				}
 			} 
 			else if(streamParams->io == 1)
 			{
 				snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "%s_%i.h5", windowName[windowNum], iter);
 				printf("filename %s \n", readFile[windowNum]); 
-				phdf5Read(readData, readFile[windowNum], iocompParams); 
+				if(file_exists(readFile[windowNum])) 
+				{
+					phdf5Read(readData, readFile[windowNum], iocompParams); 
+				} 
+				else
+				{
+					printf("filename %s does not exist.\n", readFile[windowNum]); 
+					exit(0); 
+				}
 			} 
 			else if( (streamParams->io == 2) || (streamParams->io == 3) || (streamParams->io == 4))
 			{
@@ -92,7 +115,15 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 				{
 					snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "%s_%i", windowName[windowNum], iter);
 				} 
-				adios2Read(readData, readFile[windowNum], iocompParams); 
+				if(file_exists(readFile[windowNum])) 
+				{
+					adios2Read(readData, readFile[windowNum], iocompParams); 
+				} 
+				else
+				{
+					printf("filename %s does not exist.\n", readFile[windowNum]); 
+					exit(0); 
+				}
 			} 
 
 			// obtain value from the window numbers
@@ -128,6 +159,7 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 				if(test_reduced == 0)
 				{
 					printf("Verification failed \n"); 
+					break; 
 				} 
 				else
 				{

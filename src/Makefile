@@ -14,7 +14,9 @@ CFLAGS = -fpic -shared -O2 -DADIOS2_USE_MPI  -Wall -Wpedantic -Werror -Wextra
 # DNDELETE for disabling the delete file commands after writing is completed  
 # DNOADIOS2 for disabling ADIOS2 
 # DNOHDF5 for disabling HDF5 
-IOCOMP_FLAGS +=-DNODELETE -DNDEBUG  #-DPRINT_ORDERING ##-DREADBACK  #-DIOCOMP_TIMERS #
+# DTESTING includes a barrier before MPI finalize, to know when the IO server is
+# done writing. 
+IOCOMP_FLAGS +=-DNODELETE -DNDEBUG -DTESTING  #-DPRINT_ORDERING ##-DREADBACK  #-DIOCOMP_TIMERS #
 
 # linker flags
 LFLAGS = -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 

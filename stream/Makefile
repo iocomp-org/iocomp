@@ -18,6 +18,7 @@ ODIR = Object_files
 
 # define library paths 
 LIBS +=   -L$(IOCOMP_DIR)/lib -liocomp  -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5  -L$(ADIOS2_DIR)/lib64 -ladios2_c -ladios2_c_mpi -lm \
+					-L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi -lm \
 					#-L${FORGE_DIR}/map/libs/default/gnu/ofi \
 					#-lmap-sampler-pmpi -lmap-sampler \
 					#-Wl,--eh-frame-hdr -Wl,-rpath=${FORGE_DIR}/map/libs/default/gnu/ofi

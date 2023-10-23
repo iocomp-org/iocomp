@@ -1,24 +1,26 @@
 # define c compiler 
-#CC = $(OMPI_DIR)/bin/mpicc
-CC = cc
-CFLAGS = -Wall -Wpedantic -Werror -Wno-unused-variable -Wno-unused-but-set-variable
+CC = cc  
+CFLAGS = -g -Wall -Wpedantic -Werror  -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
-CFLAGS +=  -g -Og -DADIOS2_USE_MPI -DNDEBUG #-DCHECK_DATA -DDEL_FILE
+# DADIOS2_USE_MPI for adios2 
+CFLAGS += -O2 -DADIOS2_USE_MPI -DNDEBUG # -DMPI_TESTS # #-DNOADIOS2 -DNOHDF5 
 
 # linker flags
-LFLAGS += -I$(IOCOMP_DIR)/include -I$(OMPI_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
+LFLAGS += -I$(STREAM_DIR) -I$(IOCOMP_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
 
 # object file directory
 ODIR = Object_files
 
 # define library paths 
-LIBS +=  -L$(IOCOMP_DIR)/lib -liocomp -L$(OMPI_DIR)/lib -lmpi -lm -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi  -lm 
+LIBS +=   -L$(IOCOMP_DIR)/lib -liocomp  -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5  -L$(ADIOS2_DIR)/lib64 -ladios2_c -ladios2_c_mpi -lm \
+					-L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi -lm \
+					#-L${FORGE_DIR}/map/libs/default/gnu/ofi \
+					#-lmap-sampler-pmpi -lmap-sampler \
+					#-Wl,--eh-frame-hdr -Wl,-rpath=${FORGE_DIR}/map/libs/default/gnu/ofi
 
 # define C source files 
-SRCS = main.c initialise.c deleteFile.c rmdir.c checkData.c mpiRead.c hdf5Read.c adios2Read.c arrayVerification.c 
-
-
+SRCS = $(wildcard *.c)
 # define executable file  
 MAIN = test 
 

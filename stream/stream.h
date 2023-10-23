@@ -1,9 +1,9 @@
 #include "mpi.h"
-#include "iocomp.h"
+#include "../include/iocomp.h"
 
 #define NDIM 2  // power to size
 #define KERNELS 4
-#define AVGLOOPCOUNT 10 // number of average cycles 
+#define AVGLOOPCOUNT 5 // number of average cycles 
 #define COMPLOOPCOUNT 1 // number of compute cycles per each averaging cycle 
 #define WRITE_FREQ 1 // frequency of writing 
 #define TEST_FREQ 11 // frequency of MPI tests 
