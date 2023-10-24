@@ -29,4 +29,5 @@ void arguments(struct test_params* testParams, int argc, char** argv);
 int valueCheck(struct iocomp_params *iocompParams, double* iodata_test, double val, char* filename); 
 void readTests(struct test_params *testParams, struct iocomp_params *iocompParams,  MPI_Comm comm); 
 bool file_exists (char *filename); 
+void deleteFilesTest(char* fileName); 
 

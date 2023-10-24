@@ -5,8 +5,6 @@
 #include <assert.h> 
 #include <math.h>
 #include <adios2_c.h>
-//#include "../stream/stream.h"
-//#include "../include/iocomp.h"
 #include "test.h"
 #define CONFIG_FILE_ADIOS2 "config.xml"
 
@@ -17,7 +15,6 @@ bool file_exists (char *filename) {
   struct stat   buffer;   
   return (stat (filename, &buffer) == 0);
 }
-
 
 int main(int argc, char** argv)
 {
@@ -51,14 +48,14 @@ int main(int argc, char** argv)
 	/*
 	 * iocomp - iocompInit initialises the ioServer 
 	 * and initialises the compute comm 
+	 * HT flag and shared flag have been turned off. 
+	 * Compute Comm is the same as WORLD COMM  
 	 */ 
 	MPI_Comm computeComm = iocompInit(&iocompParams,comm, 0, testParams.io, NODESIZE, 0, NUMWIN); 
-	printf("after iocompInit \n"); 
 	
 	// first set of tests: file is read, values are checked. 
 	readTests(&testParams, &iocompParams,  MPI_COMM_WORLD); 
-	printf("after readbacktests \n"); 
-
+	
 	MPI_Finalize(); 
 } 
 
