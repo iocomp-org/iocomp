@@ -12,7 +12,7 @@
 void computeStep(struct iocomp_params *iocompParams, struct stream_params *streamParams, MPI_Comm comm)
 {
 #ifndef NDEBUG
-	fprintf(iocompParams->debug, "stream-> starting compute step  \n");
+	fprintf(streamParams->debug, "stream-> starting compute step  \n");
 #endif
 
 	/*
@@ -29,9 +29,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	 */ 
 	winInits(iocompParams, streamParams->localDataSize); 
 
-	a = iocompParams->array[2];
-	c = iocompParams->array[1];
 	b = iocompParams->array[0];
+	c = iocompParams->array[1];
+	a = iocompParams->array[2];
 	// b = iocompParams->array[0];
 
 	// tempororary mallocing of c for testing with scale array 
@@ -41,7 +41,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	//malloc_check(a); 
 
 #ifndef NDEBUG
-	fprintf(iocompParams->debug, "stream->arrays malloced \n");
+	fprintf(streamParams->debug, "stream->arrays malloced \n");
 #endif
 
 	for(int i = 0; i < streamParams->localDataSize; i++)
@@ -85,7 +85,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	for(iter = 0; iter< AVGLOOPCOUNT; iter++) // averaging 
 	{
 #ifndef NDEBUG
-		fprintf(iocompParams->debug, "stream-> stream loop starts \n");
+		fprintf(streamParams->debug, "stream-> stream loop starts \n");
 #endif
 
 		/*
@@ -175,7 +175,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 
 	} // end avg loop 
 #ifndef NDEBUG
-	fprintf(iocompParams->debug, "stream-> after end of avg loop\n");
+	fprintf(streamParams->debug, "stream-> after end of avg loop\n");
 #endif
 
 	if(streamParams->HT_flag)
@@ -186,7 +186,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	} 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs and post win free for shared windows 
 #ifndef NDEBUG
-	fprintf(iocompParams->debug, "stream->data send complete\n");
+	fprintf(streamParams->debug, "stream->data send complete\n");
 #endif
 
 	winFinalise(iocompParams); // finalise arrays 
@@ -195,7 +195,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	streamParams->wallTimer=wallTime_end - wallTime_start; 
 
 #ifndef NDEBUG
-	fprintf(iocompParams->debug, "stream->compute step completed\n");
+	fprintf(streamParams->debug, "stream->compute step completed\n");
 #endif
 } 
 

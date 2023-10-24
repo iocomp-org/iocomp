@@ -47,6 +47,12 @@ struct stream_params{
 	// command line args 
 	bool HT_flag, sharedFlag, testFlag; 
 	int nx, ny, io; 
+
+#ifndef NDEBUG
+	// file object for debug 
+	char debugFile[100]; 
+	FILE* debug; 
+#endif 
 }; 
 extern struct stream_params streamParams; 
 // stream kernel functions 

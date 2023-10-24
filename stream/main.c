@@ -57,7 +57,9 @@ int main(int argc, char** argv)
 	 */ 
 	MPI_Comm computeComm = iocompInit(&iocompParams,comm, streamParams.HT_flag, streamParams.io, NODESIZE, streamParams.sharedFlag, NUMWIN); 
 #ifndef NDEBUG
-	fprintf(iocompParams.debug, "stream->After iocompInit\n");
+	streamParams.debug = stdout; 
+	// streamParams.debug = iocompParams.debug; 
+	fprintf(streamParams.debug, "stream->After iocompInit\n");
 #endif
 	int computeRank;
 	MPI_Comm_rank(computeComm, &computeRank); 
@@ -68,12 +70,12 @@ int main(int argc, char** argv)
 	 */ 
 	streamParams.localDataSize = streamParams.nx*streamParams.ny;  
 #ifndef NDEBUG
-	fprintf(iocompParams.debug,"stream-> localdatasize initialised with %li \n", streamParams.localDataSize);
+	fprintf(streamParams.debug,"stream-> localdatasize initialised with %li \n", streamParams.localDataSize);
 #endif
 	
 	computeStep(&iocompParams, &streamParams, computeComm); // do compute 
 #ifndef NDEBUG
-	fprintf(iocompParams.debug,"stream-> after computeStep \n");
+	fprintf(streamParams.debug,"stream-> after computeStep \n");
 #endif
 	
 	/*
@@ -90,7 +92,7 @@ int main(int argc, char** argv)
 		verify(&iocompParams, &streamParams, computeComm); 
 	} 
 #ifndef NDEBUG
-	fprintf(iocompParams.debug,"stream-> after verification\n");
+	fprintf(streamParams.debug,"stream-> after verification\n");
 #endif
 
 	/*  
@@ -101,7 +103,6 @@ int main(int argc, char** argv)
 	 * reduce results across computeComm and get max timers
 	 */ 
 	reduceResults(&streamParams, computeComm); 
-	
 
 	if(computeRank == 0)
 	{
@@ -110,12 +111,12 @@ int main(int argc, char** argv)
 	}   
 
 #ifndef NDEBUG
-	fprintf(iocompParams.debug,"stream->Before MPI finalize rank \n");
+	fprintf(streamParams.debug,"stream->Before MPI finalize rank \n");
 #endif
 	ierr = MPI_Finalize(); 
 	mpi_error_check(ierr); 
 #ifndef NDEBUG
-	fprintf(iocompParams.debug,"stream->MPI finalize\n");
+	fprintf(streamParams.debug,"stream->MPI finalize\n");
 #endif
 
 	return 0; 

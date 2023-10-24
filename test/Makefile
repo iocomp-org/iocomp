@@ -3,15 +3,11 @@ CC = cc
 CFLAGS = -g -Wall -Wpedantic -Werror  -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
-# DNDEBUG for not including error messages 
-# DMPI_TESTS for including MPI tests in stream kernels 
 # DADIOS2_USE_MPI for adios2 
-# DNOADIOS2 for disabling ADIOS2 in iocomp 
-# DNOHDF5 for disabling HDF5 in iocomp 
-CFLAGS += -O2 -DADIOS2_USE_MPI # -DNDEBUG # -DMPI_TESTS # #-DNOADIOS2 -DNOHDF5 
+CFLAGS += -O2 -DADIOS2_USE_MPI -DNDEBUG # -DMPI_TESTS # #-DNOADIOS2 -DNOHDF5 
 
 # linker flags
-LFLAGS +=  -I$(IOCOMP_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
+LFLAGS += -I$(STREAM_DIR) -I$(IOCOMP_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
 
 # object file directory
 ODIR = Object_files
@@ -24,8 +20,7 @@ LIBS +=   -L$(IOCOMP_DIR)/lib -liocomp  -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5  -L$(
 					#-Wl,--eh-frame-hdr -Wl,-rpath=${FORGE_DIR}/map/libs/default/gnu/ofi
 
 # define C source files 
-# SRCS = $(wildcard *.c)
-SRCS = $(filter-out copy.c, $(wildcard *.c))
+SRCS = $(wildcard *.c)
 # define executable file  
 MAIN = test 
 

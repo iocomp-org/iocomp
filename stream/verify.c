@@ -68,7 +68,7 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 		c = a + b; 
 		a = b + (CONSTANT*c); 
 #ifndef NDEBUG
-		fprintf(iocompParams->debug, "a[%i] = %lf, b[%i] = %lf, c[%i] = %lf \n", iter, a, iter, b, iter, c); 
+		fprintf(streamParams->debug, "a[%i] = %lf, b[%i] = %lf, c[%i] = %lf \n", iter, a, iter, b, iter, c); 
 #endif 
 
 		// read data from the different windows; 
@@ -143,12 +143,12 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 			int test = valueCheck(iocompParams, readData, val, readFile[windowNum]); 
 			int test_reduced;  
 #ifndef NDEBUG   
-			fprintf(iocompParams->debug,"Filename %s Data read: \n", readFile[windowNum]); 
+			fprintf(streamParams->debug,"Filename %s Data read: \n", readFile[windowNum]); 
 			for(int i = 0; i < iocompParams->localDataSize; i++)
 			{
-				fprintf(iocompParams->debug,"%lf, ", readData[i]); 
+				fprintf(streamParams->debug,"%lf, ", readData[i]); 
 			}
-			fprintf(iocompParams->debug,"\n"); 
+			fprintf(streamParams->debug,"\n"); 
 #endif       
 
 			// sync all values of test, if multiplication comes back as 0 it means
@@ -172,7 +172,7 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 	free(readData); 
 	readData = NULL; 
 #ifndef NDEBUG   
-	fprintf(iocompParams->debug,"iodata test freed\n"); 
+	fprintf(streamParams->debug,"iodata test freed\n"); 
 #endif       
 	printf("Verification tests finished \n"); 
 	MPI_Barrier(comm); 
