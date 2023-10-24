@@ -30,11 +30,12 @@ int main(int argc, char** argv)
 	 */ 
 	struct stream_params streamParams; 
 	struct iocomp_params iocompParams; 
+	struct test_params testParams; 
 
 	/*	
 	 * initialise stream param structs using command line parameters
 	 */ 
-	commandLineArgs(&streamParams, argc, argv); 
+	arguments(&testParams, argc, argv); 
 
 	MPI_Comm comm = MPI_COMM_WORLD; 
 	int rank; 
@@ -44,33 +45,18 @@ int main(int argc, char** argv)
 	// data parameters definitions 
 
 	if(!rank){
-		// check for HT flag 
-		if (streamParams.HT_flag)
-		{
-			puts ("HT flag is set to on");
-			printf("size of array %i x %i IO num %i \n", streamParams.nx, streamParams.ny, streamParams.io); 
-		} 
-		else if (streamParams.sharedFlag)
-		{
-			puts ("Shared flag is set to on");
-			printf("size of array %i x %i IO num %i \n", streamParams.nx, streamParams.ny, streamParams.io); 
-		} 
-		else 
-		{
-			puts ("HT flag is switched off"); 
-			printf("size of array %i x %i IO num %i \n", streamParams.nx, streamParams.ny, streamParams.io); 
-		} 
+		printf("size of array %i x %i IO num %i \n", testParams.nx, testParams.ny, testParams.io); 
 	} 
 
 	/*
 	 * iocomp - iocompInit initialises the ioServer 
 	 * and initialises the compute comm 
 	 */ 
-	// MPI_Comm computeComm = iocompInit(&iocompParams,comm, streamParams.HT_flag, streamParams.io, NODESIZE, streamParams.sharedFlag, NUMWIN); 
+	MPI_Comm computeComm = iocompInit(&iocompParams,comm, 0, testParams.io, NODESIZE, 0, NUMWIN); 
 	printf("after iocompInit \n"); 
 	
 	// first set of tests: file is read, values are checked. 
-	readBackTests( &streamParams, MPI_COMM_WORLD); 
+	readTests(&testParams, &iocompParams,  MPI_COMM_WORLD); 
 	printf("after readbacktests \n"); 
 
 	MPI_Finalize(); 
