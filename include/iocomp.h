@@ -159,7 +159,7 @@ extern "C" {
 
 	// delete files and directories  
 	// int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf); 
-	void deleteFiles(struct iocomp_params* iocompParams, int windowNum); 
+	void deleteFiles(char* fileName); 
 	void sendFileName(struct iocomp_params *iocompParams, char* fileName); 
 
 	/*
