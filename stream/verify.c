@@ -12,8 +12,8 @@
 #include <sys/stat.h>   // stat
 #include <stdbool.h>    // bool type
 bool file_exists (char *filename) {
-  struct stat   buffer;   
-  return (stat (filename, &buffer) == 0);
+	struct stat   buffer;   
+	return (stat (filename, &buffer) == 0);
 }
 
 void verify(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm)
@@ -40,6 +40,7 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 #else 
 		iocompParams->adios = adios2_init();  
 #endif 
+
 		adios2_set_engine(iocompParams->io,iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); 
 	} 
 
@@ -67,9 +68,9 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 		b = CONSTANT * c; 
 		c = a + b; 
 		a = b + (CONSTANT*c); 
-#ifndef NDEBUG
-		fprintf(streamParams->debug, "a[%i] = %lf, b[%i] = %lf, c[%i] = %lf \n", iter, a, iter, b, iter, c); 
-#endif 
+		if(streamParams->verboseFlag){
+			fprintf(streamParams->debug, "a[%i] = %lf, b[%i] = %lf, c[%i] = %lf \n", iter, a, iter, b, iter, c); 
+		} 
 
 		// read data from the different windows; 
 		// b, c, a is the order of windows 
@@ -142,14 +143,14 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 			// verify data by checking value by value with STREAM code   
 			int test = valueCheck(iocompParams, readData, val, readFile[windowNum]); 
 			int test_reduced;  
-#ifndef NDEBUG   
-			fprintf(streamParams->debug,"Filename %s Data read: \n", readFile[windowNum]); 
-			for(int i = 0; i < iocompParams->localDataSize; i++)
-			{
-				fprintf(streamParams->debug,"%lf, ", readData[i]); 
-			}
-			fprintf(streamParams->debug,"\n"); 
-#endif       
+			if(streamParams->verboseFlag){   
+				fprintf(streamParams->debug,"Filename %s Data read: \n", readFile[windowNum]); 
+				for(int i = 0; i < iocompParams->localDataSize; i++)
+				{
+					fprintf(streamParams->debug,"%lf, ", readData[i]); 
+				}
+				fprintf(streamParams->debug,"\n"); 
+			}       
 
 			// sync all values of test, if multiplication comes back as 0 it means
 			// verification failed by a particular rank 
@@ -166,14 +167,15 @@ void verify(struct iocomp_params *iocompParams, struct stream_params* streamPara
 					printf("Verification passed for filename %s \n", readFile[windowNum]); 
 				}
 			}
-		} 
+		}
 	} 
+
 
 	free(readData); 
 	readData = NULL; 
-#ifndef NDEBUG   
-	fprintf(streamParams->debug,"iodata test freed\n"); 
-#endif       
+	if(streamParams->verboseFlag){   
+		fprintf(streamParams->debug,"iodata test freed\n"); 
+	}       
 	printf("Verification tests finished \n"); 
 	MPI_Barrier(comm); 
 } 

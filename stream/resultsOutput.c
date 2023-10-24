@@ -16,7 +16,7 @@ void averages(struct stream_params* streamParams)
 		streamParams->avgCompTimer[i]=0.0; 
 		streamParams->avgWaitTimer[i]=0.0; 
 		streamParams->avgSendTimer[i]=0.0; 
-		
+
 		// average out the values from compue values 
 		int avgCount = AVGLOOPCOUNT/WRITE_FREQ; 
 		for (int k = 0; k < AVGLOOPCOUNT; k++)
@@ -42,20 +42,20 @@ void reduceResults(struct stream_params* streamParams,MPI_Comm computeComm)
 
 void resultsOutput(struct stream_params* streamParams, MPI_Comm computeComm)
 {
-		
+
 	averages(streamParams); // get average timings from the reduced times 
-	// initialise the file variables 
+													// initialise the file variables 
 	int test; 
 	FILE* out; 
-#ifndef NDEBUG
-	printf("remove filename \n");
-#endif
+	if(streamParams->verboseFlag){
+		printf("remove filename \n");
+	}
 	test = remove(filename);
 	if (test != 0)
 	{
-#ifndef NDEBUG
-		printf("Cant remove %s \n", filename);
-#endif 
+		if(streamParams->verboseFlag){
+			printf("Cant remove %s \n", filename);
+		} 
 	}
 	out = fopen(filename, "w+");
 	if (out == NULL)
@@ -81,20 +81,20 @@ void fullResultsOutput(struct stream_params* streamParams)
 	streamParams->fullResults_filename[1] = 		"scale.csv"; 
 	streamParams->fullResults_filename[2] = 		"add.csv"		; 
 	streamParams->fullResults_filename[3] = 		"triad.csv"; 
-	
+
 	// go via each kernel 
 	for (int i = 0; i< KERNELS; i++)
 	{
 		FILE* out; 
-#ifndef NDEBUG
-		printf("remove filename \n");
-#endif
+		if(streamParams->verboseFlag){
+			printf("remove filename \n");
+		}
 		test = remove(streamParams->fullResults_filename[i]);
 		if (test != 0)
 		{
-#ifndef NDEBUG
-			printf("Cant remove %s \n",streamParams->fullResults_filename[i]);
-#endif 
+			if(streamParams->verboseFlag){
+				printf("Cant remove %s \n",streamParams->fullResults_filename[i]);
+			} 
 		}
 		out = fopen(streamParams->fullResults_filename[i], "w+");
 		if (out == NULL)

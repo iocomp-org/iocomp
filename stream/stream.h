@@ -48,11 +48,10 @@ struct stream_params{
 	bool HT_flag, sharedFlag, testFlag; 
 	int nx, ny, io; 
 
-#ifndef NDEBUG
 	// file object for debug 
 	char debugFile[100]; 
 	FILE* debug; 
-#endif 
+	int verboseFlag; 
 }; 
 extern struct stream_params streamParams; 
 // stream kernel functions 
@@ -90,4 +89,4 @@ double timer_end(double timerStart, int computeRank );
 void verify(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm); 
 int valueCheck(struct iocomp_params *iocompParams, double* iodata_test, double val, char* filename); 
 // command line
-void commandLineArgs(struct stream_params* streamParams, int argc, char** argv); 
+void commandLineArgs(struct stream_params* streamParams, int globalRank, int argc, char** argv); 

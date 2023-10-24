@@ -11,9 +11,9 @@
 
 void computeStep(struct iocomp_params *iocompParams, struct stream_params *streamParams, MPI_Comm comm)
 {
-#ifndef NDEBUG
-	fprintf(streamParams->debug, "stream-> starting compute step  \n");
-#endif
+	if(streamParams->verboseFlag){
+		fprintf(streamParams->debug, "stream-> starting compute step  \n");
+	}
 
 	/*
 	 * mallocing the pointers 
@@ -40,9 +40,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	//a = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
 	//malloc_check(a); 
 
-#ifndef NDEBUG
-	fprintf(streamParams->debug, "stream->arrays malloced \n");
-#endif
+	if(streamParams->verboseFlag){
+		fprintf(streamParams->debug, "stream->arrays malloced \n");
+	}
 
 	for(int i = 0; i < streamParams->localDataSize; i++)
 	{
@@ -84,9 +84,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	int iter; 
 	for(iter = 0; iter< AVGLOOPCOUNT; iter++) // averaging 
 	{
-#ifndef NDEBUG
-		fprintf(streamParams->debug, "stream-> stream loop starts \n");
-#endif
+		if(streamParams->verboseFlag){
+			fprintf(streamParams->debug, "stream-> stream loop starts \n");
+		}
 
 		/*
 		 * COPY(C) + MPITEST(A)
@@ -174,9 +174,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		triad_send(iocompParams, streamParams, iter, a);
 
 	} // end avg loop 
-#ifndef NDEBUG
-	fprintf(streamParams->debug, "stream-> after end of avg loop\n");
-#endif
+	if(streamParams->verboseFlag){
+		fprintf(streamParams->debug, "stream-> after end of avg loop\n");
+	}
 
 	if(streamParams->HT_flag)
 	{
@@ -185,18 +185,18 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		triad_wait(iocompParams, streamParams, iter, a, fileWrite_TRIAD); 
 	} 
 	stopSend(iocompParams); // send ghost message to stop MPI_Recvs and post win free for shared windows 
-#ifndef NDEBUG
-	fprintf(streamParams->debug, "stream->data send complete\n");
-#endif
+	if(streamParams->verboseFlag){
+		fprintf(streamParams->debug, "stream->data send complete\n");
+	}
 
 	winFinalise(iocompParams); // finalise arrays 
 	wallTime_end = MPI_Wtime(); 
 	assert(wallTime_end!=wallTime_start); 
 	streamParams->wallTimer=wallTime_end - wallTime_start; 
 
-#ifndef NDEBUG
-	fprintf(streamParams->debug, "stream->compute step completed\n");
-#endif
+	if(streamParams->verboseFlag){
+		fprintf(streamParams->debug, "stream->compute step completed\n");
+	}
 } 
 
 
