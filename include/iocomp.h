@@ -104,13 +104,6 @@ extern "C" {
 		// previous element count
 		int adios2Init;  
 
-#ifndef NDEBUG
-		// filename for debug
-		char DEBUG_FILE[100];  
-		// output file per rank
-		FILE* debug_out;  
-#endif 
-
 #ifdef PRINT_ORDERING
 		// so that getPair messages are not printed more than once.
 		int pairPrintCounter; 
