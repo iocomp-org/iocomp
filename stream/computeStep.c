@@ -30,14 +30,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	 */ 
 	winInits(iocompParams, (int)streamParams->localDataSize); 
 	
-	// init array 
-	//b = (double*)malloc(streamParams->localDataSize*sizeof(double)); 
-	//assert(b!=NULL); 
-	//c = (double*)malloc(streamParams->localDataSize*sizeof(double)); 
-	//assert(c!=NULL); 
-	//a = (double*)malloc(streamParams->localDataSize*sizeof(double)); 
-	//assert(a!=NULL); 
-	
 	b = iocompParams->array[0];
 	c = iocompParams->array[1];
 	a = iocompParams->array[2];
@@ -117,7 +109,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		if(iter > 0)
 		{
-			printf("SCALE file name %s \n", fileWrite_SCALE); 
 			scale_wait(iocompParams, streamParams, iter, b, fileWrite_SCALE); 
 			winActivateInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
@@ -139,7 +130,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		if(iter > 0)
 		{
-			printf("ADD file name %s \n", fileWrite_ADD); 
 			add_wait(iocompParams, streamParams, iter, c, fileWrite_ADD); 
 			winActivateInfo(iocompParams, c); 
 			winTestInfo(iocompParams, a); 
@@ -162,7 +152,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		 */ 
 		if(iter > 0)
 		{
-			printf("TRIAD file name %s \n", fileWrite_TRIAD); 
 			triad_wait(iocompParams, streamParams, iter, a, fileWrite_TRIAD); 
 			winActivateInfo(iocompParams, a); 
 			winTestInfo(iocompParams, b); 
