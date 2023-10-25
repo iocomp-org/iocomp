@@ -22,7 +22,6 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	double* c = NULL; // initialise data pointer  
 	double* a = NULL; // initialise data pointer  
 
-	printf("array local data size %li\n", streamParams->localDataSize); 
 	/*
 	 * Initialise a, b, c. 
 	 * Initialise shared windows associated with arrays *if* shared flag is true
