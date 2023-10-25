@@ -7,7 +7,7 @@ void preDataSend(struct iocomp_params *iocompParams, double* array, char* fileNa
 {
 	if(iocompParams->sharedFlag)
 	{
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "preDataSend -> Before MPI bcast, iocompParams->wintestflags"); 
 		for(int i = 0; i < iocompParams->numWin; i++)
 		{
@@ -27,7 +27,7 @@ void preDataSend(struct iocomp_params *iocompParams, double* array, char* fileNa
 		// broadcast them to ioserver 
 		MPI_Bcast( iocompParams->wintestflags, iocompParams->numWin, MPI_INT, 0, iocompParams->newComm); 
 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "preDataSend -> After MPI broadcast  \n"); 
 #endif 
 
@@ -42,17 +42,17 @@ void preDataSend(struct iocomp_params *iocompParams, double* array, char* fileNa
 				 */ 
 				int ierr = MPI_Send(fileName, ((int)strlen(fileName)+1), MPI_CHAR, 1, 0, iocompParams->newComm);  
 				mpi_error_check(ierr); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 				fprintf(iocompParams->debug, "file name sent %s with length %i\n", fileName, ((int)strlen(fileName)+1)) ; 
 #endif 
 
 				// match array with windows and issue win complete 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 				fprintf(iocompParams->debug, "preDataSend-> Before mpi win start for window %i \n", i); 
 #endif 
 				ierr = MPI_Win_start(iocompParams->group, 0, iocompParams->winMap[i]); 
 				mpi_error_check(ierr); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 				fprintf(iocompParams->debug, "preDataSend-> After mpi win start for window %i \n", i); 
 #endif 
 			}
@@ -79,12 +79,12 @@ void preDataSend(struct iocomp_params *iocompParams, double* array, char* fileNa
 		//					ierr = MPI_Comm_rank(iocompParams->globalComm, &globalRank);
 		//					mpi_error_check(ierr); 
 		//					tag = globalRank ;
-		//#ifndef NDEBUG 
+		//#ifdef VERBOSE 
 		//					fprintf(iocompParams->debug, "preDataSend->Going to send filename to dest %i with tag %i\n", dest, tag) ; 
 		//#endif 
 		//					int ierr = MPI_Send(fileName, ((int)strlen(fileName)+1), MPI_CHAR, dest, tag, iocompParams->globalComm);  
 		//					mpi_error_check(ierr); 
-		//#ifndef NDEBUG 
+		//#ifdef VERBOSE 
 		//					fprintf(iocompParams->debug, "preDataSend->file name sent %s with length %i\n", fileName, ((int)strlen(fileName)+1)) ; 
 		//#endif 
 		//				} 

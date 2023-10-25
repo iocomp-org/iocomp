@@ -19,7 +19,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	MPI_Comm_rank(comm, &myGlobalrank); 
 	iocompParams->globalComm = comm; 
 	
-#ifndef NDEBUG
+#ifdef VERBOSE
 	initDebugFile(iocompParams, myGlobalrank);
 	fprintf(iocompParams->debug, "MPI initialised \n");
 #endif 
@@ -66,7 +66,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 
 		if(newRank != 0)
 		{
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"iocompInit -> Before assigining groups for io server \n"); 
 #endif
 			// allocate groups 
@@ -83,16 +83,16 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 
 			/* I/O group consists of ranks 1 */
 			MPI_Group_incl(comm_group,1,ranks,&iocompParams->group);
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"iocompInit -> After assigning groups for io server\n"); 
 #endif
 
 			ioServer_shared(iocompParams);
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"iocompInit -> After ioServer shared exits \n"); 
 #endif
 			MPI_Finalize(); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 			fprintf(iocompParams->debug, "iocompInit-> after MPI finalize \n"); 
 #endif 
 		  free(iocompParams->writeFile); 
@@ -114,7 +114,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 
 			/* I/O group consists of ranks 1 */
 			MPI_Group_incl(comm_group,1,ranks+1,&iocompParams->group);
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"iocompInit -> After assigning groups for comp server\n"); 
 #endif
 		} 
@@ -126,7 +126,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 		 * assigns communicators in struct for both cases  
 		 */ 
 		comm_split(iocompParams, comm); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug, "iocompInit -> communicator split up and colour assigned \n"); 
 #endif
 		/*
@@ -149,15 +149,15 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 		{
 			int ioRank; 
 			MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServerInitialise -> ioServer called\n"); 
 #endif
 			ioServer(iocompParams);
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServerInitialise -> After ioServer\n"); 
 #endif
 			MPI_Finalize(); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServerInitialise -> After finalize\n"); 
 #endif
 			exit(0); 

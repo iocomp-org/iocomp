@@ -24,7 +24,7 @@ void ioServer(struct iocomp_params *iocompParams)
 	source = getPair(iocompParams); 
 	tag = source; 
 
-#ifndef NDEBUG
+#ifdef VERBOSE
 	fprintf(iocompParams->debug,"ioServer -> Recieving data starts from source rank %i \n", source); 
 #endif
 	int test_count = 1; 
@@ -42,17 +42,17 @@ void ioServer(struct iocomp_params *iocompParams)
 	 */ 
 	for(;;) 
 	{
-#ifndef NDEBUG
+#ifdef VERBOSE
 		// fprintf(iocompParams->debug,"ioServer -> start of ioServer loop, iter %i ioRank %i \n",iter,ioRank); 
 #endif
 
 		MPI_Probe(source, tag, iocompParams->globalComm, &status); // Probe for additional messages
-#ifndef NDEBUG
+#ifdef VERBOSE
 		// fprintf(iocompParams->debug,"ioServer -> MPI probe called \n"); 
 #endif
 
 		MPI_Get_count(&status, MPI_DOUBLE, &test_count); // get count 
-#ifndef NDEBUG
+#ifdef VERBOSE
 		// fprintf(iocompParams->debug,"ioServer -> MPI get count %i \n", test_count); 
 #endif
 
@@ -61,14 +61,14 @@ void ioServer(struct iocomp_params *iocompParams)
 		 */ 
 		if(!test_count)
 		{
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServer -> test count = 0, ghost message initialised \n"); 	
 #endif
 			int ghost;  
 			ierr = MPI_Recv(&ghost, 0, MPI_INT, source, tag,
 					iocompParams->globalComm,&status);
 			mpi_error_check(ierr); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServer -> ghost message recieved \n"); 	
 #endif
 			/*
@@ -77,7 +77,7 @@ void ioServer(struct iocomp_params *iocompParams)
 			 */ 
 			free(recv);
 			recv = NULL; 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServer -> recv array freed\n"); 	
 #endif
 #ifndef NOADIOS2
@@ -91,7 +91,7 @@ void ioServer(struct iocomp_params *iocompParams)
 			if(ioRank == 0)
 			{
 				deleteFiles(iocompParams, 0); // delete files 
-#ifndef NDEBUG
+#ifdef VERBOSE
 				fprintf(iocompParams->debug,"ioServer -> files deleted\n"); 	
 #endif
 			} 
@@ -139,19 +139,19 @@ void ioServer(struct iocomp_params *iocompParams)
 				malloc_check(recv); 
 				previousCount = test_count;  
 			} 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
 #endif
 			ierr = MPI_Recv(recv, test_count, MPI_DOUBLE, source, tag,
 					iocompParams->globalComm,&status);
 			mpi_error_check(ierr); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServer -> Received array \n"); 
 #endif
 			// get file name 
 			getFileName(iocompParams,0);  
 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServer -> Recv data coming from rank %i \n",source ); 
 #endif
 
@@ -159,7 +159,7 @@ void ioServer(struct iocomp_params *iocompParams)
 			 * Writing data using different IO libraries commences using io_libraries function
 			 * Parameters passed using iocompParams  
 			 */ 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServer -> Send to ioLibraries \n"); 
 #endif
 			ioLibraries(recv, iocompParams, 0); 

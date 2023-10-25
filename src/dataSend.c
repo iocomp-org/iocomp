@@ -29,7 +29,7 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 		dest = getPair(iocompParams); // destination for sending data. 
 		tag = globalRank; // tag should be rank of computeServer
 
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"dataSend -> Sending data starts from compProcessor with globalRank %i\
 				to ioProcessor with globalRank  %i  \n", globalRank, dest); 
 #endif
@@ -38,7 +38,7 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 					iocompParams->globalComm, request); // every rank sends its portion of data 
 		mpi_error_check(ierr); 
 
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"dataSend -> Sending data stop \n"); 
 #endif
 	}
@@ -68,7 +68,7 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 			iocompParams->previousInit = 1; 
 			iocompParams->previousCount = localDataSize; 
 		}
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"dataSend -> Hyperthread flag deactivated, go to ioLibraries with\
 				localDataSize %ld \n", localDataSize); 
 #endif

@@ -13,7 +13,7 @@ void dataWait(struct iocomp_params *iocompParams,MPI_Request *request, double* a
 	{
 		int compRank; 
 		MPI_Comm_rank(iocompParams->compServerComm, &compRank); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"dataWait -> MPI wait activated\n"); 
 #endif
 		// wait for the data to be sent from previous dataSend

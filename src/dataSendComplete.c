@@ -6,7 +6,7 @@
 void dataSendComplete(struct iocomp_params *iocompParams, double* array)
 {
 	// free window and free shared memory pointer 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 	fprintf(iocompParams->debug, "MPI win free comp server reached\n"); 
 #endif
 

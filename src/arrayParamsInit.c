@@ -24,7 +24,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	iocompParams->localArray = malloc(sizeof(size_t)*iocompParams->NDIM);
 	iocompParams->globalArray = malloc(sizeof(size_t)*iocompParams->NDIM);
 	iocompParams->dataType = MPI_DOUBLE; // data type of sent and recvd data 
-#ifndef NDEBUG
+#ifdef VERBOSE
 	fprintf(iocompParams->debug,"arrayParamsInit -> local, global size initialised \n"); 
 #endif
 
@@ -39,7 +39,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	int root; 
 	size_t dim[2] = {0,0}; // setting this to be 2 dimensions   
 	root = (int)pow(iocompParams->localDataSize,power);
-#ifndef NDEBUG
+#ifdef VERBOSE
 	fprintf(iocompParams->debug,"arrayParamsInit -> local data size %ld \n", iocompParams->localDataSize); 
 #endif
 
@@ -89,7 +89,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	iocompParams->globalArray[0]*= ioSize; // assumes outermost dimension gets expanded by each rank 
 
 
-#ifndef NDEBUG   
+#ifdef VERBOSE   
 	fprintf(iocompParams->debug,"arrayParamsInit-> globalArray:[%li,%li] \n",iocompParams->globalArray[0], iocompParams->globalArray[1] ); 
 	fprintf(iocompParams->debug,"arrayParamsInit-> localArray:[%li,%li] \n", iocompParams->localArray[0],  iocompParams->localArray[1] ); 
 	// fprintf(iocompParams->debug,"arrayParamsInit-> startArray:[%li,%li] \n", iocompParams->arrayStart[0],  iocompParams->arrayStart[1] ); 
@@ -100,7 +100,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	 */ 
 	iocompParams->globalDataSize = iocompParams->localDataSize * ioSize; 
 
-#ifndef NDEBUG
+#ifdef VERBOSE
 	fprintf(iocompParams->debug,"arrayParamsInit -> size definitions, localDataSize %li, globalDataSize %li\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
 #endif
 
@@ -108,7 +108,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	 * Define and initialise arrayStart
 	 */ 
 	iocompParams->arrayStart = malloc(sizeof(size_t)*iocompParams->NDIM);
-#ifndef NDEBUG
+#ifdef VERBOSE
 	fprintf(iocompParams->debug,"arrayParamsInit -> initialise arrayStart \n");
 #endif
 
@@ -117,7 +117,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 		iocompParams->arrayStart[i] = 0; 
 	}
 	iocompParams->arrayStart[0] = ioRank * iocompParams->localArray[0]; // assuming ar_size has uniform dimensions. 
-#ifndef NDEBUG
+#ifdef VERBOSE
 	fprintf(iocompParams->debug,"arrayParamsInit -> arrayStart initialised ioRank = %i\n",ioRank);
 #endif
 

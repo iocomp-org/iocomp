@@ -24,13 +24,13 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams, int windowNu
                     offset[iocompParams->NDIM],
                     dimsf[iocompParams->NDIM];   // specifies the dimensions of dataset, dimsf[0] number of rows, dimsf[1] number of columns, dimsf[2] so on..
 
-#ifndef NDEBUG
+#ifdef VERBOSE
     fprintf(iocompParams->debug,"inits \n"); 
 #endif
 
     herr_t status = H5open();
 		mpi_error_check(status); 
-#ifndef NDEBUG
+#ifdef VERBOSE
     fprintf(iocompParams->debug,"After H5open\n"); 
 #endif
     MPI_Info info  = MPI_INFO_NULL; 
@@ -44,13 +44,13 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams, int windowNu
         dimsf[i] = iocompParams->globalArray[i]; 
         count[i] = iocompParams->localArray[i]; 
         offset[i]= iocompParams->arrayStart[i]; 
-#ifndef NDEBUG
+#ifdef VERBOSE
         assert(dimsf[i] > 0); 
         assert(count[i] > 0); 
 #endif
     }
 		
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 	fprintf(iocompParams->debug, "HDF5 Write-> array specifiers \n"); 
 	fprintf(iocompParams->debug,"dimsf"); 
 	for(int i = 0; i < iocompParams->NDIM; i++)
@@ -77,7 +77,7 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams, int windowNu
 	 */
     plist_id = H5Pcreate(H5P_FILE_ACCESS); 
     H5Pset_fapl_mpio(plist_id, iocompParams->cartcomm, info);
-#ifndef NDEBUG
+#ifdef VERBOSE
     fprintf(iocompParams->debug,"file access \n"); 
 #endif
 
@@ -87,7 +87,7 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams, int windowNu
 		 
     file_id = H5Fcreate(iocompParams->writeFile[windowNum], H5F_ACC_TRUNC, H5P_DEFAULT, plist_id);
 
-#ifndef NDEBUG
+#ifdef VERBOSE
     fprintf(iocompParams->debug,"property list \n"); 
 #endif
 
@@ -119,7 +119,7 @@ void phdf5write(double* iodata, struct iocomp_params *iocompParams, int windowNu
 		
     status = H5Dwrite (dset_id, H5T_NATIVE_DOUBLE, memspace, filespace, 
             plist_id, iodata);
-#ifndef NDEBUG
+#ifdef VERBOSE
     fprintf(iocompParams->debug,"property list collective data writes \n"); 
 #endif
 

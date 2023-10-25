@@ -4,7 +4,7 @@
 #include <errno.h>
 #include "../include/iocomp.h"
 
-#ifndef NDEBUG
+#ifdef VERBOSE
 void initDebugFile(struct iocomp_params *iocompParams, int globalRank)
 {
 	// iocompParams->debug = NULL;

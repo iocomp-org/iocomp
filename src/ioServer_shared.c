@@ -19,7 +19,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	int ioRank, ierr; 
 	ierr = MPI_Comm_rank(iocompParams->ioComm, &ioRank); 
 	mpi_error_check(ierr); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 	fprintf(iocompParams->debug, "ioServer->IO server comm initialised IO rank %i\n", ioRank); 
 #endif 
 
@@ -55,17 +55,17 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	{
 		iocompParams->flag[i] = -1; 
 	} 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 	fprintf(iocompParams->debug, "ioServer->flag initialised with -1\n"); 
 #endif 
 
 	for(;;)  
 	{
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "ioServer->before MPI Bcast \n"); 
 #endif 
 		MPI_Bcast(iocompParams->wintestflags, iocompParams->numWin, MPI_INT, 0, iocompParams->newComm); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "ioServer -> after MPI bcast, iocompParams->wintestflags "); 
 		for(int i = 0; i < iocompParams->numWin; i++)
 		{
@@ -129,7 +129,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 			break; 
 		}
 	} 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 	fprintf(iocompParams->debug, "ioServerShared -> loop server exited \n"); 
 #endif 
 
@@ -139,7 +139,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 	 */ 
 	for(int i = 0; i < iocompParams->numWin; i++)
 	{
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "ioServerShared -> flag value %i for window %i\n", iocompParams->flag[i], i); 
 #endif 
 		// wait for completion of all windows 
@@ -148,21 +148,21 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 			winWait(iocompParams, i); 
 		}
 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "ioServerShared-> MPI barrier activated\n"); 
 #endif 
 		// MPI_Barrier(iocompParams->newComm); // wait till each process is finished  
 		winFree(iocompParams, i); 
 	} 
 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 	fprintf(iocompParams->debug, "ioServerShared-> all windows freed \n"); 
 #endif 
 	// Finalise ADIOS2 object
 	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
 	{
 		adios2_finalize(iocompParams->adios);
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "ioServer->adios2 finalised\n"); 
 #endif	
 	} 
@@ -186,7 +186,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			deleteFiles(iocompParams, i); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 			fprintf(iocompParams->debug, "ioServer->file/directory %s deleted \n", iocompParams->writeFile[i]); 
 #endif	
 		} 

@@ -11,7 +11,7 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 {
 	if(iocompParams->sharedFlag == true)
 	{
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"winInits->shared flag true");
 #endif
 		/* 
@@ -21,7 +21,7 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 		for(int i = 0; i < iocompParams->numWin; i++)
 		{
 			iocompParams->wintestflags[i] = 0; 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"winInits->Wintest flags for window %i = %i \n", i, iocompParams->wintestflags[i]);
 #endif
 		} 
@@ -32,13 +32,13 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 			ierr = MPI_Win_allocate_shared(sizeof(double)*localDataSize, sizeof(double), MPI_INFO_NULL, iocompParams->newComm, &iocompParams->array[i], &iocompParams->winMap[i]); 
 			mpi_error_check(ierr);
 		}
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"winInits->after window shared allocated \n");
 #endif
 	}
 	else
 	{
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"winInits->shared flag not true \n ");
 #endif
 		/*
@@ -48,11 +48,11 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 		{
 			iocompParams->array[i] = (double*)malloc(localDataSize*sizeof(double)); 
 			assert(iocompParams->array[i] != NULL); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug, "Memory address of array at %i 0x%" PRIXPTR "\n" ,i, (uintptr_t)iocompParams->array[i]);
 #endif
 		}
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"winInits->Arrays malloced \n");
 #endif
 	} 

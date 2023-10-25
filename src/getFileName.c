@@ -8,7 +8,7 @@
 
 void getFileName(struct iocomp_params *iocompParams, int i)
 {
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "getFileName -> entered \n"); 
 #endif 
 
@@ -20,7 +20,7 @@ void getFileName(struct iocomp_params *iocompParams, int i)
 		int ierr; 
 		int source, tag; 
 		MPI_Comm comm; 	
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "getFileName -> after if statement \n"); 
 #endif 
 
@@ -45,19 +45,19 @@ void getFileName(struct iocomp_params *iocompParams, int i)
 		} 
 
 		// Probe for an incoming message from I/O process
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "getFileName -> before MPI probe \n"); 
 #endif 
 		ierr = MPI_Probe(source, tag, comm, &status);
 		mpi_error_check(ierr); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "getFileName -> MPI probe \n"); 
 #endif 
 
 		// When probe returns, get size of filename 
 		ierr = MPI_Get_count(&status, MPI_CHAR, &size);
 		mpi_error_check(ierr); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "getFileName -> MPI get count with size %i\n", size); 
 #endif 
 		
@@ -70,14 +70,14 @@ void getFileName(struct iocomp_params *iocompParams, int i)
 		// Allocate a pointer to the double pointer plus space for extensions 
 		iocompParams->writeFile[i] = (char*)malloc(sizeof(char) * (size + 10));
 		assert(iocompParams->writeFile[i]!=NULL); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "getFileName -> MPI write file malloced  \n");
 #endif 
 
 		// Receive the filename message with the allocated buffer
 		ierr = MPI_Recv(iocompParams->writeFile[i], size, MPI_CHAR, source, tag, comm, MPI_STATUS_IGNORE); 
 		mpi_error_check(ierr); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 		fprintf(iocompParams->debug, "getFileName -> File name %s with size %i for window number %i \n", iocompParams->writeFile[i], size, i );
 #endif 
 	}

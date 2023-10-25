@@ -39,7 +39,7 @@ void mpiRead(double *readData, char* FILENAME, struct iocomp_params *iocompParam
 			MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh); 
 	mpi_error_check(ierr); 
 
-#ifndef NDEBUG   
+#ifdef VERBOSE   
 	fprintf(iocompParams->debug,"Cartcomm rank and size %i %i \n", myrank, nprocs); 
 	fprintf(iocompParams->debug,"arraygsize for rank %i : %i  \n",myrank, globalArray[0]	); 
 	fprintf(iocompParams->debug,"arraysubsize for rank %i : %i \n",myrank,localArray[0]); 
@@ -49,20 +49,20 @@ void mpiRead(double *readData, char* FILENAME, struct iocomp_params *iocompParam
 	ierr = MPI_Type_create_subarray(iocompParams->NDIM, globalArray, localArray, arrayStart,
 			MPI_ORDER_C, MPI_DOUBLE, &filetype); 
 	mpi_error_check(ierr); 
-#ifndef NDEBUG   
+#ifdef VERBOSE   
 	fprintf(iocompParams->debug,"MPI create subarray \n"); 
 #endif                                   
 
 	ierr = MPI_Type_commit(&filetype); 
 	mpi_error_check(ierr); 
-#ifndef NDEBUG   
+#ifdef VERBOSE   
 	fprintf(iocompParams->debug,"MPI type commit \n"); 
 #endif       
 
 	ierr = MPI_File_open(iocompParams->cartcomm, FILENAME, MPI_MODE_RDONLY, 
 			MPI_INFO_NULL, &fh); 
 	mpi_error_check(ierr); 
-#ifndef NDEBUG   
+#ifdef VERBOSE   
 	fprintf(iocompParams->debug,"MPI file open \n"); 
 #endif       
 
@@ -70,7 +70,7 @@ void mpiRead(double *readData, char* FILENAME, struct iocomp_params *iocompParam
 	ierr = MPI_File_set_view(fh, 0, MPI_DOUBLE, filetype, "native",  
 			MPI_INFO_NULL); 
 	mpi_error_check(ierr); 
-#ifndef NDEBUG   
+#ifdef VERBOSE   
 	fprintf(iocompParams->debug,"MPI file set view \n"); 
 #endif       
 
@@ -82,19 +82,19 @@ void mpiRead(double *readData, char* FILENAME, struct iocomp_params *iocompParam
 	}
 	ierr = MPI_File_read_all(fh, readData, total_data, MPI_DOUBLE, &status);   
 	mpi_error_check(ierr); 
-#ifndef NDEBUG   
+#ifdef VERBOSE   
 	fprintf(iocompParams->debug,"MPI file write all \n"); 
 #endif       
 
 	ierr = MPI_File_close(&fh);
 	mpi_error_check(ierr); 
-#ifndef NDEBUG   
+#ifdef VERBOSE   
 	fprintf(iocompParams->debug,"MPI file close \n"); 
 #endif       
 
 	ierr = MPI_Type_free(&filetype); 
 	mpi_error_check(ierr); 
-#ifndef NDEBUG   
+#ifdef VERBOSE   
 	fprintf(iocompParams->debug,"MPI filetype\n"); 
 #endif       
 

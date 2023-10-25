@@ -21,7 +21,7 @@ void sendFileName(struct iocomp_params *iocompParams, char* fileName)
 
 	ierr = MPI_Send(fileName, ((int)strlen(fileName)+1), MPI_CHAR, dest, tag, iocompParams->globalComm);  
 	mpi_error_check(ierr); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 	fprintf(iocompParams->debug, "preDataSend->file name sent %s with length %i\n", fileName, ((int)strlen(fileName)+1)) ; 
 #endif 
 

@@ -26,7 +26,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 	int globalRank; 
 	MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
 
-#ifndef NDEBUG
+#ifdef VERBOSE
 	fprintf(iocompParams->debug,"commSplit -> comm duplicate \n"); 
 #endif
 
@@ -77,7 +77,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 			iocompParams->pairPrintCounter = 0;  
 #endif 
 		}
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"commSplit -> colour assigned based on HIGH LOW ordering \n"); 
 #endif
 
@@ -86,7 +86,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		 */
 		ierr =	MPI_Comm_split(iocompParams->globalComm, iocompParams->colour, globalRank,	&splitComm);   
 		mpi_error_check(ierr);
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"commSplit -> MPI comm split \n"); 
 #endif
 
@@ -95,7 +95,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 			// compute communicator for compute tasks and colour != 0
 			ierr = MPI_Comm_dup(splitComm, &iocompParams->compServerComm);  
 			mpi_error_check(ierr); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"commSplit -> MPI compServerComm initialised \n"); 
 #endif
 		} 
@@ -105,7 +105,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 			// all other values get ioServerComm
 			ierr = MPI_Comm_dup(splitComm, &iocompParams->ioServerComm); // compute communicator for compute tasks and colour != 0 
 			mpi_error_check(ierr); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 			fprintf(iocompParams->debug,"commSplit -> MPI ioServerComm initialised \n"); 
 #endif
 		} 
@@ -119,7 +119,7 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		mpi_error_check(ierr); 
 		ierr = MPI_Comm_dup(iocompParams->globalComm, &iocompParams->ioServerComm); // compute communicator for compute tasks and colour != 0 
 		mpi_error_check(ierr); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"commSplit -> MPI ioServerComm and compServerComm set to globalComm for hyperthreads switched off\n"); 
 #endif
 	}

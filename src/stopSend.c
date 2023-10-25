@@ -27,7 +27,7 @@ void stopSend(struct iocomp_params *iocompParams)
 		ierr = MPI_Send(&ghost, 0 , MPI_DOUBLE, dest, tag,
 				iocompParams->globalComm); // every rank sends its portion of data 
 		mpi_error_check(ierr); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"stopSend -> Ghost message sent \n"); 
 #endif
 	}
@@ -41,18 +41,18 @@ void stopSend(struct iocomp_params *iocompParams)
 		}
 		dataSendInfo(iocompParams);
 
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"stopSend -> Barrier reached before Win free called \n"); 
 #endif
 		// MPI_Barrier(iocompParams->newComm); // wait till each process is free  
 		for(int i = 0; i < iocompParams->numWin; i++)
 		{
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 			fprintf(iocompParams->debug, "stopSend->window:%i Before win free\n", i); 
 #endif
 			int ierr = MPI_Win_free(&iocompParams->winMap[i]);
 			mpi_error_check(ierr); 
-#ifndef NDEBUG 
+#ifdef VERBOSE 
 			fprintf(iocompParams->debug, "stopSend->window:%i After win free\n", i); 
 #endif
 		} 
@@ -70,7 +70,7 @@ void stopSend(struct iocomp_params *iocompParams)
 		} 
 #endif 
 
-#ifndef NDEBUG
+#ifdef VERBOSE
 		fprintf(iocompParams->debug,"stopSend -> adios2 finalised with HT flag=%i \n", iocompParams->hyperthreadFlag); 
 #endif
 		// delete file function is called in ioServer

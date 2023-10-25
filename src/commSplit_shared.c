@@ -15,7 +15,7 @@ void commSplit_shared(struct iocomp_params *iocompParams)
 	colour = (int)globalRank/2; // IO rank and comp rank have same colour
 	int ierr = MPI_Comm_split(MPI_COMM_WORLD, colour, globalRank, &iocompParams->newComm); 
 	mpi_error_check(ierr); 
-#ifndef NDEBUG
+#ifdef VERBOSE
 	fprintf(iocompParams->debug,"iocompInit -> shared flag true, MPI comm split into pairs of compute and IO server \n"); 
 #endif
 

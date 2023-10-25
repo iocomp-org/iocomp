@@ -17,7 +17,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowN
 	MPI_Comm_size(iocompParams->ioServerComm, &ioSize);
 	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
 	
-#ifndef NDEBUG
+#ifdef VERBOSE
 	fprintf(iocompParams->debug,"ioLibraries -> Pass off to I/O libraries with ioLibNum %i  \n", iocompParams->ioLibNum);
 #endif
 
@@ -74,7 +74,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowN
 			printf("Invalid I/O library number \n"); 
 			break; 
 	} 
-#ifndef NDEBUG
+#ifdef VERBOSE
 	fprintf(iocompParams->debug,"ioLibraries -> end of switch for IO libraries\n");
 #endif
 #ifdef READBACK
