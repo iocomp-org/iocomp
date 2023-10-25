@@ -1,4 +1,4 @@
-test/*
+**/Object_files/*
 *.out 
 lib/* 
 build/* 
