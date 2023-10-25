@@ -53,6 +53,8 @@ int main(int argc, char** argv)
 	 * Compute Comm is the same as WORLD COMM  
 	 */ 
 	MPI_Comm computeComm = iocompInit(&iocompParams,comm, 0, testParams.io, NODESIZE, 0, NUMWIN); 
+	ioServerInitialise(&iocompParams);
+	arrayParamsInit(&iocompParams, comm); 
 	
 	// first set of tests: file is read, values are checked. 
 	STREAM_tests(&testParams, &iocompParams,  MPI_COMM_WORLD); 
