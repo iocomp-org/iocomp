@@ -1,4 +1,5 @@
 #include "../include/iocomp.h"
+#include <inttypes.h>
 /*! \file winInits.c
 	\brief Initialises windows for shared memory interfaces and otherwise. 
 
@@ -47,6 +48,9 @@ void winInits(struct iocomp_params *iocompParams, int localDataSize)
 		{
 			iocompParams->array[i] = (double*)malloc(localDataSize*sizeof(double)); 
 			assert(iocompParams->array[i] != NULL); 
+#ifndef NDEBUG
+			fprintf(iocompParams->debug, "Memory address of array at %i 0x%" PRIXPTR "\n" ,i, (uintptr_t)iocompParams->array[i]);
+#endif
 		}
 #ifndef NDEBUG
 		fprintf(iocompParams->debug,"winInits->Arrays malloced \n");

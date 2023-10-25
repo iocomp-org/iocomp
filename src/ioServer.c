@@ -37,7 +37,6 @@ void ioServer(struct iocomp_params *iocompParams)
 	 */ 
 	double* recv = NULL; 
 	int previousCount = -1; 
-
 	/*
 	 * Check for ghost messages, for ever loop activated
 	 */ 

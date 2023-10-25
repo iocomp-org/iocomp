@@ -18,7 +18,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	int myGlobalrank, ierr;  
 	MPI_Comm_rank(comm, &myGlobalrank); 
 	iocompParams->globalComm = comm; 
-
+	
 #ifndef NDEBUG
 	initDebugFile(iocompParams, myGlobalrank);
 	fprintf(iocompParams->debug, "MPI initialised \n");
