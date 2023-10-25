@@ -33,6 +33,7 @@ int main(int argc, char** argv)
 	 * initialise stream param structs using command line parameters
 	 */ 
 	arguments(&testParams, argc, argv); 
+	testParams.localDataSize = testParams.nx * testParams.ny;
 
 	MPI_Comm comm = MPI_COMM_WORLD; 
 	int rank; 
@@ -54,7 +55,7 @@ int main(int argc, char** argv)
 	MPI_Comm computeComm = iocompInit(&iocompParams,comm, 0, testParams.io, NODESIZE, 0, NUMWIN); 
 	
 	// first set of tests: file is read, values are checked. 
-	readTests(&testParams, &iocompParams,  MPI_COMM_WORLD); 
+	STREAM_tests(&testParams, &iocompParams,  MPI_COMM_WORLD); 
 	
 	MPI_Finalize(); 
 } 
