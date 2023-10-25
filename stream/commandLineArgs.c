@@ -7,7 +7,6 @@ void commandLineArgs(struct stream_params* streamParams, int globalRank, int arg
 	// default arguments 
 	streamParams->HT_flag = 0; 
 	streamParams->sharedFlag = 0;  
-	streamParams->testFlag = 0;  
 	streamParams->nx = 10; 
 	streamParams->ny = 10; 
 	streamParams->io = 0; 
