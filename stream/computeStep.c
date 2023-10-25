@@ -4,10 +4,10 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include "stdio.h"
 #include "mpi.h"
 #include "stream.h"
-
 
 void computeStep(struct iocomp_params *iocompParams, struct stream_params *streamParams, MPI_Comm comm)
 {
@@ -22,26 +22,32 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	double* c = NULL; // initialise data pointer  
 	double* a = NULL; // initialise data pointer  
 
+	printf("array local data size %li\n", streamParams->localDataSize); 
 	/*
 	 * Initialise a, b, c. 
 	 * Initialise shared windows associated with arrays *if* shared flag is true
 	 * otherwise return the malloced arrays with localDataSize 
 	 */ 
-	winInits(iocompParams, streamParams->localDataSize); 
-
+	winInits(iocompParams, (int)streamParams->localDataSize); 
+	
+	// init array 
+	//b = (double*)malloc(streamParams->localDataSize*sizeof(double)); 
+	//assert(b!=NULL); 
+	//c = (double*)malloc(streamParams->localDataSize*sizeof(double)); 
+	//assert(c!=NULL); 
+	//a = (double*)malloc(streamParams->localDataSize*sizeof(double)); 
+	//assert(a!=NULL); 
+	
 	b = iocompParams->array[0];
 	c = iocompParams->array[1];
 	a = iocompParams->array[2];
-	// b = iocompParams->array[0];
-
-	// tempororary mallocing of c for testing with scale array 
-	//c = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
-	//malloc_check(c); 
-	//a = (double*)malloc(streamParams->localDataSize*sizeof(double)); // one rank only sends to one rank
-	//malloc_check(a); 
 
 	if(streamParams->verboseFlag){
 		fprintf(streamParams->debug, "stream->arrays malloced \n");
+		for(int i = 0; i < NUMWIN; i++)
+		{
+			fprintf(streamParams->debug, "Memory address of array %i 0x%" PRIXPTR "\n",i, (uintptr_t)iocompParams->array[i]);
+		} 
 	}
 
 	for(int i = 0; i < streamParams->localDataSize; i++)
