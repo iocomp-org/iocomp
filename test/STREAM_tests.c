@@ -57,17 +57,17 @@ void STREAM_tests(struct test_params *testParams, struct iocomp_params *iocompPa
 				snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "A_%i%s",iter, ext[testParams->io]);
 			} 
 
-			if(!myRank){
+			if( (myRank==0) && (testParams->verbose==true) ){
 				printf("Verification tests starting for filename %s \n", readFile[windowNum]); 
 			} 
 			// read data from readFile  
 			read_ptr = readTest(testParams, iocompParams, readFile[windowNum]); 
 			if(read_ptr == NULL)
 			{
-				if(!myRank){
+				if( (myRank==0) && (testParams->verbose==true) ){
 					printf("Filename %s does not exist. \n", readFile[windowNum]); 
-					failed++; 
 				} 
+				failed++; 
 				break; 
 			} 
 
@@ -83,22 +83,22 @@ void STREAM_tests(struct test_params *testParams, struct iocomp_params *iocompPa
 			// if all processes return true then verification passes. 
 			if(test_reduced == 0)
 			{
-				if(!myRank)
+				if( (myRank==0) && (testParams->verbose==true) )
 				{	
 					printf("Verification failed for filename %s \n", readFile[windowNum]); 
-					failed++; 
 				} 
+				failed++; 
 			} 
 			else
 			{
-				if(!myRank)
+				if( (myRank==0) && (testParams->verbose==true) )
 				{	
 					printf("Verification passed for filename %s \n", readFile[windowNum]); 
-					passed++; 
 				} 
+				passed++; 
 			}
 #ifndef NODELETE
-			if(!myRank)
+			if( (myRank==0) && (testParams->verbose==true) )
 			{	
 				printf("Deleting file %s \n", readFile[windowNum]); 
 				deleteFilesTest(readFile[windowNum]); 

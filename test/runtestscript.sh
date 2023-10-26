@@ -1,24 +1,26 @@
-export TEST_HOME=TEST_OUTPUT
+export TEST_HOME='/home/shrey/Coding/iocomp/test/TEST_OUTPUT' 
 export STREAM_EXE='/home/shrey/Coding/iocomp/stream/test' 
+export CONFIG_FILE='/home/shrey/Coding/iocomp/stream/run_dir/config.xml' 
 export TEST_EXE='/home/shrey/Coding/iocomp/test/test' 
 
 setup() {
 	rm -rf ${TEST_DIR} 
 	mkdir -p ${TEST_DIR} 
 	cd ${TEST_DIR} 
+	cp ${CONFIG_FILE} . 
 } 
 
 # MPI cores
-CORES_START=2
+CORES_START=4
 CORES_END=4
 
 # controls NX and NY parameters
-ARRAY_START=1
+ARRAY_START=2
 ARRAY_END=3
 
 # IO libraries selection 
-IO_START=0
-IO_END=2
+IO_START=3
+IO_END=3
 
 # STREAM tests in HT flag 
 echo 'Testing HT configuration'
@@ -34,7 +36,9 @@ do
 			TEST_DIR=${TEST_HOME}/${CORES}/${NX}/${NY}/${IO}
 			setup
 			mpirun.mpich -n ${CORES} ${STREAM_EXE} --nx ${NX} --ny ${NY} --io ${IO} --HT 
+			sleep 1
 			mpirun.mpich -n ${CORES} ${TEST_EXE} --nx ${NX} --ny ${NY} --io ${IO} 
+			sleep 1 
 		done 
 	done
 done 
