@@ -61,7 +61,7 @@ void STREAM_tests(struct test_params *testParams, struct iocomp_params *iocompPa
 				printf("Verification tests starting for filename %s \n", readFile[windowNum]); 
 			} 
 			// read data from readFile  
-			read_ptr = readTest(testParams, iocompParams, readFile[windowNum]); 
+			read_ptr = readFiles(testParams, iocompParams, readFile[windowNum]); 
 			if(read_ptr == NULL)
 			{
 				if( (myRank==0) && (testParams->verbose==true) ){
