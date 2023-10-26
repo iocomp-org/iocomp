@@ -36,7 +36,7 @@ double* readFiles(struct test_params *testParams, struct iocomp_params *iocompPa
 			return(NULL); 
 		}
 	} 
-	else if( (testParams->io == 2) || (testParams->io == 3) || (testParams->io == 4))
+	else if( (testParams->io == 2) || (testParams->io == 3) )
 	{
 		if(file_exists(readFile)) 
 		{
@@ -46,6 +46,11 @@ double* readFiles(struct test_params *testParams, struct iocomp_params *iocompPa
 		{
 			return(NULL); 
 		}
+	}
+	else
+	{
+		printf("Invalid option. Quiting \n"); 
+		exit(1); 
 	}
 	
 	return(readData); 
