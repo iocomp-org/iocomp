@@ -54,6 +54,7 @@ int main(int argc, char** argv)
 	 */ 
 	MPI_Comm computeComm = iocompInit(&iocompParams,comm, 0, testParams.io, NODESIZE, 0, NUMWIN); 
 	ioServerInitialise(&iocompParams);
+  iocompParams.localDataSize = testParams.localDataSize; 
 	arrayParamsInit(&iocompParams, comm); 
 	
 	// first set of tests: file is read, values are checked. 

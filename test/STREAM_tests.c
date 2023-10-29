@@ -98,9 +98,12 @@ void STREAM_tests(struct test_params *testParams, struct iocomp_params *iocompPa
 				passed++; 
 			}
 #ifndef NODELETE
-			if( (myRank==0) && (testParams->verbose==true) )
-			{	
-				printf("Deleting file %s \n", readFile[windowNum]); 
+			if(myRank==0) 
+      {
+        if(testParams->verbose==true)
+        {	
+          printf("Deleting file %s \n", readFile[windowNum]); 
+        } 
 				deleteFilesTest(readFile[windowNum]); 
 			} 
 			MPI_Barrier(comm); 
