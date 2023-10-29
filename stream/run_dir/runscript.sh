@@ -13,21 +13,30 @@ NODE_START=0
 NODE_END=0
 
 # I/O selection range 
-IO_START=1
-IO_END=1
+IO_START=0
+IO_END=0
 
 # Job numbers for averaging 
 ARRAY="0"
 
 # time per job for custom time
-TIME="00:05:00"
+TIME="00:10:00"
 
 # shared, HT or none? 
-FLAG="shared"
+# FLAG="shared"
+FLAG="HT"
 
-# directory for weak scaling 
-DIR=OUTPUT/v2.0.0/COMPARISON
+# directory. Check if flag defined as HT or shared. 
+# If not defined, then save under nosplit. 
+if [ -n "$FLAG" ];
+then 
+  DIR=OUTPUT/v2.0.0/TESTING/${FLAG}
+else
+  DIR=OUTPUT/v2.0.0/TESTING/NOSPLIT
+fi 
+
 source weakScaling.sh 
+
 
 
 # directory for strong scaling 

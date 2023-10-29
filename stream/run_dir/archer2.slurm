@@ -25,8 +25,9 @@ export LD_LIBRARY_PATH=${ADIOS2_DIR}/lib64:${LD_LIBRARY_PATH}
 
 # set file dirs for executable and make files that will be copied to rundir 
 export EXE=${STREAM_DIR}/stream/test # production run 
-export IOCOMP_MAKEOUTPUT=${STREAM_DIR}/src/make.out # production run 
-export STREAM_MAKEOUTPUT=${STREAM_DIR}/stream/make.out # production run 
+export TEST_EXE=${STREAM_DIR}/test/test # test script
+export IOCOMP_MAKEOUTPUT=${STREAM_DIR}/src/iocomp_make.out # production run 
+export STREAM_MAKEOUTPUT=${STREAM_DIR}/stream/stream_make.out # production run 
 export CONFIG=${SLURM_SUBMIT_DIR}/config.xml 
 
 # Ensure the cpus-per-task option is propagated to srun commands
@@ -55,7 +56,6 @@ export OMP_NUM_THREADS=1
 export MAP=0
 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
-i=${SLURM_ARRAY_TASK_ID} 
 HALF_CORES=$((${SLURM_NTASKS_PER_NODE}/2)) 
 FULL_CORES=$((${SLURM_NTASKS_PER_NODE})) 
 HALF_NODES=$((${SLURM_NNODES}/2))
@@ -67,7 +67,7 @@ echo "Job started " $(date +"%T") "size " ${SIZE} MiB # start time
 
 for IO in $(seq ${IO_START} ${IO_END})
 do 
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${FLAG}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}
+  export PARENT_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}
 
   # Case 1 
   # source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh

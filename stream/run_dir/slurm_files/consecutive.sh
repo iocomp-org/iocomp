@@ -15,5 +15,9 @@ bar=$(IFS=, ; echo "${vals[*]}")
 #fi 
 srun ${EXE} --nx ${NX} --ny ${NY} --io ${IO} --${FLAG} > test.out 
 
+#wait 
+
+#srun ${TEST_EXE} --nx ${NX} --ny ${NY} --io ${IO}  >> test.out 
+
 echo "JOB ID"  $SLURM_JOBID >> test.out
 echo "JOB NAME" ${SLURM_JOB_NAME} >> test.out
