@@ -9,22 +9,22 @@ NX=$((2**11))
 NY=$((2**11)) 
 
 # node start and end as power of 2s 
-NODE_START=0
-NODE_END=0
+NODE_START=1
+NODE_END=1
 
 # I/O selection range 
-IO_START=1
-IO_END=1
+IO_START=0
+IO_END=3
 
 # Job numbers for averaging 
 ARRAY="0"
 
 # time per job for custom time
-TIME="00:02:00"
+TIME="00:20:00"
 
 # shared, HT or none? 
-# FLAG="shared"
-FLAG="HT"
+FLAG="shared"
+# FLAG="HT"
 
 # directory. Check if flag defined as HT or shared. 
 # If not defined, then save under nosplit. 
