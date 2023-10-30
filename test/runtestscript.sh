@@ -24,8 +24,8 @@ IO_START=0
 IO_END=3
 
 # flag
-#FLAG=HT
-FLAG=shared
+FLAG=HT
+# FLAG=shared
 
 # STREAM tests in HT flag 
 echo 'Testing ' ${FLAG} ' configuration'
@@ -50,7 +50,7 @@ do
 			else
 				TEST_CORES=${CORES}
 			fi 
-			mpirun.mpich -n ${TEST_CORES} ${TEST_EXE} --nx ${NX} --ny ${NY} --io ${IO} --v 
+			mpirun.mpich -n ${TEST_CORES} ${TEST_EXE} --nx ${NX} --ny ${NY} --io ${IO}
 			sleep 5
 		done 
 	done

@@ -4,7 +4,7 @@ CFLAGS = -g -Wall -Wpedantic -Werror  -Wno-unused-variable -Wno-unused-but-set-v
 
 # define compile time flags 
 # DADIOS2_USE_MPI for adios2 
-CFLAGS += -DADIOS2_USE_MPI # -DNODELETE
+CFLAGS += -DADIOS2_USE_MPI -DNODELETE
 
 # linker flags
 LFLAGS += -I$(STREAM_DIR) -I$(IOCOMP_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 

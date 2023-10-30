@@ -7,7 +7,7 @@
 #ifdef VERBOSE
 void initDebugFile(struct iocomp_params *iocompParams, int globalRank)
 {
-	// iocompParams->debug = NULL;
+	iocompParams->debug = NULL;
 	if(!iocompParams->debug)
 	{
 		// print out debug statements  

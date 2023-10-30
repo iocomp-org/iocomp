@@ -68,7 +68,7 @@ void getFileName(struct iocomp_params *iocompParams, int i)
 			i = 0; 
 		}
 		// Allocate a pointer to the double pointer plus space for extensions 
-		iocompParams->writeFile[i] = (char*)malloc(sizeof(char) * (size + 10));
+		iocompParams->writeFile[i] = (char*)malloc(sizeof(char) * (size));
 		assert(iocompParams->writeFile[i]!=NULL); 
 #ifdef VERBOSE 
 		fprintf(iocompParams->debug, "getFileName -> MPI write file malloced  \n");

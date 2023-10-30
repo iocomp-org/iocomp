@@ -44,17 +44,20 @@ void STREAM_tests(struct test_params *testParams, struct iocomp_params *iocompPa
 			if(windowNum == 0)
 			{
 				val = b; 
-				snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "B_%i%s",iter, ext[testParams->io]);
+				// snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "B_%i%s",iter, ext[testParams->io]);
+				snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "B_%i",iter);
 			} 
 			else if(windowNum == 1)
 			{
 				val = c; 
-				snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "C_%i%s",iter, ext[testParams->io]);
+				// snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "C_%i%s",iter, ext[testParams->io]);
+				snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "C_%i",iter);
 			} 
 			else
 			{
 				val = a; 
-				snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "A_%i%s",iter, ext[testParams->io]);
+				// snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "A_%i%s",iter, ext[testParams->io]);
+				snprintf(readFile[windowNum], sizeof(readFile[windowNum]), "A_%i",iter);
 			} 
 
 			if( (myRank==0) && (testParams->verbose==true) ){
