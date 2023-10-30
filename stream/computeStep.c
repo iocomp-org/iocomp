@@ -22,6 +22,9 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	double* c = NULL; // initialise data pointer  
 	double* a = NULL; // initialise data pointer  
 
+	// extension for filenames 
+	char ext[5][5] = {".dat", ".h5", ".h5", "", ""};
+
 	/*
 	 * Initialise a, b, c. 
 	 * Initialise shared windows associated with arrays *if* shared flag is true
@@ -117,7 +120,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 		{
 			winActivateInfo(iocompParams, b); 
 		}
-		snprintf(fileWrite_SCALE, sizeof(fileWrite_SCALE), "B_%i",iter);
+		snprintf(fileWrite_SCALE, sizeof(fileWrite_SCALE), "B_%i%s",iter, ext[streamParams->io]);
 		preDataSend(iocompParams, b, fileWrite_SCALE); 
 		scale(iocompParams, streamParams, iter, c, b);
 		scale_send(iocompParams, streamParams, iter, b);
@@ -139,7 +142,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 			winActivateInfo(iocompParams, c); 
 			winTestInfo(iocompParams, b); 
 		}
-		snprintf(fileWrite_ADD, sizeof(fileWrite_ADD), "C_%i",iter);
+		snprintf(fileWrite_ADD, sizeof(fileWrite_ADD), "C_%i%s",iter, ext[streamParams->io]);
 		preDataSend(iocompParams, c, fileWrite_ADD); 
 		add(iocompParams, streamParams, iter, c, a, b);
 		add_send(iocompParams, streamParams, iter, c);
@@ -162,7 +165,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 			winTestInfo(iocompParams, b); 
 			winTestInfo(iocompParams, c); 
 		}
-		snprintf(fileWrite_TRIAD, sizeof(fileWrite_TRIAD), "A_%i",iter);
+		snprintf(fileWrite_TRIAD, sizeof(fileWrite_TRIAD), "A_%i%s",iter,ext[streamParams->io]);
 		preDataSend(iocompParams, a, fileWrite_TRIAD); 
 		triad(iocompParams, streamParams, iter, c, a, b);
 		triad_send(iocompParams, streamParams, iter, a);
