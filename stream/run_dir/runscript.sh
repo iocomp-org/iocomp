@@ -13,14 +13,14 @@ NODE_START=0
 NODE_END=0
 
 # I/O selection range 
-IO_START=0
-IO_END=0
+IO_START=1
+IO_END=1
 
 # Job numbers for averaging 
 ARRAY="0"
 
 # time per job for custom time
-TIME="00:10:00"
+TIME="00:02:00"
 
 # shared, HT or none? 
 # FLAG="shared"
