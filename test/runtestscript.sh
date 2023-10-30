@@ -12,8 +12,8 @@ setup() {
 } 
 
 # MPI cores
-CORES_START=4
-CORES_END=4
+CORES_START=6
+CORES_END=8
 
 # controls NX and NY parameters
 ARRAY_START=2
@@ -41,17 +41,17 @@ do
 			TEST_DIR=${TEST_HOME}/${CORES}/${NX}/${NY}/${IO}
 			setup
 			mpirun.mpich -n ${CORES} ${STREAM_EXE} --nx ${NX} --ny ${NY} --io ${IO} --${FLAG} 
-			sleep 5
-			echo testing in; echo ${TEST_DIR}
-			# if flag activated then only half ranks are writing and global size is
-			# also halved. 
-			if [ -n ${FLAG} ]; then 
-				TEST_CORES=$((${CORES}/2))
-			else
-				TEST_CORES=${CORES}
-			fi 
-			mpirun.mpich -n ${TEST_CORES} ${TEST_EXE} --nx ${NX} --ny ${NY} --io ${IO}
-			sleep 5
+			#sleep 5
+			#echo testing in; echo ${TEST_DIR}
+			## if flag activated then only half ranks are writing and global size is
+			## also halved. 
+			#if [ -n ${FLAG} ]; then 
+			#	TEST_CORES=$((${CORES}/2))
+			#else
+			#	TEST_CORES=${CORES}
+			#fi 
+			#mpirun.mpich -n ${TEST_CORES} ${TEST_EXE} --nx ${NX} --ny ${NY} --io ${IO}
+			#sleep 5
 		done 
 	done
 done 
