@@ -32,9 +32,10 @@ void getFileName(struct iocomp_params *iocompParams, int i)
 		{
 			source = getPair(iocompParams); 
 			int globalRank; 
+			int globalSize; 
 			MPI_Comm_rank(iocompParams->globalComm, &globalRank); 
-			// tag = globalRank; 
-			tag = 5; 
+			MPI_Comm_size(iocompParams->globalComm, &globalSize); 
+			tag = globalSize; 
 			comm = iocompParams->globalComm; 
 		}
 		else
@@ -75,6 +76,9 @@ void getFileName(struct iocomp_params *iocompParams, int i)
 #endif 
 
 		// Receive the filename message with the allocated buffer
+#ifdef VERBOSE 
+		printf("getFileName->tag = %i, source = %i \n", tag, source); 
+#endif 
 		ierr = MPI_Recv(iocompParams->writeFile[i], size, MPI_CHAR, source, tag, comm, MPI_STATUS_IGNORE); 
 		mpi_error_check(ierr); 
 #ifdef VERBOSE 
