@@ -13,11 +13,20 @@ bar=$(IFS=, ; echo "${vals[*]}")
 #else 
 #srun  --hint=nomultithread  --distribution=block:block  --nodes=${SLURM_NNODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --HT --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
 #fi 
+
 srun ${EXE} --nx ${NX} --ny ${NY} --io ${IO} --${FLAG} > test.out 
 
-#wait 
+wait 
 
-#srun ${TEST_EXE} --nx ${NX} --ny ${NY} --io ${IO}  >> test.out 
+# halve the global size if flag is activated as only half ranks will be writing. 
+if [[ -n ${FLAG} ]];
+then 
+  NX_TEST=$(( ${NX}/2 )) 
+else
+  NX_TEST=${NX}
+fi 
+
+srun ${TEST_EXE} --nx ${NX_TEST} --ny ${NY} --io ${IO}  >> test.out 
 
 echo "JOB ID"  $SLURM_JOBID >> test.out
 echo "JOB NAME" ${SLURM_JOB_NAME} >> test.out
