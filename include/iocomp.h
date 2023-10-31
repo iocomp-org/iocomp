@@ -181,7 +181,6 @@ extern "C" {
 	// Shared memory additions 
 	void ioServer_shared(struct iocomp_params *iocompParams); 
 	void fileWrite(struct iocomp_params *iocompParams, double* iodata, int* loopCounter, int windowNum); 
-	void fileNameInit(struct iocomp_params *iocompParams, char filenames[iocompParams->numWin][100]); 
 	void winInits(struct iocomp_params *iocompParams, int localdatasize); 
 	void dataSendEnd(struct iocomp_params *iocompParams, double* array); 
 	void dataSendStart(struct iocomp_params *iocompParams, double* array); 
