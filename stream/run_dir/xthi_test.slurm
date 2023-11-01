@@ -1,13 +1,12 @@
 #!/bin/bash --login
-#SBATCH --job-name=stream
+#SBATCH --job-name=xthi
 #SBATCH --nodes=1
 #SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
-#SBATCH --time=00:10:00
+#SBATCH --time=00:2:00
 #SBATCH --account=e609
 #SBATCH --partition=standard 
-#SBATCH --qos=lowpriority
-##SBATCH --array=0-2
+#SBATCH --qos=standard
 
 module swap PrgEnv-cray/8.0.0 PrgEnv-gnu
 module load cmake 
@@ -27,44 +26,35 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ADIOS2_DIR}/lib64:${IOCOMP_DIR}/lib
 export CONFIG=${SLURM_SUBMIT_DIR}/config.xml 
 export MAP=0
 export STREAM_DIR=$(cd ${SLURM_SUBMIT_DIR}/../../ && pwd) 
-#export EXE=${STREAM_DIR}/stream/test
 export EXE=xthi
 export FI_OFI_RXM_SAR_LIMIT=64K #ARCHER2 flag for I/O performance 
-export UCX_IB_REG_METHODS=direct
-#export NX=4096
-#export NY=4096
+export STREAM_DIR=$(cd ${SLURM_SUBMIT_DIR}/../../ && pwd) 
+export IOCOMP_MAKEOUTPUT=${STREAM_DIR}/src/iocomp_make.out # production run 
+export STREAM_MAKEOUTPUT=${STREAM_DIR}/stream/stream_make.out # production run 
 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
 i=${SLURM_ARRAY_TASK_ID} 
-HALF_CORES=$((${SLURM_NTASKS_PER_NODE}/2)) 
-FULL_CORES=$((${SLURM_NTASKS_PER_NODE})) 
-HALF_NODES=$((${SLURM_NNODES}/2))
-TOTAL_RANKS=$(($SLURM_NNODES * $SLURM_NTASKS_PER_NODE))
 
 echo "Job started " $(date +"%T") # start time
 
-for IO in {0..0}
-do 
-  #export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1.2/GLOBAL/64GiB/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${IOLAYERS[${IO}]}
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/TEST/GLOBAL/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${IOLAYERS[${IO}]}
+#export PARENT_DIR=${SLURM_SUBMIT_DIR}/v1.1.2/GLOBAL/64GiB/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${IOLAYERS[${IO}]}
+export PARENT_DIR=${SLURM_SUBMIT_DIR}/xthi/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}
 
-  # Case 1 
-  export UCX_IB_REG_METHODS=direct
-  source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
-  wait 
-  # Case 2
-  source ${SLURM_SUBMIT_DIR}/slurm_files/oversubscribe.sh 
-  wait 
-  # Case 3
-  export UCX_IB_REG_METHODS=direct
-  source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
-  wait 
-  # Case 4
-  export UCX_IB_REG_METHODS=direct
-  source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
-  wait 
-
-done 
+# Case 1 
+export UCX_IB_REG_METHODS=direct
+source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
+# wait 
+# Case 2
+##export UCX_IB_REG_METHODS=direct
+##source ${SLURM_SUBMIT_DIR}/slurm_files/oversubscribe.sh 
+##wait 
+# Case 3
+#export UCX_IB_REG_METHODS=direct
+#source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
+#wait 
+### Case 4
+#export UCX_IB_REG_METHODS=direct
+#source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
 
 echo $(module list) 
 

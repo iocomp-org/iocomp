@@ -9,35 +9,24 @@ NX=$((2**11))
 NY=$((2**11)) 
 
 # node start and end as power of 2s 
-NODE_START=1
-NODE_END=1
+NODE_START=0
+NODE_END=0
 
 # I/O selection range 
 IO_START=0
-IO_END=3
+IO_END=0 
 
 # Job numbers for averaging 
 ARRAY="0"
 
 # time per job for custom time
-TIME="00:20:00"
+TIME="00:05:00"
 
-# shared, HT or none? 
-FLAG="shared"
-# FLAG="HT"
+# Directory for the tests 
+DIR=OUTPUT/v2.0.0/TESTING
 
-# directory. Check if flag defined as HT or shared. 
-# If not defined, then save under nosplit. 
-if [ -n "$FLAG" ];
-then 
-  DIR=OUTPUT/v2.0.0/TESTING/${FLAG}
-else
-  DIR=OUTPUT/v2.0.0/TESTING/NOSPLIT
-fi 
-
+# weak scaling script 
 source weakScaling.sh 
-
-
 
 # directory for strong scaling 
 #DIR=v1.1.4/STRONG
