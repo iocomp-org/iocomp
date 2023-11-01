@@ -17,15 +17,15 @@ void add(struct iocomp_params *iocompParams, struct stream_params* streamParams,
 		for(int i = 0; i< streamParams->localDataSize; i++) // actual copy kernel 
 		{
 			c[i] = a[i] + b[i]; 
-			//#ifdef MPI_TESTS
-			//			if(iter%WRITE_FREQ == 0) // only when scale sends data 
-			//			{
-			//				streamParams->mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE]); 
-			//			} 
-			//} 
-	}
-} 
-streamParams->compTimer[ADD][iter] = MPI_Wtime() - timerStart;  // computeTime for ADD 
+#ifdef MPI_TESTS
+			if(iter%WRITE_FREQ == 0) // only when scale sends data 
+			{
+				streamParams->mpiWaitFlag[SCALE]=dataSendTest(iocompParams,&streamParams->requestArray[SCALE]); 
+			} 
+#endif 
+		}
+	} 
+	streamParams->compTimer[ADD][iter] = MPI_Wtime() - timerStart;  // computeTime for ADD 
 }
 
 void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* array, char* fileWrite)

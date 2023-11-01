@@ -41,17 +41,16 @@ do
 			TEST_DIR=${TEST_HOME}/${CORES}/${NX}/${NY}/${IO}
 			setup
 			mpirun.mpich -n ${CORES} ${STREAM_EXE} --nx ${NX} --ny ${NY} --io ${IO} --${FLAG} 
-			#sleep 5
-			#echo testing in; echo ${TEST_DIR}
-			## if flag activated then only half ranks are writing and global size is
-			## also halved. 
-			#if [ -n ${FLAG} ]; then 
-			#	TEST_CORES=$((${CORES}/2))
-			#else
-			#	TEST_CORES=${CORES}
-			#fi 
-			#mpirun.mpich -n ${TEST_CORES} ${TEST_EXE} --nx ${NX} --ny ${NY} --io ${IO}
-			#sleep 5
+			sleep 2
+			# if flag activated then only half ranks are writing and global size is
+			# also halved. 
+			if [ -n ${FLAG} ]; then 
+				NX_TEST=$((${NX}/2))
+			else
+				NX_TEST=${NX}
+			fi 
+			mpirun.mpich -n ${CORES} ${TEST_EXE} --nx ${NX_TEST} --ny ${NY} --io ${IO}
+			sleep 5
 		done 
 	done
 done 
