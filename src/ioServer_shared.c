@@ -170,27 +170,5 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 #ifdef IOBW
 	iobw(iocompParams); 
 #endif 
-
-#ifdef VERIFY
-	if(!ioRank)
-	{
-		printf("Verification started \n"); 
-	}
-	verify(iocompParams); 
-#endif
-
-#ifndef NODELETE
-	MPI_Barrier(iocompParams->ioComm); 
-	if(!ioRank)
-	{
-		for(int i = 0; i < iocompParams->numWin; i++)
-		{
-			deleteFiles(iocompParams, i); 
-#ifdef VERBOSE 
-			fprintf(iocompParams->debug, "ioServer->file/directory %s deleted \n", iocompParams->writeFile[i]); 
-#endif	
-		} 
-	} 
-#endif 
 } 
 

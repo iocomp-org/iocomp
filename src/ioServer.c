@@ -86,16 +86,6 @@ void ioServer(struct iocomp_params *iocompParams)
 				adios2_finalize(iocompParams->adios); 
 			} 
 #endif 
-#ifndef NODELETE
-			MPI_Barrier(iocompParams->ioServerComm); // wait for all files to finish writing  
-			if(ioRank == 0)
-			{
-				deleteFiles(iocompParams, 0); // delete files 
-#ifdef VERBOSE
-				fprintf(iocompParams->debug,"ioServer -> files deleted\n"); 	
-#endif
-			} 
-#endif
 			break; 
 		}
 
