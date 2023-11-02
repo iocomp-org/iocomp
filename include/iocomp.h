@@ -135,7 +135,7 @@ extern "C" {
 		int writeCount; 
 		
 		// store timings, 100 as an arbitrary large number 
-#ifdef IOCOMP_TIMERS
+#ifndef NOTIMERS
 		double writeTime[100]; 
 		double timerStart[100]; 
 #endif 

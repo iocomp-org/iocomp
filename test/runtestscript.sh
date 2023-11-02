@@ -12,8 +12,8 @@ setup() {
 } 
 
 # MPI cores
-CORES_START=1
-CORES_END=1
+CORES_START=2
+CORES_END=2
 
 # controls NX and NY parameters
 ARRAY_START=2
