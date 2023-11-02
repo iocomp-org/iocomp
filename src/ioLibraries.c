@@ -25,21 +25,21 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowN
 	switch(iocompParams->ioLibNum){
 
 		case 0:
-#ifdef IOCOMP_TIMERS
+#ifndef NOTIMERS
 			iocompParams->timerStart[iocompParams->writeCount] = MPI_Wtime(); 
 #endif 
 			mpiiowrite(iodata, iocompParams, windowNum);
-#ifdef IOCOMP_TIMERS
+#ifndef NOTIMERS
 			iocompParams->writeTime[iocompParams->writeCount] = MPI_Wtime() - iocompParams->timerStart[iocompParams->writeCount];
 #endif 
 			break; 
 #ifndef NOHDF5
 		case 1: 
-#ifdef IOCOMP_TIMERS
+#ifndef NOTIMERS
 			iocompParams->timerStart[iocompParams->writeCount] = MPI_Wtime();
 #endif 
 			phdf5write(iodata, iocompParams, windowNum);
-#ifdef IOCOMP_TIMERS
+#ifndef NOTIMERS
 			iocompParams->writeTime[iocompParams->writeCount] = MPI_Wtime() - iocompParams->timerStart[iocompParams->writeCount]; 
 #endif 
 			break; 
@@ -50,11 +50,11 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowN
 			 */ 
 #ifndef NOADIOS2
 		case 2: case 3: case 4: 
-#ifdef IOCOMP_TIMERS
+#ifndef NOTIMERS
 			iocompParams->timerStart[iocompParams->writeCount] = MPI_Wtime();
 #endif 
 			adioswrite(iodata, iocompParams, windowNum);
-#ifdef IOCOMP_TIMERS
+#ifndef NOTIMERS
 			iocompParams->writeTime[iocompParams->writeCount] = MPI_Wtime() - iocompParams->timerStart[iocompParams->writeCount];
 #endif 
 			break; 

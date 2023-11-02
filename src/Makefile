@@ -8,13 +8,13 @@ CFLAGS = -fpic -shared -g -DADIOS2_USE_MPI  -Wall -Wpedantic -Werror -Wextra
 
 # enable and disable different iocomp related flags 
 # DVERBOSE for including error messages 
-# DIOCOMP_TIMERS for printing out time taken to write by ioLibraries.c 
+# DNOTIMERS for disabling timing and printing of timers 
 # DPRINT_ORDERING for printing out orders of splitting between compute and I/O
 # processes
 # DREADACK for printing after the data is written into different files 
 # DNOADIOS2 for disabling ADIOS2 
 # DNOHDF5 for disabling HDF5 
-IOCOMP_FLAGS += -DIOCOMP_TIMERS # -DVERBOSE #-DPRINT_ORDERING ##-DREADBACK  ##
+IOCOMP_FLAGS += 
 
 # linker flags
 LFLAGS = -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 

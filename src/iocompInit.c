@@ -95,7 +95,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #endif
 
 			/* write timers to file after reducing across ranks*/
-#ifdef IOCOMP_TIMERS
+#ifndef NOTIMERS
 			printWriteTimers(iocompParams); 
 #endif
 
@@ -166,7 +166,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #endif
 
 			/* write timers to file after reducing across ranks*/
-#ifdef IOCOMP_TIMERS
+#ifndef NOTIMERS
 			printWriteTimers(iocompParams); 
 #endif
 
