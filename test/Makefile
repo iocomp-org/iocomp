@@ -1,6 +1,6 @@
 # define c compiler 
 CC = cc  
-CFLAGS = -g -Wall -Wpedantic -Werror  -Wno-unused-variable -Wno-unused-but-set-variable
+CFLAGS = -O2 -Wall -Wpedantic -Werror  -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
 # DADIOS2_USE_MPI for adios2 

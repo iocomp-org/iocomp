@@ -7,7 +7,7 @@ CFLAGS = -Wall -Wpedantic -Werror  -Wno-unused-variable -Wno-unused-but-set-vari
 # DADIOS2_USE_MPI for adios2 
 # DNOADIOS2 for disabling ADIOS2 in iocomp 
 # DNOHDF5 for disabling HDF5 in iocomp 
-CFLAGS += -g -DADIOS2_USE_MPI # -DMPI_TESTS # #-DNOADIOS2 -DNOHDF5 
+CFLAGS += -O2 -DADIOS2_USE_MPI # -DMPI_TESTS # #-DNOADIOS2 -DNOHDF5 
 
 # linker flags
 LFLAGS +=  -I$(IOCOMP_DIR)/include -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
