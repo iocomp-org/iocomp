@@ -43,7 +43,8 @@ int main(int argc, char** argv)
 	// data parameters definitions 
 
 	if(!rank){
-		printf("size of array %i x %i IO num %i \n", testParams.nx, testParams.ny, testParams.io); 
+		printf("Testing for STREAM benchmark output started. \n"); 
+		printf("Size of array %i x %i IO num %i \n", testParams.nx, testParams.ny, testParams.io); 
 	} 
 
 	/*
@@ -61,5 +62,8 @@ int main(int argc, char** argv)
 	STREAM_tests(&testParams, &iocompParams,  MPI_COMM_WORLD); 
 	
 	MPI_Finalize(); 
+	if(!rank){
+		printf("Testing ends\n"); 
+	} 
 } 
 

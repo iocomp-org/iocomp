@@ -33,7 +33,7 @@ void stopSend(struct iocomp_params *iocompParams)
 	}
 	else if(iocompParams->sharedFlag)
 	{
-		
+
 		// send win free message to control arrays 
 		for(int i = 0; i < iocompParams->numWin; i++)
 		{
@@ -72,6 +72,13 @@ void stopSend(struct iocomp_params *iocompParams)
 
 #ifdef VERBOSE
 		fprintf(iocompParams->debug,"stopSend -> adios2 finalised with HT flag=%i \n", iocompParams->hyperthreadFlag); 
+#endif
+		/* write timers to file after reducing across ranks*/
+#ifndef NOTIMERS
+		printWriteTimers(iocompParams); 
+#ifdef VERBOSE
+		fprintf(iocompParams->debug,"stopSend -> print write timers\n"); 
+#endif
 #endif
 	}
 } 

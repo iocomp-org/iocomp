@@ -33,19 +33,20 @@ int main(int argc, char** argv)
 	commandLineArgs(&streamParams, rank, argc, argv); 
 
 	if(!rank){
+		printf("STREAM benchmark starts with size %i \n", size);
 		if (streamParams.HT_flag)
 		{
-			puts ("HT flag is set to on");
+			puts("HT flag is set to on");
 			printf("size of array %i x %i IO num %i \n", streamParams.nx, streamParams.ny, streamParams.io); 
 		} 
 		else if (streamParams.sharedFlag)
 		{
-			puts ("Shared flag is set to on");
+			puts("Shared flag is set to on");
 			printf("size of array %i x %i IO num %i \n", streamParams.nx, streamParams.ny, streamParams.io); 
 		} 
 		else 
 		{
-			puts ("HT flag is switched off"); 
+			puts("HT flag is switched off"); 
 			printf("size of array %i x %i IO num %i \n", streamParams.nx, streamParams.ny, streamParams.io); 
 		} 
 	} 

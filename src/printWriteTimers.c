@@ -8,14 +8,13 @@
 
 void printWriteTimers(struct iocomp_params *iocompParams)
 {
-	double reducedWriteTimes[100]; 
-	for(int i = 0; i < 100; i++)
+	double maxWriteTimes[100]; // as write times are defined till 100 numbers. 
+	for(int i=0; i < 100; i++)
 	{
-		reducedWriteTimes[i] = 0.0; 
-	}
-
+		maxWriteTimes[i] = 0.0; 
+	} 
 	// Reduce write times across I/O server to get the max for all the iterations
-	int ierr = MPI_Reduce(&reducedWriteTimes, &iocompParams->writeTime, iocompParams->writeCount, MPI_DOUBLE, MPI_MAX, 0, iocompParams->ioServerComm); 
+	int ierr = MPI_Reduce(&iocompParams->writeTime, &maxWriteTimes, iocompParams->writeCount, MPI_DOUBLE, MPI_MAX, 0, iocompParams->ioServerComm); 
 	mpi_error_check(ierr); 
 	
 	int ioRank; 
@@ -36,10 +35,11 @@ void printWriteTimers(struct iocomp_params *iocompParams)
 			exit(1); 
 		}
 		
+		// print to file 
 		fprintf(fptr, "%s \n", "Counter, writing time(s)"); 
 		for(int counter = 0; counter < iocompParams->writeCount; counter++)
 		{
-			fprintf(fptr, "%i, %lf \n", counter, reducedWriteTimes[counter]); 
+			fprintf(fptr, "%i, %lf \n", counter, maxWriteTimes[counter]); 
 		} 
 		fclose(fptr); 
 	} 
