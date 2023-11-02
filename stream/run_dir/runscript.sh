@@ -20,10 +20,12 @@ IO_END=0
 ARRAY="0"
 
 # time per job for custom time
-TIME="00:05:00"
+TIME="00:10:00"
 
 # Directory for the tests 
-DIR=OUTPUT/v2.0.0/TESTING
+DIR=TESTING/v2.0.0/SHARED
+FLAG="shared"
+# FLAG="HT"
 
 # weak scaling script 
 source weakScaling.sh 

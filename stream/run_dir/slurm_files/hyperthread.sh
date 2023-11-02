@@ -1,4 +1,4 @@
-export CASE=Hyperthread
+export CASE=Hyperthread/${FLAG}
 
 # setup of directories and copying of config files and make outputs.
 source ${SLURM_SUBMIT_DIR}/slurm_files/setup.sh 
@@ -28,7 +28,7 @@ bar=$(IFS=, ; echo "${updated[*]}")
 if (( ${MAP} == 1  )); then 
   map -n $TOTAL_RANKS --mpiargs="--hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]}" --profile ${EXE} --HT --size ${SIZE} --io ${IO} > test.out
 else
-  srun  --hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --HT --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
+  srun  --hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
   wait  
   # for testing purposes, global size is halved to match the actual number of writers.
   NX_TEST=$((${NX}/2))

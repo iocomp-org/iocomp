@@ -1,4 +1,4 @@
-export CASE=Consecutive
+export CASE=Consecutive/${FLAG} 
 
 # setup of directories and copying of config files and make outputs.
 source ${SLURM_SUBMIT_DIR}/slurm_files/setup.sh 
@@ -15,7 +15,7 @@ if (( ${MAP} == 1  )); then
   TOTAL_RANKS=$(( ${SLURM_NNODES} * ${FULL_CORES} ))
   map --mpi=slurm -n ${TOTAL_RANKS} --mpiargs="--hint=nomultithread  --distribution=block:block" --profile  ${EXE} --HT --nx ${NX} --ny ${NY}  --io ${IO}
 else 
-  srun  --hint=nomultithread  --distribution=block:block --cpu-bind=map_cpu:${bar[@]} ${EXE} --HT --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
+  srun  --hint=nomultithread  --distribution=block:block --cpu-bind=map_cpu:${bar[@]} ${EXE} --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
   wait 
   # for testing purposes, global size is halved to match the actual number of writers.
   NX_TEST=$((${NX}/2))
