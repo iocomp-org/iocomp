@@ -1,7 +1,5 @@
 #include <mpi.h>
 #include <adios2_c.h>
-
-// #include "../include/iocomp.h"
 #include "../stream/stream.h"
 
 // test parameters structure 

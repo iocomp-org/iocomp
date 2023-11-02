@@ -12,8 +12,8 @@ setup() {
 } 
 
 # MPI cores
-CORES_START=6
-CORES_END=8
+CORES_START=1
+CORES_END=1
 
 # controls NX and NY parameters
 ARRAY_START=2
@@ -21,7 +21,7 @@ ARRAY_END=2
 
 # IO libraries selection 
 IO_START=0
-IO_END=3
+IO_END=0
 
 # flag
 FLAG=HT

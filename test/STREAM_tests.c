@@ -29,6 +29,8 @@ void STREAM_tests(struct test_params *testParams, struct iocomp_params *iocompPa
 
 	char ext[5][10] = {".dat", ".h5", ".h5", "", ""}; 
 
+	printf("avg loop count is %i \n", AVGLOOPCOUNT); 
+
 	for(int iter = 0; iter < AVGLOOPCOUNT; iter++)
 	{
 		// get stream expected output for that iteration
