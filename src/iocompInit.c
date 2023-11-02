@@ -30,6 +30,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	iocompParams->NODESIZE = fullNode; // set size of node for comm splitting 
 	iocompParams->sharedFlag = sharedFlag; // set flag for MPI shared memory usage 
 	iocompParams->numWin = numWin; // set the number of windows  
+	iocompParams->writeCount = 0; // set counter for number of writes to 0 
 
 	/*
 	 * assert tests for input parameters 
@@ -46,6 +47,7 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	iocompParams->flag = (int*)malloc(iocompParams->numWin*sizeof(int)); 
 	iocompParams->array = (double**)malloc(iocompParams->numWin*sizeof(double*)); 
 	iocompParams->writeFile = (char**)malloc(iocompParams->numWin*sizeof(char*)); 
+	
 
 	/*
 	 * If the shared flag is on and process is ioserver then ioServer initialises
@@ -91,6 +93,12 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #ifdef VERBOSE
 			fprintf(iocompParams->debug,"iocompInit -> After ioServer shared exits \n"); 
 #endif
+
+			/* write timers to file after reducing across ranks*/
+#ifdef IOCOMP_TIMERS
+			printWriteTimers(iocompParams); 
+#endif
+
 			MPI_Finalize(); 
 #ifdef VERBOSE 
 			fprintf(iocompParams->debug, "iocompInit-> after MPI finalize \n"); 
@@ -156,6 +164,12 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 #ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServerInitialise -> After ioServer\n"); 
 #endif
+
+			/* write timers to file after reducing across ranks*/
+#ifdef IOCOMP_TIMERS
+			printWriteTimers(iocompParams); 
+#endif
+
 			MPI_Finalize(); 
 #ifdef VERBOSE
 			fprintf(iocompParams->debug,"ioServerInitialise -> After finalize\n"); 

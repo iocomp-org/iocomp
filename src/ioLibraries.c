@@ -16,7 +16,8 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowN
 
 	MPI_Comm_size(iocompParams->ioServerComm, &ioSize);
 	MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
-	
+
+
 #ifdef VERBOSE
 	fprintf(iocompParams->debug,"ioLibraries -> Pass off to I/O libraries with ioLibNum %i  \n", iocompParams->ioLibNum);
 #endif
@@ -25,26 +26,21 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowN
 
 		case 0:
 #ifdef IOCOMP_TIMERS
-			double timerStart; 
-			if (!ioRank) {timerStart = MPI_Wtime();} 
+			iocompParams->timerStart[iocompParams->writeCount] = MPI_Wtime(); 
 #endif 
-			// strcat(iocompParams->writeFile[windowNum], ".dat"); 
 			mpiiowrite(iodata, iocompParams, windowNum);
 #ifdef IOCOMP_TIMERS
-			MPI_Barrier(iocompParams->ioServerComm);
-			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
+			iocompParams->writeTime[iocompParams->writeCount] = MPI_Wtime() - iocompParams->timerStart[iocompParams->writeCount];
 #endif 
 			break; 
 #ifndef NOHDF5
 		case 1: 
 #ifdef IOCOMP_TIMERS
-			if (!ioRank) {timerStart = MPI_Wtime();} 
+			iocompParams->timerStart[iocompParams->writeCount] = MPI_Wtime();
 #endif 
-			// strcat(iocompParams->writeFile[windowNum], ".h5"); 
 			phdf5write(iodata, iocompParams, windowNum);
 #ifdef IOCOMP_TIMERS
-			MPI_Barrier(iocompParams->ioServerComm);
-			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
+			iocompParams->writeTime[iocompParams->writeCount] = MPI_Wtime() - iocompParams->timerStart[iocompParams->writeCount]; 
 #endif 
 			break; 
 #endif 
@@ -55,17 +51,11 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowN
 #ifndef NOADIOS2
 		case 2: case 3: case 4: 
 #ifdef IOCOMP_TIMERS
-			if (!ioRank) {timerStart = MPI_Wtime();} 
+			iocompParams->timerStart[iocompParams->writeCount] = MPI_Wtime();
 #endif 
-			// adios2 calling hdf5 writes to a file with h5 extension 
-			//if(iocompParams->ioLibNum==2)
-			//{
-			//	strcat(iocompParams->writeFile[windowNum], ".h5"); 
-			//}
 			adioswrite(iodata, iocompParams, windowNum);
 #ifdef IOCOMP_TIMERS
-			MPI_Barrier(iocompParams->ioServerComm);
-			if (!ioRank) {writeTime = MPI_Wtime() - timerStart;} 
+			iocompParams->writeTime[iocompParams->writeCount] = MPI_Wtime() - iocompParams->timerStart[iocompParams->writeCount];
 #endif 
 			break; 
 #endif 
@@ -77,20 +67,7 @@ void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowN
 #ifdef VERBOSE
 	fprintf(iocompParams->debug,"ioLibraries -> end of switch for IO libraries\n");
 #endif
-#ifdef READBACK
-	MPI_Barrier(iocompParams->ioServerComm); // wait for all processes to finish writing data 
-	if(!ioRank)
-	{
-		readBack(iocompParams); // read files and print them out 
-	} 
-#endif
 
-#ifdef IOCOMP_TIMERS
-	if (!ioRank) 
-	{
-		double fileSize = iocompParams->globalDataSize*sizeof(double)/(pow(10,9)); 
-		printf("** I/O write time=%lf filesize(GB)=%lf\n", writeTime,fileSize) ; 
-	} 
-#endif
+	iocompParams->writeCount++; // increment write counter at end of loop 
 }
 

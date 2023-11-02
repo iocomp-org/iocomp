@@ -71,12 +71,10 @@ extern "C" {
 		int compServerSize;
 		int NODESIZE; 
 		int numWin; 
-
-		// for data_output function 
-		double writeTime; 
-		char ioLibs[ioLibCount][100]; 
+	
 		// select ioLib
 		int ioLibNum;  
+		char ioLibs[ioLibCount][100]; 
 
 		// for io_libraries function 
 		int NDIM; 
@@ -132,6 +130,15 @@ extern "C" {
 		int* flag;
 		// filename for writing 
 		char** writeFile; 
+
+		// counter for number of writings done 
+		int writeCount; 
+		
+		// store timings, 100 as an arbitrary large number 
+#ifdef IOCOMP_TIMERS
+		double writeTime[100]; 
+		double timerStart[100]; 
+#endif 
 	}; 
 	extern struct iocomp_params iocompParams; 
 
@@ -202,6 +209,9 @@ extern "C" {
 
 	// debug file 
 	void initDebugFile(struct iocomp_params *iocompParams, int globalRank); 
+
+	// print timers
+	void printWriteTimers(struct iocomp_params *iocompParams); 
 
 #ifdef __cplusplus
 }
