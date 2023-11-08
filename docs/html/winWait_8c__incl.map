@@ -1,0 +1,4 @@
+<map id="/home/shrey/Coding/iocomp/src/winWait.c" name="/home/shrey/Coding/iocomp/src/winWait.c">
+<area shape="rect" id="node1" title="Waits for window to be ready for writing. Then calls IO libraries to write data to file and assigns t..." alt="" coords="5,5,169,47"/>
+<area shape="rect" id="node2" title=" " alt="" coords="15,95,160,121"/>
+</map>

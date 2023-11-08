@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['iolibraries_76',['ioLibraries',['../ioLibraries_8c.html#a4786691d8da6eb77c5d0db8f4b922d60',1,'ioLibraries.c']]],
-  ['ioserver_5fshared_77',['ioServer_shared',['../ioServer__shared_8c.html#a185e4b3ed3eefd33a307ac52698484df',1,'ioServer_shared.c']]],
-  ['ioserver_5fsharedallocate_78',['ioServer_sharedAllocate',['../ioServer__sharedAllocate_8c.html#a21ba6070f8af84c7a1b950ca6b556e95',1,'ioServer_sharedAllocate.c']]]
+  ['comm_5fsplit_136',['comm_split',['../commSplit_8c.html#a7d94d0f9379ab49c1bd3066d327ae7cf',1,'commSplit.c']]],
+  ['commsplit_5fshared_137',['commSplit_shared',['../commSplit__shared_8c.html#abbeb964a7af5e662c97dab26ee78622c',1,'commSplit_shared.c']]]
 ];

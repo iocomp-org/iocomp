@@ -85,21 +85,26 @@ $(function() {
 Include dependency graph for commSplit.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="commSplit_8c__incl.png" border="0" usemap="#a_2home_2shrey_2Coding_2iocomp_2src_2commSplit_8c" alt=""/></div>
+<map name="a_2home_2shrey_2Coding_2iocomp_2src_2commSplit_8c" id="a_2home_2shrey_2Coding_2iocomp_2src_2commSplit_8c">
+<area shape="rect" title="Implements splitting of MPI communicator into compute and I/O communicators. Currently,..." alt="" coords="195,5,378,47"/>
+<area shape="rect" title=" " alt="" coords="5,95,88,121"/>
+<area shape="rect" title=" " alt="" coords="113,95,181,121"/>
+<area shape="rect" title=" " alt="" coords="205,95,275,121"/>
+<area shape="rect" title=" " alt="" coords="300,95,367,121"/>
+<area shape="rect" title=" " alt="" coords="391,95,449,121"/>
+<area shape="rect" title=" " alt="" coords="474,95,619,121"/>
+</map>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a2d01ddbe9ccf457702ad881649c29675"><td class="memItemLeft" align="right" valign="top"><a id="a2d01ddbe9ccf457702ad881649c29675"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>ioColour</b>&#160;&#160;&#160;0</td></tr>
+<tr class="memitem:a2d01ddbe9ccf457702ad881649c29675"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="commSplit_8c.html#a2d01ddbe9ccf457702ad881649c29675">ioColour</a>&#160;&#160;&#160;0</td></tr>
 <tr class="separator:a2d01ddbe9ccf457702ad881649c29675"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af425f97fd24ea3700a43438b74d5d80f"><td class="memItemLeft" align="right" valign="top"><a id="af425f97fd24ea3700a43438b74d5d80f"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>compColour</b>&#160;&#160;&#160;1</td></tr>
+<tr class="memitem:af425f97fd24ea3700a43438b74d5d80f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="commSplit_8c.html#af425f97fd24ea3700a43438b74d5d80f">compColour</a>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:af425f97fd24ea3700a43438b74d5d80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3fa50ce2c375df88215f9e4a35de556"><td class="memItemLeft" align="right" valign="top"><a id="aa3fa50ce2c375df88215f9e4a35de556"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>HIGH_LOW</b>&#160;&#160;&#160;1</td></tr>
+<tr class="memitem:aa3fa50ce2c375df88215f9e4a35de556"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="commSplit_8c.html#aa3fa50ce2c375df88215f9e4a35de556">HIGH_LOW</a>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:aa3fa50ce2c375df88215f9e4a35de556"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86a2698a67e2fbd4b1f932c5904eca3c"><td class="memItemLeft" align="right" valign="top"><a id="a86a2698a67e2fbd4b1f932c5904eca3c"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>MAXSPACE</b>&#160;&#160;&#160;20</td></tr>
+<tr class="memitem:a86a2698a67e2fbd4b1f932c5904eca3c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="commSplit_8c.html#a86a2698a67e2fbd4b1f932c5904eca3c">MAXSPACE</a>&#160;&#160;&#160;20</td></tr>
 <tr class="separator:a86a2698a67e2fbd4b1f932c5904eca3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -112,7 +117,64 @@ Functions</h2></td></tr>
 <div class="textblock"><p>Implements splitting of MPI communicator into compute and I/O communicators. Currently, only supports splitting using high low ordering. </p>
 <dl class="section author"><dt>Author</dt><dd>Shrey Bhardwaj (sb15895) </dd></dl>
 <dl class="bug"><dt><b><a class="el" href="bug.html#_bug000005">Bug:</a></b></dt><dd>No know bugs. </dd></dl>
-</div><h2 class="groupheader">Function Documentation</h2>
+</div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="af425f97fd24ea3700a43438b74d5d80f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af425f97fd24ea3700a43438b74d5d80f">&#9670;&nbsp;</a></span>compColour</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define compColour&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa3fa50ce2c375df88215f9e4a35de556"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3fa50ce2c375df88215f9e4a35de556">&#9670;&nbsp;</a></span>HIGH_LOW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HIGH_LOW&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2d01ddbe9ccf457702ad881649c29675"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d01ddbe9ccf457702ad881649c29675">&#9670;&nbsp;</a></span>ioColour</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ioColour&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a86a2698a67e2fbd4b1f932c5904eca3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86a2698a67e2fbd4b1f932c5904eca3c">&#9670;&nbsp;</a></span>MAXSPACE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAXSPACE&#160;&#160;&#160;20</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
 <a id="a7d94d0f9379ab49c1bd3066d327ae7cf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7d94d0f9379ab49c1bd3066d327ae7cf">&#9670;&nbsp;</a></span>comm_split()</h2>
 

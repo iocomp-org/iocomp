@@ -88,18 +88,28 @@ $(function() {
 Include dependency graph for iocompInit.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="iocompInit_8c__incl.png" border="0" usemap="#a_2home_2shrey_2Coding_2iocomp_2src_2iocompInit_8c" alt=""/></div>
+<map name="a_2home_2shrey_2Coding_2iocomp_2src_2iocompInit_8c" id="a_2home_2shrey_2Coding_2iocomp_2src_2iocompInit_8c">
+<area shape="rect" title="Initialises the library. Splits the code into different modes depending on flags." alt="" coords="329,5,511,47"/>
+<area shape="rect" title=" " alt="" coords="5,95,88,121"/>
+<area shape="rect" title=" " alt="" coords="113,95,181,121"/>
+<area shape="rect" title=" " alt="" coords="205,95,275,121"/>
+<area shape="rect" title=" " alt="" coords="300,95,367,121"/>
+<area shape="rect" title=" " alt="" coords="391,95,449,121"/>
+<area shape="rect" title=" " alt="" coords="473,95,559,121"/>
+<area shape="rect" title=" " alt="" coords="583,95,679,121"/>
+<area shape="rect" title=" " alt="" coords="703,95,774,121"/>
+<area shape="rect" title=" " alt="" coords="798,95,943,121"/>
+</map>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a9989cd05a46b84fe38a7217f39dfa210"><td class="memItemLeft" align="right" valign="top"><a id="a9989cd05a46b84fe38a7217f39dfa210"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>atoa</b>(x)&#160;&#160;&#160;#x</td></tr>
+<tr class="memitem:a9989cd05a46b84fe38a7217f39dfa210"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="iocompInit_8c.html#a9989cd05a46b84fe38a7217f39dfa210">atoa</a>(x)&#160;&#160;&#160;#x</td></tr>
 <tr class="separator:a9989cd05a46b84fe38a7217f39dfa210"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0dee30a208637584e33cfae4ba264f5d"><td class="memItemLeft" align="right" valign="top"><a id="a0dee30a208637584e33cfae4ba264f5d"></a>
-MPI_Comm&#160;</td><td class="memItemRight" valign="bottom"><b>iocompInit</b> (struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum, int fullNode, bool sharedFlag, int numWin)</td></tr>
+<tr class="memitem:a0dee30a208637584e33cfae4ba264f5d"><td class="memItemLeft" align="right" valign="top">MPI_Comm&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="iocompInit_8c.html#a0dee30a208637584e33cfae4ba264f5d">iocompInit</a> (struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, int ioLibNum, int fullNode, bool sharedFlag, int numWin)</td></tr>
 <tr class="separator:a0dee30a208637584e33cfae4ba264f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -120,7 +130,85 @@ MPI_Comm&#160;</td><td class="memItemRight" valign="bottom"><b>iocompInit</b> (s
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>compServerComm communicator for compute processes </dd></dl>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a9989cd05a46b84fe38a7217f39dfa210"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9989cd05a46b84fe38a7217f39dfa210">&#9670;&nbsp;</a></span>atoa</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define atoa</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">x</td><td>)</td>
+          <td>&#160;&#160;&#160;#x</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a0dee30a208637584e33cfae4ba264f5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dee30a208637584e33cfae4ba264f5d">&#9670;&nbsp;</a></span>iocompInit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MPI_Comm iocompInit </td>
+          <td>(</td>
+          <td class="paramtype">struct iocomp_params *&#160;</td>
+          <td class="paramname"><em>iocompParams</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">MPI_Comm&#160;</td>
+          <td class="paramname"><em>comm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>FLAG</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ioLibNum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fullNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sharedFlag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>numWin</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
