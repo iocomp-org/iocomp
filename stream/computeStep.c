@@ -1,5 +1,9 @@
-/* Inspired from the STREAM benchmark */ 
-/* github url https://github.com/jeffhammond/STREAM.git */ 
+/**	@file computeStep.c
+ *	@brief Compute step calling the different STREAM kernels 
+ * 	Inspired from the STREAM benchmark 
+ * 	github url https://github.com/jeffhammond/STREAM.git 
+ *	@author Shrey (sb15895) 
+ */ 
 
 #include <stdbool.h>
 #include <math.h>
