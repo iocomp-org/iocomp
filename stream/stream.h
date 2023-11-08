@@ -1,17 +1,19 @@
 #include "mpi.h"
-#include "iocomp.h"
+#include "../include/iocomp.h"
 
 #define NDIM 2  // power to size
 #define KERNELS 4
 #define AVGLOOPCOUNT 10 // number of average cycles 
-#define COMPLOOPCOUNT 100 // number of compute cycles per each averaging cycle 
+#define COMPLOOPCOUNT 1 // number of compute cycles per each averaging cycle 
 #define WRITE_FREQ 1 // frequency of writing 
-#define TEST_FREQ 10 // frequency of MPI tests 
+#define TEST_FREQ 1 // frequency of MPI tests 
 #define COPY		0
 #define SCALE		1
 #define ADD			2
 #define TRIAD		3
 #define NODESIZE 128
+#define CONSTANT 5
+#define NUMWIN 3 
 
 
 // number of iterations for averaging the stream tests 
@@ -42,6 +44,14 @@ struct stream_params{
 	char* fullResults_filename[KERNELS]; 
 	int writeFreq; // compute steps per writing
 	int numWrites; // max number of writes  
+	// command line args 
+	bool HT_flag, sharedFlag; 
+	int nx, ny, io; 
+
+	// file object for debug 
+	char debugFile[100]; 
+	FILE* debug; 
+	int verboseFlag; 
 }; 
 extern struct stream_params streamParams; 
 // stream kernel functions 
@@ -50,13 +60,13 @@ void scale(struct iocomp_params *iocompParams, struct stream_params* streamParam
 void add(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a, double* b); 
 void triad(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c, double* a, double* b ); 
 // waiting functions 
-void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
-void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
-void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
-void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k); 
+void copy_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, char* fileWrite); 
+void scale_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* b, char* fileWrite); 
+void add_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* array, char* fileWrite); 
+void triad_wait(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* array, char* fileWrite); 
 // sending functions 
 void copy_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c); 
-void scale_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* b); 
+void scale_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int iter, double* b); 
 void add_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* c); 
 void triad_send(struct iocomp_params *iocompParams, struct stream_params* streamParams, int k, double* a); 
 //values check function 
@@ -74,3 +84,9 @@ void initData(double* iodata, struct iocomp_params *iocompParams);
 void averages(struct stream_params* streamParams); 
 double timer_start(int computeRank); 
 double timer_end(double timerStart, int computeRank ); 
+
+// verification 
+void verify(struct iocomp_params *iocompParams, struct stream_params* streamParams, MPI_Comm comm); 
+int valueCheck(struct iocomp_params *iocompParams, double* iodata_test, double val, char* filename); 
+// command line
+void commandLineArgs(struct stream_params* streamParams, int globalRank, int argc, char** argv); 

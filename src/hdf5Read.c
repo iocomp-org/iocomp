@@ -10,14 +10,15 @@
 #define DATASETNAME "/IntArray" 
 
 /*** READ SERIALLY ***/ 
-
-void hdf5Read(struct iocomp_params *iocompParams, double* iodata_test)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+void hdf5Read(struct iocomp_params *iocompParams, double* iodata_test, char* fileName)
 {
 	hid_t  file_id, dataset_id; /* identifiers */
 	herr_t status;
-
+	
 	/* Open an existing file. */
-	file_id = H5Fopen(iocompParams->FILENAMES[iocompParams->ioLibNum], H5F_ACC_RDWR, H5P_DEFAULT);
+	file_id = H5Fopen(fileName, H5F_ACC_RDWR, H5P_DEFAULT);
 
 	/* Open an existing dataset. */
 	dataset_id = H5Dopen2(file_id, DATASETNAME, H5P_DEFAULT);
@@ -33,5 +34,5 @@ void hdf5Read(struct iocomp_params *iocompParams, double* iodata_test)
 	status = H5Fclose(file_id);
 	mpi_error_check(status); 
 }
-
+#pragma GCC diagnostic pop
 

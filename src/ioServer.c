@@ -24,9 +24,8 @@ void ioServer(struct iocomp_params *iocompParams)
 	source = getPair(iocompParams); 
 	tag = source; 
 
-#ifndef NDEBUG
-	VERBOSE_1(ioRank,"ioServer -> Recieving data starts from source rank %i \n", source); 
-	VERBOSE_2(iocompParams->debug_out,"ioServer -> Recieving data starts from source rank %i \n", source); 
+#ifdef VERBOSE
+	fprintf(iocompParams->debug,"ioServer -> Recieving data starts from source rank %i \n", source); 
 #endif
 	int test_count = 1; 
 	int iter = 0; 
@@ -38,27 +37,23 @@ void ioServer(struct iocomp_params *iocompParams)
 	 */ 
 	double* recv = NULL; 
 	int previousCount = -1; 
-
 	/*
 	 * Check for ghost messages, for ever loop activated
 	 */ 
 	for(;;) 
 	{
-#ifndef NDEBUG
-		VERBOSE_1(ioRank,"ioServer -> start of ioServer loop, iter %i ioRank %i \n",iter,ioRank); 
-		VERBOSE_2(iocompParams->debug_out,"ioServer -> start of ioServer loop, iter %i ioRank %i \n",iter,ioRank); 
+#ifdef VERBOSE
+		// fprintf(iocompParams->debug,"ioServer -> start of ioServer loop, iter %i ioRank %i \n",iter,ioRank); 
 #endif
 
 		MPI_Probe(source, tag, iocompParams->globalComm, &status); // Probe for additional messages
-#ifndef NDEBUG
-		VERBOSE_1(ioRank,"ioServer -> MPI probe called \n"); 
-		VERBOSE_2(iocompParams->debug_out,"ioServer -> MPI probe called \n"); 
+#ifdef VERBOSE
+		// fprintf(iocompParams->debug,"ioServer -> MPI probe called \n"); 
 #endif
 
 		MPI_Get_count(&status, MPI_DOUBLE, &test_count); // get count 
-#ifndef NDEBUG
-		VERBOSE_1(ioRank,"ioServer -> MPI get count %i \n", test_count); 
-		VERBOSE_2(iocompParams->debug_out,"ioServer -> MPI get count %i \n", test_count); 
+#ifdef VERBOSE
+		// fprintf(iocompParams->debug,"ioServer -> MPI get count %i \n", test_count); 
 #endif
 
 		/*
@@ -66,33 +61,31 @@ void ioServer(struct iocomp_params *iocompParams)
 		 */ 
 		if(!test_count)
 		{
-#ifndef NDEBUG
-			VERBOSE_1(ioRank,"ioServer -> ghost messaged recieved \n"); 	
-			VERBOSE_2(iocompParams->debug_out,"ioServer -> ghost messaged recieved \n"); 	
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"ioServer -> test count = 0, ghost message initialised \n"); 	
 #endif
 			int ghost;  
 			ierr = MPI_Recv(&ghost, 0, MPI_INT, source, tag,
 					iocompParams->globalComm,&status);
 			mpi_error_check(ierr); 
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"ioServer -> ghost message recieved \n"); 	
+#endif
 			/*
 			 * Stop send reached, so recv array will be freed
 			 * and adios2 object is finalised. 
 			 */ 
 			free(recv);
 			recv = NULL; 
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"ioServer -> recv array freed\n"); 	
+#endif
 #ifndef NOADIOS2
 			if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
 			{
 				adios2_finalize(iocompParams->adios); 
 			} 
 #endif 
-#ifndef NDELETE
-			MPI_Barrier(iocompParams->ioServerComm); // wait for all files to finish writing  
-			if(ioRank == 0)
-			{
-				deleteFiles(iocompParams); // delete files 
-			} 
-#endif
 			break; 
 		}
 
@@ -136,29 +129,30 @@ void ioServer(struct iocomp_params *iocompParams)
 				malloc_check(recv); 
 				previousCount = test_count;  
 			} 
-
-#ifndef NDEBUG
-			VERBOSE_1(ioRank,"ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
-			VERBOSE_2(iocompParams->debug_out,"ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"ioServer -> Initialisation of recv array with count %li \n", iocompParams->localDataSize); 
 #endif
 			ierr = MPI_Recv(recv, test_count, MPI_DOUBLE, source, tag,
 					iocompParams->globalComm,&status);
 			mpi_error_check(ierr); 
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"ioServer -> Received array \n"); 
+#endif
+			// get file name 
+			getFileName(iocompParams,0);  
 
-#ifndef NDEBUG
-			VERBOSE_1(ioRank,"ioServer -> Recv data coming from rank %i \n",source ); 
-			VERBOSE_2(iocompParams->debug_out,"ioServer -> Recv data coming from rank %i \n",source ); 
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"ioServer -> Recv data coming from rank %i \n",source ); 
 #endif
 
 			/*
 			 * Writing data using different IO libraries commences using io_libraries function
 			 * Parameters passed using iocompParams  
 			 */ 
-#ifndef NDEBUG
-			VERBOSE_1(ioRank,"ioServer -> Send to ioLibraries \n"); 
-			VERBOSE_2(iocompParams->debug_out,"ioServer -> Send to ioLibraries \n"); 
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"ioServer -> Send to ioLibraries \n"); 
 #endif
-			ioLibraries(recv, iocompParams); 
+			ioLibraries(recv, iocompParams, 0); 
 		}  
 
 		iter++; 

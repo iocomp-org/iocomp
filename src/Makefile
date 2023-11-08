@@ -3,18 +3,18 @@ CC = cc
 
 # define compile time flags 
 # DADIOS2_USE_MPI for adios2 
-CFLAGS = -fpic -shared -O2 -DADIOS2_USE_MPI  -Wall -Wpedantic -Werror -Wextra 
+
+CFLAGS = -fpic -shared -O2 -DADIOS2_USE_MPI -Wall -Wpedantic -Werror -Wextra 
 
 # enable and disable different iocomp related flags 
-# DNDEBUG for not including error messages 
-# DIOCOMP_TIMERS for printing out time taken to write by ioLibraries.c 
+# DVERBOSE for including error messages 
+# DNOTIMERS for disabling timing and printing of timers 
 # DPRINT_ORDERING for printing out orders of splitting between compute and I/O
 # processes
 # DREADACK for printing after the data is written into different files 
-# DNDELETE for disabling the delete file commands after writing is completed  
 # DNOADIOS2 for disabling ADIOS2 
 # DNOHDF5 for disabling HDF5 
-IOCOMP_FLAGS += -DNDEBUG #-DPRINT_ORDERING #-DNDELETE #-DREADBACK  #-DIOCOMP_TIMERS #-DNDELETE
+IOCOMP_FLAGS += 
 
 # linker flags
 LFLAGS = -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
@@ -73,7 +73,7 @@ $(MAIN): $(OBJS)
 else
 $(MAIN): $(OBJS) 
 	#$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -o $(MAIN) Object_files/*.o
-	ar rcs $(MAIN) $(OBJS)
+	$(CC) $(CFLAGS) $(LFLAGS) -o $(MAIN)  $(OBJS) 
 endif 
 
 	

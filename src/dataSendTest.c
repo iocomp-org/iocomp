@@ -5,7 +5,7 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
-int dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request)
+int dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request, double* array)
 {
 	if(iocompParams->hyperthreadFlag) // only implement if HT flag switched on 
 	{
@@ -14,7 +14,20 @@ int dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request)
 		mpi_error_check(ierr); 
 		return(mpiWaitFlag);
 	}
-	else
+	else if(iocompParams->sharedFlag)
+	{
+		for(int i = 0; i < iocompParams->numWin; i++)
+		{
+			if(iocompParams->array[i] == array)
+			{
+				iocompParams->wintestflags[i] = WIN_TEST;  
+			}
+		} 
 		return -1; 
+	} 
+	else
+	{
+		return -1; 
+	} 
 } 
 

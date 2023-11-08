@@ -24,16 +24,39 @@ void stopSend(struct iocomp_params *iocompParams)
 
 		double ghost = 0.0; 
 
-#ifdef VERBOSE_2
-		printf("stopSend -> Sending data starts from compProcessor with globalRank %i to ioProcessor with globalRank  %i  \n", globalRank, dest); 
-#endif
 		ierr = MPI_Send(&ghost, 0 , MPI_DOUBLE, dest, tag,
 				iocompParams->globalComm); // every rank sends its portion of data 
 		mpi_error_check(ierr); 
-#ifndef NDEBUG
-		VERBOSE_1(compRank,"stopSend -> Ghost message sent \n"); 
+#ifdef VERBOSE
+		fprintf(iocompParams->debug,"stopSend -> Ghost message sent \n"); 
 #endif
 	}
+	else if(iocompParams->sharedFlag)
+	{
+
+		// send win free message to control arrays 
+		for(int i = 0; i < iocompParams->numWin; i++)
+		{
+			iocompParams->wintestflags[i] = WIN_FREE;  
+		}
+		dataSendInfo(iocompParams);
+
+#ifdef VERBOSE
+		fprintf(iocompParams->debug,"stopSend -> Barrier reached before Win free called \n"); 
+#endif
+		// MPI_Barrier(iocompParams->newComm); // wait till each process is free  
+		for(int i = 0; i < iocompParams->numWin; i++)
+		{
+#ifdef VERBOSE 
+			fprintf(iocompParams->debug, "stopSend->window:%i Before win free\n", i); 
+#endif
+			int ierr = MPI_Win_free(&iocompParams->winMap[i]);
+			mpi_error_check(ierr); 
+#ifdef VERBOSE 
+			fprintf(iocompParams->debug, "stopSend->window:%i After win free\n", i); 
+#endif
+		} 
+	} 
 	/*
 	 * if HT flag is off, then adios2 object should be finalised 
 	 * as the ioServer finalises the adios2 object 
@@ -47,18 +70,15 @@ void stopSend(struct iocomp_params *iocompParams)
 		} 
 #endif 
 
-#ifndef NDEBUG
-		VERBOSE_1(compRank,"stopSend -> adios2 finalised with HT flag=%i \n", iocompParams->hyperthreadFlag); 
+#ifdef VERBOSE
+		fprintf(iocompParams->debug,"stopSend -> adios2 finalised with HT flag=%i \n", iocompParams->hyperthreadFlag); 
 #endif
-		// delete file function is called in ioServer
-		// for non HT implementation, files should be deleted after the data is sent
-		// through 
-#ifndef NDELETE 
-		MPI_Barrier(iocompParams->compServerComm); 
-		if(compRank == 0)
-		{
-			deleteFiles(iocompParams); // delete files 
-		} 
+		/* write timers to file after reducing across ranks*/
+#ifndef NOTIMERS
+		printWriteTimers(iocompParams); 
+#ifdef VERBOSE
+		fprintf(iocompParams->debug,"stopSend -> print write timers\n"); 
+#endif
 #endif
 	}
 } 

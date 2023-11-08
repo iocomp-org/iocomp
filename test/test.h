@@ -1,26 +1,31 @@
-#include "mpi.h"
-#include "iocomp.h"
-#define LOOPCOUNT 10 
+#include <mpi.h>
+#include <adios2_c.h>
+#include "../stream/stream.h"
 
-struct test_variables{
+// test parameters structure 
+struct test_params{
 	int LOOP_COUNT; 
-	double startTime[LOOPCOUNT], endTime[LOOPCOUNT]; 
+	// sizes
 	size_t localDataSize; 
 	size_t globalDataSize; 
-	char* FILENAMES[5];  
-	int computeRank; 
-	char* adios2Engine[3]; 
-	int CONSTANT; 
+	char* fullResults_filename[KERNELS]; 
+	int writeFreq; // compute steps per writing
+	int numWrites; // max number of writes  
+
+	// command line args 
+	bool HT_flag, sharedFlag, testFlag, verbose; 
+	int nx, ny, io; 
+
+	// file object for debug 
+	char debugFile[100]; 
+	FILE* debug; 
 }; 
-extern struct test_variables testParams; 
-double* initialise(struct test_variables* testParams); 
-void deleteFile(struct test_variables* testParams, int io); 
-int rmdir(char *path); // delete the directory 
-void rmfile(char* filename); // delete a file 
-//void stats(struct test_variables* testParams); // stats function to output the write times, global size, local size, ranks 
-bool checkData(int io, struct test_variables* testParams); // function to check values of files
-bool mpiRead(struct test_variables* testParams); 
-bool hdf5Read(struct test_variables* testParams); 
-//int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf); 
-void arrayVerification(struct test_variables* testParams, double* iodata); 
-bool adios2Read(struct test_variables* testParams, int io); 
+extern struct test_params testParams; 
+
+void arguments(struct test_params* testParams, int argc, char** argv); 
+int valueCheck(struct iocomp_params *iocompParams, double* iodata_test, double val, char* filename); 
+double* readFiles(struct test_params *testParams, struct iocomp_params *iocompParams, char* readFile); 
+void STREAM_tests(struct test_params *testParams, struct iocomp_params *iocompParams,  MPI_Comm comm); 
+bool file_exists (char *filename); 
+void deleteFilesTest(char* fileName); 
+

@@ -13,33 +13,24 @@
  * Initialises the library 
  */
 MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, 
-		int ioLibNum, int fullNode)
+		int ioLibNum, int fullNode, bool sharedFlag, int numWin)
 {
-	int myGlobalrank; 
+	int myGlobalrank, ierr;  
 	MPI_Comm_rank(comm, &myGlobalrank); 
-#ifndef NDEBUG
-	char rank_str[10]; 
-	sprintf(rank_str, "%d", myGlobalrank);
-
-	strcat(iocompParams->DEBUG_FILE,rank_str ); 
-	strcat(iocompParams->DEBUG_FILE,".out"); 
-	printf("debug file name %s\n",iocompParams->DEBUG_FILE); 
-
-	iocompParams->debug_out=fopen(iocompParams->DEBUG_FILE,"w+"); // create new file 
-	if(iocompParams->debug_out==NULL)
-	{
-		printf("debug file not created \n"); 
-		exit(1); 
-	}
-	// fprintf(iocompParams->debug_out, "iocompInit \n"); 
-	// VERBOSE_1(myGlobalrank, "iocompInit -> Start of intercomm_init\n"); 
-	VERBOSE_2(iocompParams->debug_out, "iocompInit -> Start of intercomm_init\n"); 
-#endif
+	iocompParams->globalComm = comm; 
+	
+#ifdef VERBOSE
+	initDebugFile(iocompParams, myGlobalrank);
+	fprintf(iocompParams->debug, "MPI initialised \n");
+#endif 
 
 	iocompParams->hyperthreadFlag = FLAG; // set hyperthread flag 
 	iocompParams->NDIM = NUM_DIM; // set number of dimensions
 	iocompParams->ioLibNum = ioLibNum; // set selection of I/O library 
 	iocompParams->NODESIZE = fullNode; // set size of node for comm splitting 
+	iocompParams->sharedFlag = sharedFlag; // set flag for MPI shared memory usage 
+	iocompParams->numWin = numWin; // set the number of windows  
+	iocompParams->writeCount = 0; // set counter for number of writes to 0 
 
 	/*
 	 * assert tests for input parameters 
@@ -48,58 +39,145 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	assert(iocompParams->ioLibNum >= 0);
 	assert(iocompParams->NODESIZE > 0); 
 
-#ifndef NDEBUG
-	VERBOSE_1(myGlobalrank,"iocompInit -> variables declared flag %i, ndim %i, iolib %i\n", 
-			iocompParams->hyperthreadFlag, iocompParams->NDIM, iocompParams->ioLibNum); 
-	VERBOSE_2(iocompParams->debug_out,
-			"iocompInit -> variables declared flag %i, ndim %i, iolib %i\n", 
-			iocompParams->hyperthreadFlag, iocompParams->NDIM, iocompParams->ioLibNum); 
-#endif
-	/*
-	 * comm split splits communicators in 2, assigns colour to ranks
-	 * assigns communicators in struct for both cases  
+	/* 
+	 * Initialise pointers with size of num win 
 	 */ 
-	comm_split(iocompParams, comm); 
-#ifndef NDEBUG
-	VERBOSE_1(myGlobalrank, "iocompInit -> communicator split up and colour assigned \n"); 
-	VERBOSE_2(iocompParams->debug_out, "iocompInit -> communicator split up and colour assigned \n"); 
-#endif
+	iocompParams->wintestflags = (int*)malloc(iocompParams->numWin*sizeof(int)); 
+	iocompParams->winMap =(int*)malloc(iocompParams->numWin*sizeof(int)); 
+	iocompParams->flag = (int*)malloc(iocompParams->numWin*sizeof(int)); 
+	iocompParams->array = (double**)malloc(iocompParams->numWin*sizeof(double*)); 
+	iocompParams->writeFile = (char**)malloc(iocompParams->numWin*sizeof(char*)); 
+	
 
 	/*
-	 * If HT flag is on, then called by io server, if HT flag off then called by
-	 * every process. This is because only ioServers have access to ioServerComm.
-	 * ioServerInitialise initialises cartesian communicator and adios2 objects,
-	 * and sets up other I/O related variables.
+	 * If the shared flag is on and process is ioserver then ioServer initialises
+	 * shared windows. 
 	 */ 
-	if(!iocompParams->hyperthreadFlag || iocompParams->colour==ioColour) 
+	if(sharedFlag == true)
 	{
-		ioServerInitialise(iocompParams); 
+
+		iocompParams->sharedFlag = true; 
+
+		// split communicators 
+		commSplit_shared(iocompParams);  
+
+		// find new rank for the pair communicator between IO and Compute rank 
+		int newRank; 
+		ierr = MPI_Comm_rank(iocompParams->newComm,&newRank); 
+		mpi_error_check(ierr);
+
+		if(newRank != 0)
+		{
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"iocompInit -> Before assigining groups for io server \n"); 
+#endif
+			// allocate groups 
+			/*
+			 * groups newComm communicator's rank 0 and 1 into a group
+			 * comp process initialises array and creates a window with that array
+			 */
+			MPI_Group comm_group;
+			int ranks[2];
+			for (int i=0;i<2;i++) {
+				ranks[i] = i;     //For forming groups, later
+			}
+			MPI_Comm_group(iocompParams->newComm,&comm_group);
+
+			/* I/O group consists of ranks 1 */
+			MPI_Group_incl(comm_group,1,ranks,&iocompParams->group);
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"iocompInit -> After assigning groups for io server\n"); 
+#endif
+
+			ioServer_shared(iocompParams);
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"iocompInit -> After ioServer shared exits \n"); 
+#endif
+
+			/* write timers to file after reducing across ranks*/
+#ifndef NOTIMERS
+			printWriteTimers(iocompParams); 
+#endif
+
+			MPI_Finalize(); 
+#ifdef VERBOSE 
+			fprintf(iocompParams->debug, "iocompInit-> after MPI finalize \n"); 
+#endif 
+		  free(iocompParams->writeFile); 
+		  iocompParams->writeFile = NULL; 
+			exit(0); 
+		}
+		else
+		{
+			/*
+			 * groups newComm communicator's rank 0 and 1 into a group
+			 * comp process initialises array and creates a window with that array
+			 */
+			MPI_Group comm_group;
+			int ranks[2];
+			for (int i=0;i<2;i++) {
+				ranks[i] = i;     //For forming groups, later
+			}
+			MPI_Comm_group(iocompParams->newComm,&comm_group);
+
+			/* I/O group consists of ranks 1 */
+			MPI_Group_incl(comm_group,1,ranks+1,&iocompParams->group);
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"iocompInit -> After assigning groups for comp server\n"); 
+#endif
+		} 
 	} 
-
-	/*
-	 * If HT flag is on and process is ioserver then ioServer recieves data
-	 * and finalises adios2 object & mpi finalizes and program exits. 
-	 */ 
-	if(iocompParams->hyperthreadFlag && iocompParams->colour == ioColour)
+	else
 	{
-		int ioRank; 
-		MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
-#ifndef NDEBUG
-		VERBOSE_1(ioRank,"ioServerInitialise -> ioServer called\n"); 
-		VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> ioServer called\n"); 
+		/*
+		 * comm split splits communicators in 2, assigns colour to ranks
+		 * assigns communicators in struct for both cases  
+		 */ 
+		comm_split(iocompParams, comm); 
+#ifdef VERBOSE
+		fprintf(iocompParams->debug, "iocompInit -> communicator split up and colour assigned \n"); 
 #endif
-		ioServer(iocompParams);
-#ifndef NDEBUG
-		VERBOSE_1(ioRank,"ioServerInitialise -> After ioServer\n"); 
-		VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> After ioServer\n"); 
+		/*
+		 * If HT flag is on, then called by io server, if HT flag off then called by
+		 * every process. This is because only ioServers have access to ioServerComm.
+		 * ioServerInitialise initialises cartesian communicator and adios2 objects,
+		 * and sets up other I/O related variables.
+		 */ 
+		if(!iocompParams->hyperthreadFlag || iocompParams->colour==ioColour) 
+		{
+			ioServerInitialise(iocompParams); 
+		}
+
+
+		/*
+		 * If HT flag is on and process is ioserver then ioServer recieves data
+		 * and finalises adios2 object & mpi finalizes and program exits. 
+		 */ 
+		if(iocompParams->hyperthreadFlag && iocompParams->colour == ioColour)
+		{
+			int ioRank; 
+			MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"ioServerInitialise -> ioServer called\n"); 
 #endif
-		MPI_Finalize(); 
-#ifndef NDEBUG
-		VERBOSE_1(ioRank,"ioServerInitialise -> After finalize\n"); 
-		VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> After finalize\n"); 
+			ioServer(iocompParams);
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"ioServerInitialise -> After ioServer\n"); 
 #endif
-		exit(0); 
-	}
+
+			/* write timers to file after reducing across ranks*/
+#ifndef NOTIMERS
+			printWriteTimers(iocompParams); 
+#endif
+
+			MPI_Finalize(); 
+#ifdef VERBOSE
+			fprintf(iocompParams->debug,"ioServerInitialise -> After finalize\n"); 
+#endif
+			exit(0); 
+		}
+
+	} 
 
 	/*
 	 * Return comp server comm to compute processes if HT flag is on

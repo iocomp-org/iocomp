@@ -1,4 +1,4 @@
-test/*
+**/Object_files/*
 *.out 
 lib/* 
 build/* 
@@ -10,6 +10,9 @@ stream/test
 stream/Object_files/*
 !stream/run_dir/*.sh
 !stream/run_dir/*.slurm 
+test/TEST_OUTPUT/*
+test/test
+**/*.swp 
 
 
 

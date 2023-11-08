@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include "stdio.h"
 #include "mpi.h"
 #include "../include/iocomp.h"
@@ -28,19 +29,31 @@ void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *req
 		dest = getPair(iocompParams); // destination for sending data. 
 		tag = globalRank; // tag should be rank of computeServer
 
-#ifndef NDEBUG
-		VERBOSE_1(compRank,"dataSend -> Sending data starts from compProcessor with globalRank %i\
-to ioProcessor with globalRank  %i  \n", globalRank, dest); 
+#ifdef VERBOSE
+		fprintf(iocompParams->debug,"dataSend -> Sending data starts from compProcessor with globalRank %i\
+				to ioProcessor with globalRank  %i  \n", globalRank, dest); 
 #endif
 
 			ierr = MPI_Isend(data, iocompParams->localDataSize , MPI_DOUBLE, dest, tag,
 					iocompParams->globalComm, request); // every rank sends its portion of data 
 		mpi_error_check(ierr); 
 
-#ifndef NDEBUG
-		VERBOSE_1(compRank,"dataSend -> Sending data stop \n"); 
+#ifdef VERBOSE
+		fprintf(iocompParams->debug,"dataSend -> Sending data stop \n"); 
 #endif
 	}
+	else if(iocompParams->sharedFlag)
+	{
+		// get the window test flag for the array 
+		for(int i = 0; i < iocompParams->numWin; i++)
+		{
+			if(iocompParams->array[i] == data)
+			{
+				// match array with windows and issue win complete 
+				MPI_Win_complete(iocompParams->winMap[i]); 
+			}
+		}
+	} 
 	else
 	{
 		/*
@@ -55,11 +68,11 @@ to ioProcessor with globalRank  %i  \n", globalRank, dest);
 			iocompParams->previousInit = 1; 
 			iocompParams->previousCount = localDataSize; 
 		}
-#ifndef NDEBUG
-		VERBOSE_1(compRank,"dataSend -> Hyperthread flag deactivated, go to ioLibraries with\
-localDataSize %ld \n", localDataSize); 
+#ifdef VERBOSE
+		fprintf(iocompParams->debug,"dataSend -> Hyperthread flag deactivated, go to ioLibraries with\
+				localDataSize %ld \n", localDataSize); 
 #endif
-			ioLibraries(data,iocompParams); // otherwise go straight to writing using ioLibraries 
+			ioLibraries(data,iocompParams, 0); // otherwise go straight to writing using ioLibraries 
 	}
 
 } 

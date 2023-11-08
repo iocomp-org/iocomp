@@ -27,9 +27,8 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank); 
 	mpi_error_check(ierr); 
 
-#ifndef NDEBUG
-	VERBOSE_1(ioRank,"ioServerInitialise -> MPI size %i and rank %i \n", ioSize, ioRank);
-	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> MPI size %i and rank %i \n", ioSize, ioRank);
+#ifdef VERBOSE
+	fprintf(iocompParams->debug,"ioServerInitialise -> MPI size %i and rank %i \n", ioSize, ioRank);
 #endif
 
 	/*
@@ -50,34 +49,23 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	 */ 
 	ierr = MPI_Dims_create(ioSize, iocompParams->NDIM, dims_mpi);
 	mpi_error_check(ierr); 
-#ifndef NDEBUG
-	VERBOSE_1(ioRank,"ioServerInitialise-> MPI dims create \n");
-	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise-> MPI dims create \n");
+#ifdef VERBOSE
+	fprintf(iocompParams->debug,"ioServerInitialise-> MPI dims create \n");
 #endif
 
 	ierr = MPI_Cart_create(iocompParams->ioServerComm, iocompParams->NDIM, dims_mpi,
 			periods, reorder, &iocompParams->cartcomm); // comm;
 	mpi_error_check(ierr); 
-#ifndef NDEBUG
-	VERBOSE_1(ioRank,"ioServerInitialise -> MPI cart create  \n");
-	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> MPI cart create  \n");
+#ifdef VERBOSE
+	fprintf(iocompParams->debug,"ioServerInitialise -> MPI cart create  \n");
 #endif
 
 	ierr = MPI_Cart_coords(iocompParams->cartcomm, ioRank, iocompParams->NDIM, coords);
 	mpi_error_check(ierr); 
-#ifndef NDEBUG
-	VERBOSE_1(ioRank,"ioServerInitialise -> MPI cart coords \n");
-	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> MPI cart coords \n");
+#ifdef VERBOSE
+	fprintf(iocompParams->debug,"ioServerInitialise -> MPI cart coords \n");
 #endif
 
-	/*	
-	 * Initiliase filename 
-	 */ 
-	iocompParams->FILENAMES[0] = "mpiio.dat"; 
-	iocompParams->FILENAMES[1] = "hdf5.h5"; 
-	iocompParams->FILENAMES[2] = "adios2.h5";
-	iocompParams->FILENAMES[3] = "adios2.bp4";
-	iocompParams->FILENAMES[4] = "adios2.bp5"; 
 	/*
 	 * Initialise adios2 engines list  
 	 */ 
@@ -85,9 +73,8 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	iocompParams->ADIOS2_IOENGINES[1] = "BP4"; 
 	iocompParams->ADIOS2_IOENGINES[2] = "BP5";
 
-#ifndef NDEBUG
-	VERBOSE_1(ioRank,"ioServerInitialise -> assigned file names and adios2 ioengines\n");
-	VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> assigned file names and adios2 ioengines\n");
+#ifdef VERBOSE
+	fprintf(iocompParams->debug,"ioServerInitialise -> assigned file names and adios2 ioengines\n");
 #endif
 
 #ifndef NOADIOS2
@@ -97,12 +84,15 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	 */ 
 	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
 	{
+#if ADIOS2_USE_MPI
 		iocompParams->adios = adios2_init_config_mpi(config_file, iocompParams->cartcomm); 
+#else 
+		iocompParams->adios = adios2_init();  
+#endif 
 		iocompParams->io = adios2_declare_io(iocompParams->adios, 
 				iocompParams->ADIOS2_IOENGINES[iocompParams->ioLibNum-2]); //IO handler declaration
-#ifndef NDEBUG
-		VERBOSE_1(ioRank,"ioServerInitialise -> initialised adios2 engine and io param\n");
-		VERBOSE_2(iocompParams->debug_out,"ioServerInitialise -> initialised adios2 engine and io param\n");
+#ifdef VERBOSE
+		fprintf(iocompParams->debug,"ioServerInitialise -> initialised adios2 engine and io param\n");
 #endif
 	} 
 #endif 
@@ -113,11 +103,8 @@ void ioServerInitialise(struct iocomp_params *iocompParams)
 	iocompParams->previousInit = 0;  
 	iocompParams->previousCount = 0;  
 	iocompParams->adios2Init = 0;  
-#ifndef NDEBUG
-	VERBOSE_1(ioRank,
-			"ioServerInitialise -> initialisation flags set, previousInit %i, previousCount %i, adios2Init %i\n", 
-			iocompParams->previousInit, iocompParams->previousCount, iocompParams->adios2Init);
-	VERBOSE_2(iocompParams->debug_out,
+#ifdef VERBOSE
+	fprintf(iocompParams->debug,
 			"ioServerInitialise -> initialisation flags set, previousInit %i, previousCount %i, adios2Init %i\n", 
 			iocompParams->previousInit, iocompParams->previousCount, iocompParams->adios2Init);
 #endif
