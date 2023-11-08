@@ -2,7 +2,7 @@
 *.out 
 lib/* 
 build/* 
-docs/*
+docs/latex/**
 src/Object_files/*
 stream/run_dir/*
 lib/*.so 
