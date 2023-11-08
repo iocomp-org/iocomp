@@ -1,4 +1,4 @@
-ioComp
+ioComp ![example-workflow](https://github.com/iocomp-org/iocomp/blob/main/.github/workflows/doxygen-publish.yml/badge.svg)
 ------
 
 Library to compare performance from different I/O libraries with the option to switch between asynchronous and direct synchronous I/O. 
