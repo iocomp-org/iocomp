@@ -1,3 +1,8 @@
+/*	@file main.c 
+ *	@brief main file for stream benchmark using iocomp
+ *
+ *	@author Shrey (sb15895) 
+ */ 
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
