@@ -13,6 +13,11 @@
 #include "mpi.h"
 #include "stream.h"
 
+/**	@brief computeStep calls the different STREAM kernels 
+ * 	@param iocompParams struct containing the iocomp parameters 
+ * 	@param streamParams struct containing the stream parameters 
+ * 	@param comm MPI communicator 
+ */
 void computeStep(struct iocomp_params *iocompParams, struct stream_params *streamParams, MPI_Comm comm)
 {
 	if(streamParams->verboseFlag){
