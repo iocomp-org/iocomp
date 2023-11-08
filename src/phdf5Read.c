@@ -1,3 +1,9 @@
+/** @file phdf5Read.c
+ *  @brief Contains function for reading data from hdf5 file in parallel. 
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
 #include <omp.h> 
 #include <stdio.h>
 #include <mpi.h>
@@ -11,7 +17,14 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
-
+/**
+ * @file phdf5Read.c
+ * @brief Contains function for reading data from hdf5 file in parallel.
+ * @param readData pointer to data to be read
+ * @param fileName name of file to be read
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void
+ */
 void phdf5Read(double *readData, char* fileName, struct iocomp_params *iocompParams) 
 {   
 

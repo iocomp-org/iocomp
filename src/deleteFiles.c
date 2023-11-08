@@ -1,3 +1,9 @@
+/** @file deleteFiles.c 
+ *  @brief deletes files or dies trying. 
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
 #define _XOPEN_SOURCE 500
 #include <ftw.h>
 #include <stdio.h> 
@@ -14,6 +20,12 @@ int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW
 }
 #pragma GCC diagnostic pop 
 
+/**
+ * @file deleteFiles.c
+ * @brief deletes files or directories.
+ * @param fileName name of file to delete
+ * @return void
+ */
 void deleteFiles(char* fileName)
 {
 	int ierr; 

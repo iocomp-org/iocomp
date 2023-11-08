@@ -1,3 +1,11 @@
+/** @file iocompInit.c
+ *  @brief Initialises the library. 
+ * 	Splits the code into different modes depending on flags.
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
+
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
@@ -8,6 +16,25 @@
 #include <string.h> 
 #include "../include/iocomp.h"
 #define atoa(x) #x
+
+
+/**
+ * @file iocompInit.c
+ * @brief Initialises the library
+ * Initialises the library, sets up communicators, and calls ioServerInitialise. 
+ * If shared flag is true, then it calls ioServer_shared instead of ioServer.
+ * If HT flag is true, then only ioServer is called, and the compute processes 
+ * are returned the compServerComm communicator. 
+ * Else, ioServerInitialise is called by all processes and function is exited.
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param comm MPI communicator
+ * @param FLAG flag for hyperthreading
+ * @param ioLibNum number of I/O library to use
+ * @param fullNode size of node for communicator splitting
+ * @param sharedFlag flag for shared memory usage
+ * @param numWin number of windows
+ * @return compServerComm communicator for compute processes
+ */
 
 /*
  * Initialises the library 

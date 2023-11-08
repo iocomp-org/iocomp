@@ -1,6 +1,8 @@
-/*
- * function gets shared array pointer using mpi win shared query 
- * and prints out data as proxy for writing to file 
+/** @file ioServer_shared.c
+ *  @brief Contains functions for shared memory I/O server
+ * 
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
  */
 
 #include <stdio.h>
@@ -11,6 +13,19 @@
 #include <math.h>
 #include "../include/iocomp.h"
 
+/**
+ * @brief Allocates shared windows and their pointers
+ * 
+ * Allocates shared windows and their pointers. 
+ * Initialises IO server cartesian communicators, and ADIOS2 objects.
+ * Then starts the loop for the IO server, which starts with receiving the Broadcast 
+ * control state array from the compute processes.
+ * The state of each window is checked with the control state array and the appropriate
+ * action is taken for each window.
+ * 
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void
+ */
 void ioServer_shared(struct iocomp_params *iocompParams)
 {
 	

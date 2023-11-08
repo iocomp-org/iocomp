@@ -1,3 +1,10 @@
+/** @file mpiWrite.c
+ *  @brief Contains functions for writing data using MPI.
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
+
 #include <stdio.h>
 #include <mpi.h>
 #include <stdlib.h>
@@ -5,6 +12,17 @@
 #include <memory.h>
 #include "../include/iocomp.h"
 
+/**
+ * @file mpiWrite.c
+ * @brief Contains functions for writing data using MPI.
+ * Contains functions for writing data using MPI in parallel. 
+ * Window number is used to select the correct file to write to in the array of file names
+ * for the shared method, but for the non shared windows, 0 is passed by default.  
+ * @param iodata pointer to array to write data from
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param windowNum window number
+ * @return void
+ */
 void mpiiowrite(double* iodata, struct iocomp_params *iocompParams, int windowNum)
 {   
 	int			i, ierr, nprocs, ioRank; 

@@ -1,3 +1,11 @@
+/**
+ * @file ioLibraries.c
+ * @brief Passes data to I/O libraries and backends
+ * 
+ * @author Shrey Bhardwaj (sb1595)
+ * @bug No known bugs.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
@@ -6,10 +14,16 @@
 #include <string.h>
 #include "../include/iocomp.h"
 
-/*
- * Purpose: define local, global, offsets for data for particular rank 
- * Then send this to the different I/O libraries. 
- */ 
+/**
+ * @brief Passes data to I/O libraries and backends
+ * 
+ * Passes data to I/O libraries and backends. 
+ * 
+ * @param iodata pointer to data to be written
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param windowNum window number
+ * @return void
+ */
 void ioLibraries(double* iodata, struct iocomp_params *iocompParams, int windowNum)
 {
 	int ioSize, ioRank;

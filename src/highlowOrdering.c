@@ -1,3 +1,11 @@
+/** @file highlowOrdering.c 
+ *  @brief Assigns io colour based on high low ordering
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
+
+
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
@@ -6,11 +14,14 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
-#define ioColour 0 
+#define ioColour 0  
 #define compColour 1 
 
-/*
- * Assigns io colour based on high low ordering 
+/**
+ * @file highlowOrdering.c
+ * @brief Assigns io colour based on high low ordering
+ * Covers different scenarious such as underpopulated node, fully populated 
+ * node and more than 1 node.
  * Comp server ranks are lower ranked, IO server ranks are higher ranked 
  * in 1 node when using Hyperthreads 
  * After 1 node the logic operates in a step function way 
@@ -25,8 +36,10 @@
  * NODE 3 640	-	767 	: I/O
  * NODE 4 768	-	895 	: compute
  * NODE 4 896	-	1023	: I/O
+ * 
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void
  */
-
 void highlowOrdering(struct iocomp_params *iocompParams) 
 {
 	int globalRank, globalSize; 

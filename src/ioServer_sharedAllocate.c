@@ -1,4 +1,21 @@
+/** @file ioServer_sharedAllocate.c
+ *  @brief Allocates the shared windows and their pointers. 
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
+
 #include "../include/iocomp.h"
+
+/**
+ * @brief Allocates shared windows and their pointers
+ * 
+ * Allocates shared windows and the pointers to them using MPI Win Shared Query 
+ * for each window
+ * 
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void
+ */
 void ioServer_sharedAllocate(struct iocomp_params *iocompParams)
 {
 	int soi = sizeof(double); 

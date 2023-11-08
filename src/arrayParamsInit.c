@@ -1,3 +1,9 @@
+/** @file arrayParamsInit.c
+ *  @brief Initialises array variables based on local size by decomposing total size into NDIM dimensions.
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
@@ -8,8 +14,11 @@
 #define HIGH_LOW 1
 #define FIXED_IO_RANK 0
 
-/*
- * Initialises the iocomp_params struct 
+/**
+ * @file arrayParamsInit.c
+ * @brief Initialises array variables based on local size by decomposing total size into NDIM dimensions.
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void
  */
 void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 {

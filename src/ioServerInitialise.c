@@ -1,3 +1,10 @@
+/** @file ioServerInitialise.c	
+ *  @brief Initialises the cartesian communicator, adios2 engines, and flags.
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
+
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
@@ -12,8 +19,12 @@
 #include <adios2/c/adios2_c_types.h>
 #endif 
 
-/*
- * Initialises the library 
+/**
+ * @file ioServerInitialise.c
+ * @brief Initialises the cartesian communicator, adios2 engines, and flags.
+ * Initialises the cartesian communicator, adios2 engines, and flags.
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void
  */
 void ioServerInitialise(struct iocomp_params *iocompParams)
 {

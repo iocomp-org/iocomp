@@ -1,3 +1,10 @@
+/** @file hdf5Write.c
+ *  @brief Contains functions for writing data using HDF5 in parallel. 
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
+
 #include <omp.h> 
 #include <stdio.h>
 #include <mpi.h>
@@ -10,6 +17,17 @@
 #include <hdf5_hl.h> 
 #include "../include/iocomp.h"
 
+/**
+ * @file hdf5Write.c
+ * @brief Contains functions for writing data using HDF5 in parallel. 
+ * Contains functions for writing data using HDF5 in parallel. 
+ * Window number is used to select the correct file to write to in the array of file names
+ * for the shared method, but for the non shared windows, 0 is passed by default.  
+ * @param iodata pointer to array to write data from
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param windowNum window number
+ * @return void
+ */
 void phdf5write(double* iodata, struct iocomp_params *iocompParams, int windowNum)
 {   
     // Variable initialisation

@@ -1,3 +1,9 @@
+/** @file stopSend.c
+ *  @brief Contains function for stopping send of data to I/O server. 
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
@@ -5,6 +11,17 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
+/**
+ * @file stopSend.c
+ * @brief Contains function for stopping send of data to I/O server. 
+ * For HT mode, sends a ghost message to the paired rank in the interComm. 
+ * This ghost message is a signal to the I/O server to stop receiving data by sending 
+ * a message with length 0.
+ * For shared mode, assigns win free to the wintestflags and calls MPI free
+ * For sequential mode, it finalises the adios2 object and prints the timers for I/O times.
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void
+ */
 void stopSend(struct iocomp_params *iocompParams)
 {
 	int globalRank, ierr, compRank;  

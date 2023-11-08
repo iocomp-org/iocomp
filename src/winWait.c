@@ -1,4 +1,12 @@
 #include "../include/iocomp.h"
+/**
+ * @file winWait.c
+ * @brief Waits for window to be ready for writing.
+ * Then calls IO libraries to write data to file and assigns test flag to 1.
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param windowNum window number
+ * @return void
+ */
 void winWait(struct iocomp_params *iocompParams, int windowNum)
 {
 #ifdef VERBOSE 

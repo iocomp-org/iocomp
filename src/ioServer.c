@@ -1,3 +1,10 @@
+/** @file ioServer.c 
+ *  @brief Contains functions for I/O server for HT flag and sequential mode. 
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
+
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
@@ -5,6 +12,21 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 #define filename "write_time.csv"
+
+/**
+ * @file ioServer.c
+ * @brief Contains functions for I/O server for HT flag. 
+ * For HT mode, initialises the server for loop which gets the length of the message 
+ * using MPI_Probe. 
+ * If message length is 0 i.e. a ghost message it exits the loop. 
+ * Otherwise, it receives the message and writes it using the appropriate I/O library.
+ * If message length is same as previous length, it keeps the previous initialisations. 
+ * After receiving the message, it recieves the file name and writes it under that file name.
+ * 
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void 
+ */
+
 void ioServer(struct iocomp_params *iocompParams)
 {
 

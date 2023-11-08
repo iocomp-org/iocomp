@@ -1,3 +1,9 @@
+/** @file adios2Write
+ *  @brief Contains function for writing data to adios2 file. 
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
 #include <adios2_c.h>
 #include <adios2/c/adios2_c_types.h>
 #include <mpi.h>
@@ -6,6 +12,14 @@
 #include <string.h>
 #include "../include/iocomp.h"
 
+/**
+ * @file adios2Write.c
+ * @brief Contains function for writing data to adios2 file in parallel.
+ * @param iodata pointer to data to be written
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param windowNum window number for writing data
+ * @return void
+ */
 void adioswrite(double* iodata, struct iocomp_params *iocompParams, int windowNum)
 {   
 	/* 

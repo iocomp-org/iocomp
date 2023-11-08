@@ -1,4 +1,11 @@
 #include "../include/iocomp.h"
+/**
+ * @file winPost.c
+ * @brief Posts windows for data transfer.
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param i window number
+ * @return void
+ */
 void winPost(struct iocomp_params *iocompParams, int i) 
 {
 	int ierr = MPI_Win_post(iocompParams->group, 0, iocompParams->winMap[i]);

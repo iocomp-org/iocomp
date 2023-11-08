@@ -1,3 +1,9 @@
+/** @file adios2Read.c
+ *  @brief Contains function for reading data from adios2 file in parallel. 
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -8,6 +14,14 @@
 #endif 
 #include "../include/iocomp.h"
 
+/**
+ * @file adios2Read.c
+ * @brief Contains function for reading data from adios2 file in parallel.
+ * @param iodata pointer to data to be read
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param windowNum window number for reading data
+ * @return void
+ */
 void adios2ReadSerially(double* iodata, char* FILENAME, struct iocomp_params *iocompParams)
 {
 	adios2_error errio; 

@@ -1,8 +1,22 @@
+/** @file preDataSend.c
+ *  @brief for shared mode, starts window and sends filename to I/O server.
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
 #include "../include/iocomp.h"
 #include "assert.h" 
 #include <string.h>
 
-
+/**
+ * @file preDataSend.c
+ * @brief for shared mode, starts window and sends filename to I/O server.
+ * Does nothing for the other modes.
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param array pointer to array to be written
+ * @param fileName name of file to be written
+ * @return void
+ */
 void preDataSend(struct iocomp_params *iocompParams, double* array, char* fileName)
 {
 	if(iocompParams->sharedFlag)

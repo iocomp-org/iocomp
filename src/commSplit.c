@@ -1,3 +1,11 @@
+/** @file commSplit.c
+ *  @brief Implements splitting of MPI communicator into compute and I/O communicators. 
+ *  Currently, only supports splitting using high low ordering.
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
+
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
@@ -13,10 +21,12 @@
 #define MAXSPACE 20 // to set space limit for printing ordering statements 
 #endif
 
-/*
- * Divides the particular rank into comp server and io server 
+/** @brief Assigns colour to ranks based on high low ordering for splitting and shared mode. 
+ * 	Then splits global communicator into compute and I/O communicators based on the colours.
+ * 	For sequential mode, both ioServerComm and compServerComm are set to globalComm.
+ *  @param iocompParams pointer to struct containing all parameters for the library
+ *  @return void
  */
-
 void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 {
 

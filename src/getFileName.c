@@ -1,3 +1,10 @@
+/** @file getFileName.c 
+ *  @brief Gets the file name from the compute process.  
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
+
 #include <stdio.h>
 #include <mpi.h>
 #include <stdlib.h>  
@@ -6,6 +13,14 @@
 #include <math.h>
 #include "../include/iocomp.h"
 
+/**
+ * @file getFileName.c
+ * @brief Gets the file name from the compute process using dynamic MPI message recieves.
+ * Only used for splitting and shared route. 
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param i window number 
+ * @return void
+ */
 void getFileName(struct iocomp_params *iocompParams, int i)
 {
 #ifdef VERBOSE 
@@ -45,7 +60,7 @@ void getFileName(struct iocomp_params *iocompParams, int i)
 			comm = iocompParams->newComm; 
 		} 
 
-		// Probe for an incoming message from I/O process
+		// Probe for an incoming message from compute process 
 #ifdef VERBOSE 
 		fprintf(iocompParams->debug, "getFileName -> before MPI probe \n"); 
 #endif 

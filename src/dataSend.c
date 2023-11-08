@@ -1,3 +1,9 @@
+/** @file dataSend.c	
+ *  @brief Implements sending data to I/O process. 
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
 #include <stdbool.h>
 #include <math.h>
 #include <stdlib.h>
@@ -6,6 +12,18 @@
 #include "mpi.h"
 #include "../include/iocomp.h"
 
+/**
+ * @file dataSend.c
+ * @brief Implements sending data to I/O process. 
+ * if HT flag is true, then MPI_Isend is used to send data to I/O process.
+ * if shared flag is true, then win complete is issued for the array window.
+ * if both flags are false, then ioLibraries is called directly.
+ * @param data pointer to array to send
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param request pointer to MPI_Request object
+ * @param localDataSize size of array to send
+ * @return void
+ */
 void dataSend(double* data, struct iocomp_params *iocompParams, MPI_Request *request, size_t localDataSize)
 {
 

@@ -1,3 +1,10 @@
+/** @file mpiRead.c 
+ *  @brief Contains functions for reading data using MPI.
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -5,6 +12,15 @@
 #include <memory.h>
 #include "../include/iocomp.h"
 
+/**
+ * @file mpiRead.c
+ * @brief Contains functions for reading data using MPI.
+ * Contains functions for reading data using MPI in parallel 
+ * @param readData pointer to array to read data into
+ * @param FILENAME name of file to read data from
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void
+ */
 void mpiRead(double *readData, char* FILENAME, struct iocomp_params *iocompParams)
 {
 	int i, ierr, nprocs, myrank; 

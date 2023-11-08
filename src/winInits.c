@@ -1,12 +1,19 @@
+/** @file winInits.c
+ *  @brief Initialises windows for shared memory interfaces and mallocs the pointers for the split case. 
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
 #include "../include/iocomp.h"
 #include <inttypes.h>
-/*! \file winInits.c
-	\brief Initialises windows for shared memory interfaces and otherwise. 
 
-	Allocates shared memory interfaces for the shared memory option returning the shared MPI window and the array. 
-	Otherwise the function will allocate the arrays with the required data size and return the array.  
-	*/
-
+/**
+ * @file winInits.c
+ * @brief Initialises windows for shared memory interfaces and mallocs the pointers for the split case.
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @param localDataSize size of local data to be written
+ * @return void
+ */
 void winInits(struct iocomp_params *iocompParams, int localDataSize)
 {
 	if(iocompParams->sharedFlag == true)

@@ -1,6 +1,20 @@
+/** @file dataSendInfo.c	
+ *  @brief Implements control mechanisms for the client process for shared method.
+ * 	Win start, win complete and broadcasting to I/O server are implemented here.
+ *
+ *  @author Shrey Bhardwaj (sb15895)
+ *  @bug No know bugs.
+ */
+
 #include "../include/iocomp.h"
 #include "assert.h" 
 
+/**
+ * @file dataSendInfo.c
+ * @brief Sends wintestflags to I/O server for shared method.
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void
+ */
 void dataSendInfo(struct iocomp_params *iocompParams)
 {	
 	if(iocompParams->sharedFlag)
@@ -30,6 +44,12 @@ void dataSendInfo(struct iocomp_params *iocompParams)
 	} 
 } 
 
+/**
+ * @file dataSendInfo.c
+ * @brief Calls MPI_Win_start for the corresponding array window.
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void
+ */
 void dataSendStart(struct iocomp_params *iocompParams, double* array)
 {
 	if(iocompParams->sharedFlag)
@@ -53,6 +73,12 @@ void dataSendStart(struct iocomp_params *iocompParams, double* array)
 	} 
 } 
 
+/**
+ * @file dataSendInfo.c
+ * @brief Calls MPI_Win_complete for the corresponding array window.
+ * @param iocompParams pointer to struct containing all parameters for the library
+ * @return void
+ */
 void dataSendEnd(struct iocomp_params *iocompParams, double* array)
 {
 	if(iocompParams->sharedFlag)
