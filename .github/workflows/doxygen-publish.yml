@@ -24,3 +24,5 @@ jobs:
         with:
           branch: gh-pages
           folder: ./docs/html 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          config_file: Doxyfile 
