@@ -21,11 +21,12 @@ bar=$(IFS=, ; echo "${vals[*]}")
 
 if (( ${MAP} == 1  )); then 
   TOTAL_RANKS=$((${NUM_NODES}*${END_CORES}))
-  map --mpi=slurm -n ${TOTAL_RANKS} --mpiargs="--hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${HALF_CORES} --cpu-bind=map_cpu:${bar[@]}" --profile  ${EXE} --nx ${NX} --ny ${NY} --io ${IO}
+  map --mpi=slurm -n ${TOTAL_RANKS} --mpiargs="--hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${NUM_TASKS} --cpu-bind=map_cpu:${bar[@]}" --profile  ${EXE} --nx ${NX} --ny ${NY} --io ${IO} > test.out
 else 
   srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${NUM_TASKS} --cpu-bind=map_cpu:${bar[@]} ${EXE} --nx ${NX} --ny ${NY} --io ${IO} > test.out
   wait 
-  srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${NUM_TASKS} --cpu-bind=map_cpu:${bar[@]} ${TEST_EXE} --nx ${NX} --ny ${NY} --io ${IO}  >> test.out 
+  srun ${TEST_EXE} --nx ${NX} --ny ${NY} --io ${IO}  >> test.out 
+  wait 
 fi 
 
 echo "JOB ID"  $SLURM_JOBID >> test.out

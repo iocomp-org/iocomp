@@ -12,14 +12,15 @@ bar=$(IFS=, ; echo "${vals[*]}")
 
 
 if (( ${MAP} == 1  )); then 
-  TOTAL_RANKS=$(( ${SLURM_NNODES} * ${FULL_CORES} ))
-  map --mpi=slurm -n ${TOTAL_RANKS} --mpiargs="--hint=nomultithread  --distribution=block:block" --profile  ${EXE} --HT --nx ${NX} --ny ${NY}  --io ${IO}
+  TOTAL_RANKS=$(( ${SLURM_NNODES} * ${END_CORES} ))
+  map --mpi=slurm -n ${TOTAL_RANKS} --mpiargs="--hint=nomultithread  --distribution=block:block --cpu-bind=map_cpu:${bar[@]}" --profile  ${EXE} --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
 else 
   srun  --hint=nomultithread  --distribution=block:block --cpu-bind=map_cpu:${bar[@]} ${EXE} --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
   wait 
   # for testing purposes, global size is halved to match the actual number of writers.
   NX_TEST=$((${NX}/2))
-  srun  --hint=nomultithread  --distribution=block:block --cpu-bind=map_cpu:${bar[@]} ${TEST_EXE} --nx ${NX_TEST} --ny ${NY}  --io ${IO} >> test.out 
+  srun ${TEST_EXE} --nx ${NX_TEST} --ny ${NY}  --io ${IO} >> test.out 
+  wait 
 fi 
 
 echo "JOB ID"  $SLURM_JOBID >> test.out

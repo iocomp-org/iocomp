@@ -1,11 +1,26 @@
 # strong scaling 
-GLOBAL_SIZE=4096 # size of array per core for 1 node jobs 
-for i in $(seq 0 3) # 1 till 16 nodes 
+
+TIMES=("8:00:00" "06:00:00" "05:00:00" "05:00:00" "03:00:00" "03:00:00") 
+MAX_NODES=1
+echo $DIR 
+# iterate through number of nodes 
+for i in $(seq ${NODE_START} ${NODE_END}) # 1 till 16 nodes 
 do 
+  # check if TIME variable is set from runscript. If not then set it from the array. 
+  if [[ -n $TIME ]];
+  then 
+    TIME_VAR=${TIME} 
+  else
+    TIME_VAR=${TIMES[${i}]} 
+  fi 
 
-  SIZE_LOCAL=$((${GLOBAL_SIZE}/(2**${i}))) # local size per node 
-  NUM_NODES=$((2**(2*${i})))
-  echo NODES ${NUM_NODES} SIZE  ${SIZE_LOCAL} 
-  sbatch --export=ALL,SIZE=${SIZE_LOCAL} --qos=lowpriority --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --time=5:00:00  archer2.slurm 
+  # get local values from the global specified for the number of nodes given 
+  NUM_NODES=$((2**${i}))
+  NX_LOCAL=$((${NX}*${MAX_NODES}/${NUM_NODES})) 
+  FILESIZE_LOCAL=$((${NX_LOCAL} * ${NY} * 8/ 2**20)) 
+  FILESIZE_GLOBAL=$((${NX_LOCAL} * ${NY} * 8 * ${NUM_NODES} * 128 / 2**20)) 
+  echo NODES ${NUM_NODES} ARRAY SIZE ${NX_LOCAL} x ${NY} Local size ${FILESIZE_LOCAL}MiB Global size ${FILESIZE_GLOBAL}MiB  TIME ${TIME_VAR} IO ${IO_START} to ${IO_END} 
 
+  sbatch --export=ALL,NX=${NX_LOCAL},NY=${NY},DIR=${DIR},IO_START=${IO_START},IO_END=${IO_END},FLAG=${FLAG} --qos=standard --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --time=${TIME_VAR} --array=${ARRAY}  archer2.slurm 
 done 
+

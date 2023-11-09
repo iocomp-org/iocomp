@@ -5,32 +5,29 @@
 PPN=128
 
 # array parameters 
-NX=$((2**11)) 
-NY=$((2**11)) 
+NX=$((2**13)) 
+NY=$((2**10)) 
 
 # node start and end as power of 2s 
-NODE_START=0
-NODE_END=0
+NODE_START=4
+NODE_END=5
 
 # I/O selection range 
 IO_START=0
-IO_END=0 
+IO_END=3
 
 # Job numbers for averaging 
-ARRAY="0"
+ARRAY="0-2"
 
 # time per job for custom time
-TIME="00:10:00"
+TIME="2:00:00"
 
-# Directory for the tests 
-DIR=TESTING/v2.0.0/SHARED
-FLAG="shared"
-# FLAG="HT"
 
-# weak scaling script 
-source weakScaling.sh 
+# weak scaling script and directory
+# DIR=OUTPUT/v2.0.0/WEAK/100COMPUTE
+# source weakScaling.sh 
 
 # directory for strong scaling 
-#DIR=v1.1.4/STRONG
-#source strongScaling.sh 
+DIR=OUTPUT/v2.0.0/STRONG
+source strongScaling.sh 
 

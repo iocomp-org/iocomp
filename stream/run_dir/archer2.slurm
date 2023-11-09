@@ -1,5 +1,5 @@
 #!/bin/bash --login
-#SBATCH --job-name=xthi
+#SBATCH --job-name=stream
 #SBATCH --nodes=1
 #SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
@@ -64,18 +64,28 @@ for IO in $(seq ${IO_START} ${IO_END})
 do 
   export PARENT_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}
 
-  ## Case 1 
+  ## Case 1; sequential case 
   export UCX_IB_REG_METHODS=direct
   source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
   wait 
-  #Case 2
-  #source ${SLURM_SUBMIT_DIR}/slurm_files/oversubscribe.sh 
-  # Case 3
+  # Case 2; shared memory in HT 
   export UCX_IB_REG_METHODS=direct
+  export FLAG="shared"
   source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
   wait 
-  ## Case 4
+  # Case 3; message passing in HT 
   export UCX_IB_REG_METHODS=direct
+  export FLAG="HT"
+  source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
+  wait 
+  # Case 4; shared memory in consecutive 
+  export UCX_IB_REG_METHODS=direct
+  export FLAG="shared"
+  source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
+  wait 
+  # Case 5; message passing in consecutive 
+  export UCX_IB_REG_METHODS=direct
+  export FLAG="HT"
   source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
   wait 
 

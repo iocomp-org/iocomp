@@ -25,14 +25,16 @@ vals_HT=($(seq $(eval echo ${start}) 1 $(eval echo ${end})))
 updated=("${vals[@]}" "${vals_HT[@]}")
 bar=$(IFS=, ; echo "${updated[*]}")
 
-if (( ${MAP} == 1  )); then 
-  map -n $TOTAL_RANKS --mpiargs="--hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]}" --profile ${EXE} --HT --size ${SIZE} --io ${IO} > test.out
+if (( ${MAP} == 1  )); then
+  TOTAL_RANKS=$(( ${NUM_NODES} * ${END_CORES} )) 
+  map -n ${TOTAL_RANKS} --mpiargs="--hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]}" --profile ${EXE} --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out
 else
   srun  --hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
   wait  
   # for testing purposes, global size is halved to match the actual number of writers.
   NX_TEST=$((${NX}/2))
-  srun  --hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} ${TEST_EXE} --nx ${NX_TEST} --ny ${NY}  --io ${IO} >> test.out 
+  srun ${TEST_EXE} --nx ${NX_TEST} --ny ${NY}  --io ${IO} >> test.out 
+  wait 
 fi 
 
 echo "JOB ID"  $SLURM_JOBID >> test.out
