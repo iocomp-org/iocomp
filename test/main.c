@@ -18,29 +18,26 @@ bool file_exists (char *filename) {
 
 int main(int argc, char** argv)
 {
-	int ierr;
+	int ierr, rank, size; 
 	ierr = MPI_Init(&argc, &argv);  
 	mpi_error_check(ierr); 
+	MPI_Comm comm = MPI_COMM_WORLD; 
+	MPI_Comm_rank(comm, &rank); 
+	MPI_Comm_size(comm, &size); 
 
-	/* 
-	 * initialise structs 
-	 */ 
+	// initialise structs 
 	struct stream_params streamParams; 
 	struct iocomp_params iocompParams; 
 	struct test_params testParams; 
 
-	/*	
-	 * initialise stream param structs using command line parameters
-	 */ 
+	// initialise stream param structs using command line parameters
 	arguments(&testParams, argc, argv); 
-	testParams.localDataSize = testParams.nx * testParams.ny;
 
-	MPI_Comm comm = MPI_COMM_WORLD; 
-	int rank; 
-	int size; 
-	MPI_Comm_rank(comm, &rank); 
-	MPI_Comm_size(comm, &size); 
-	// data parameters definitions 
+	// assign local data size; in this case its nx x ny 
+	testParams.localDataSize = testParams.nx * testParams.ny;
+	
+	// decompose data into 2d
+	arrayParamsInit(iocompParams,iocompParams->ioServerComm); 
 
 	if(!rank){
 		printf("Testing for STREAM benchmark output started. \n"); 
