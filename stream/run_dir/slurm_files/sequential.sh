@@ -25,7 +25,8 @@ if (( ${MAP} == 1  )); then
 else 
   srun  --hint=nomultithread  --distribution=block:block --nodes=${NUM_NODES} --ntasks=${NUM_TASKS} --cpu-bind=map_cpu:${bar[@]} ${EXE} --nx ${NX} --ny ${NY} --io ${IO} > test.out
   wait 
-  srun ${TEST_EXE} --nx ${NX} --ny ${NY} --io ${IO}  >> test.out 
+  echo TESTING with ${NUM_NODES} nodes and ${NUM_TASKS} tasks ${END_CORES} tasks per node.
+  srun  --nodes=${NUM_NODES} --ntasks-per-node=${END_CORES} --ntasks=${NUM_TASKS} ${TEST_EXE} --nx ${NX} --ny ${NY}  --io ${IO} >> test.out
   wait 
 fi 
 

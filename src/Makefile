@@ -4,7 +4,8 @@ CC = cc
 # define compile time flags 
 # DADIOS2_USE_MPI for adios2 
 
-CFLAGS = -fpic -shared -O2 -DADIOS2_USE_MPI -Wall -Wpedantic -Werror -Wextra 
+# CFLAGS = -fpic -shared -O2 -DADIOS2_USE_MPI -Wall -Wpedantic -Werror -Wextra 
+CFLAGS = -fpic -shared -g -DADIOS2_USE_MPI -Wall -Wpedantic -Werror -Wextra 
 
 # enable and disable different iocomp related flags 
 # DVERBOSE for including error messages 

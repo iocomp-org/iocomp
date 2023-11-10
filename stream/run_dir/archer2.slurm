@@ -52,8 +52,8 @@ export PPN=${SLURM_NTASKS_PER_NODE}
 export OMP_NUM_THREADS=1
 
 # for ARM MAP 
-# module load arm/forge 
-export MAP=0
+module load arm/forge 
+export MAP=1
 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
 SIZE=$(( ${NX}*${NY}*8 / 2**20 )) # local size in MiB
@@ -64,10 +64,10 @@ for IO in $(seq ${IO_START} ${IO_END})
 do 
   export PARENT_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}
 
-  ## Case 1; sequential case 
-  export UCX_IB_REG_METHODS=direct
-  source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
-  wait 
+ ## # Case 1; sequential case 
+ ## export UCX_IB_REG_METHODS=direct
+ ## source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
+ ## wait 
   # Case 2; shared memory in HT 
   export UCX_IB_REG_METHODS=direct
   export FLAG="shared"

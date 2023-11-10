@@ -27,14 +27,24 @@ bar=$(IFS=, ; echo "${updated[*]}")
 
 if (( ${MAP} == 1  )); then
   TOTAL_RANKS=$(( ${NUM_NODES} * ${END_CORES} )) 
-  map -n ${TOTAL_RANKS} --mpiargs="--hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]}" --profile ${EXE} --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out
+  map --mpi=slurm -n ${TOTAL_RANKS} --mpiargs="--hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]}" --profile ${EXE} --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out
 else
   srun  --hint=multithread --distribution=block:block  --nodes=${NUM_NODES} --cpu-bind=map_cpu:${bar[@]} ${EXE} --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
   wait  
-  # for testing purposes, global size is halved to match the actual number of writers.
-  NX_TEST=$((${NX}/2))
-  srun ${TEST_EXE} --nx ${NX_TEST} --ny ${NY}  --io ${IO} >> test.out 
-  wait 
+  # for testing purposes, global number of nodes/processes are halved from  to match the ranks available to IO server
+  #if (( ${NUM_NODES} > 1  )); then 
+  #  NODES_TEST=$((${NUM_NODES}/2))
+  #  PPN_TEST=${SLURM_NTASKS_PER_NODE}
+  #else
+  #  NODES_TEST=${NUM_NODES}
+  #  PPN_TEST=$((${SLURM_NTASKS_PER_NODE}/2)) 
+  #fi 
+  NODES_TEST=${NUM_NODES}
+  PPN_TEST=${END_CORES} 
+  #TASKS_TEST=$(( ${NODES_TEST} * ${PPN_TEST} )) 
+  #echo TESTING with ${NODES_TEST} nodes and ${TASKS_TEST} tasks ${PPN_TEST} tasks per node.
+  #srun  --nodes=${NODES_TEST} --ntasks-per-node=${PPN_TEST} --ntasks=${TASKS_TEST} ${TEST_EXE} --nx ${NX} --ny ${NY}  --io ${IO} >> test.out
+  #wait 
 fi 
 
 echo "JOB ID"  $SLURM_JOBID >> test.out
