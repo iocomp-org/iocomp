@@ -1,6 +1,6 @@
 # define c compiler 
 CC = cc  
-CFLAGS = -Wall -Wpedantic -Werror -g -Wno-unused-variable -Wno-unused-but-set-variable
+CFLAGS = -Wall -Wpedantic -Werror -O2 -Wno-unused-variable -Wno-unused-but-set-variable
 
 # define compile time flags 
 # DMPI_TESTS for including MPI tests in stream kernels 

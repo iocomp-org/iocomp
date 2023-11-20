@@ -6,28 +6,29 @@ PPN=128
 
 # array parameters 
 NX=$((2**14)) # for strong scaling 
-# NX=$((2**11)) # for weak scaling  
 NY=$((2**11)) 
+# NX=$((2**12)) # for weak scaling  
+# NY=$((2**12)) 
 
 # node start and end as power of 2s 
-NODE_START=1
-NODE_END=1
+NODE_START=6
+NODE_END=6
 
 # I/O selection range 
-IO_START=3
+IO_START=0
 IO_END=3
 
 # Job numbers for averaging 
 ARRAY="0-2"
 
 # time per job for custom time
-TIME="3:00:00"
+#TIME="3:00:00"
 
 # weak scaling script and directory
-#DIR=ARM_MAP/v2.0.0/MPICH/1000COMPUTE
+# DIR=OUTPUT/v2.0.0/WEAK/100COMPUTE
 # source weakScaling.sh 
 
 # directory for strong scaling 
-DIR=OUTPUT/v2.0.0/STRONG/GLOBALSIZE_8GB/100COMPUTE
+DIR=OUTPUT/v2.0.0/STRONG/GLOBALSIZE_8GB/1COMPUTE
 source strongScaling.sh 
 
