@@ -53,44 +53,44 @@ export OMP_NUM_THREADS=1
 
 # for ARM MAP 
 # module load arm/forge 
-export MAP=0
+export MAP=0 
 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
-  SIZE=$(( ${NX}*${NY}*8 / 2**20 )) # local size in MiB
+SIZE=$(( ${NX}*${NY}*8 / 2**20 )) # local size in MiB
 
-  echo "Job started " $(date +"%T") "size " ${SIZE} MiB # start time
+echo "Job started " $(date +"%T") "size " ${SIZE} MiB # start time
 
-  for IO in $(seq ${IO_START} ${IO_END})
-  do 
-    export PARENT_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}
+for IO in $(seq ${IO_START} ${IO_END})
+do 
+  export PARENT_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}
 
-   # # Case 1; sequential case 
-   # export UCX_IB_REG_METHODS=direct
-   # source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
-   # wait 
-   # # Case 2; shared memory in HT 
-   # export UCX_IB_REG_METHODS=direct
-   # export FLAG="shared"
-   # source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
-   # wait 
-   # # Case 3; message passing in HT 
-   # export UCX_IB_REG_METHODS=direct
-   # export FLAG="HT"
-   # source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
-   # wait 
-    # Case 4; shared memory in consecutive 
-    export UCX_IB_REG_METHODS=direct
-    export FLAG="shared"
-    source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
-    wait 
-    # Case 5; message passing in consecutive 
-    export UCX_IB_REG_METHODS=direct
-    export FLAG="HT"
-    source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
-    wait 
+#  # Case 1; sequential case 
+#  export UCX_IB_REG_METHODS=direct
+#  source ${SLURM_SUBMIT_DIR}/eq_local_size/sequential.sh
+#  wait 
+#  # Case 2; shared memory in HT 
+#  export UCX_IB_REG_METHODS=direct
+#  export FLAG="shared"
+#  source ${SLURM_SUBMIT_DIR}/eq_local_size/hyperthread.sh 
+#  wait 
+#  # Case 3; message passing in HT 
+#  export UCX_IB_REG_METHODS=direct
+#  export FLAG="HT"
+#  source ${SLURM_SUBMIT_DIR}/eq_local_size/hyperthread.sh 
+#  wait 
+#  # Case 4; shared memory in consecutive 
+#  export UCX_IB_REG_METHODS=direct
+#  export FLAG="shared"
+#  source ${SLURM_SUBMIT_DIR}/eq_local_size/consecutive.sh
+#  wait 
+  # Case 5; message passing in consecutive 
+  export UCX_IB_REG_METHODS=direct
+  export FLAG="HT"
+  source ${SLURM_SUBMIT_DIR}/eq_local_size/consecutive.sh
+  wait 
 
-  done 
+done 
 
-  echo $(module list) 
+echo $(module list) 
 
-  echo "Job ended " $(date +"%T") # end time 
+echo "Job ended " $(date +"%T") # end time 

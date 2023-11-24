@@ -1,34 +1,53 @@
-# bash script to perform global scaling on stream 
-# export SIZE variable to archer2 slurm script 
+# bash script to call different kinds of scaling scripts for archer2 job submissions. 
 
-# tasks per node
-PPN=128
+callWeakScaling () {
+  (
+    export PPN=128
+    export NX=$((2**11))
+    export NY=$((2**11)) 
+    export NODE_START=0
+    export NODE_END=0
+    export IO_START=0
+    export IO_END=0
+    export ARRAY="0"
+    export TIME="00:10:00"
+    export DIR=OUTPUT/v2.0.0/WEAK/100COMPUTE
+    sh ./weakScaling.sh
+  ) 
+}
 
-# array parameters 
-NX=$((2**14)) # for strong scaling 
-NY=$((2**11)) 
-# NX=$((2**12)) # for weak scaling  
-# NY=$((2**12)) 
+callStrongScaling () {
+  (
+    export PPN=128
+    export NX=$((2**14))
+    export NY=$((2**11)) 
+    export NODE_START=0
+    export NODE_END=0
+    export IO_START=0
+    export IO_END=0
+    export ARRAY="0"
+    export TIME="00:10:00"
+    export DIR=OUTPUT/v2.0.0/STRONG/GLOBALSIZE_8GB/100COMPUTE
+    sh strongScaling.sh
+  )
+} 
 
-# node start and end as power of 2s 
-NODE_START=6
-NODE_END=6
+callTest () {
+  (
+    export PPN=128
+    export NX=$((2**14))
+    export NY=$((2**11)) 
+    export NODE_START=6
+    export NODE_END=6
+    export IO_START=0
+    export IO_END=0
+    export ARRAY="0"
+    export TIME="00:10:00"
+    export DIR=TESTING
+    sh strongScaling.sh
+  )
+} 
 
-# I/O selection range 
-IO_START=0
-IO_END=3
-
-# Job numbers for averaging 
-ARRAY="0-2"
-
-# time per job for custom time
-#TIME="3:00:00"
-
-# weak scaling script and directory
-# DIR=OUTPUT/v2.0.0/WEAK/100COMPUTE
-# source weakScaling.sh 
-
-# directory for strong scaling 
-DIR=OUTPUT/v2.0.0/STRONG/GLOBALSIZE_8GB/1COMPUTE
-source strongScaling.sh 
-
+# callWeakScaling
+# callStrongScaling 
+callTest 
