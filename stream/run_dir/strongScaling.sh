@@ -19,8 +19,8 @@ do
   FILESIZE_LOCAL=$((${NX_LOCAL} * ${NY} * 8/ 2**20)) 
   FILESIZE_GLOBAL=$(( ${NX_LOCAL} * ${NY} * 8 * ${NUM_NODES} * 128 / (2*2**20) ))  # global size is halfed due to IO servers
 
-  echo NODES ${NUM_NODES} ARRAY SIZE ${NX_LOCAL} x ${NY} Local size ${FILESIZE_LOCAL}MiB Global size ${FILESIZE_GLOBAL}MiB  TIME ${TIME_VAR} IO ${IO_START} to ${IO_END} JOBS ${ARRAY}
+  echo NODES ${NUM_NODES} ARRAY SIZE ${NX_LOCAL} x ${NY} Local size ${FILESIZE_LOCAL}MiB Global size ${FILESIZE_GLOBAL}MiB  TIME ${TIME_VAR} IO ${IO_START} to ${IO_END} JOBS ${ARRAY} MAP ${MAP} CASE ${CASE_START} to ${CASE_END}
   
-  sbatch --export=ALL,NX=${NX_LOCAL},NY=${NY},DIR=${DIR},IO_START=${IO_START},IO_END=${IO_END},FLAG=${FLAG} --qos=standard --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --time=${TIME_VAR} --array=${ARRAY}  archer2.slurm 
+  sbatch --export=ALL,NX=${NX_LOCAL},NY=${NY},DIR=${DIR},IO_START=${IO_START},IO_END=${IO_END},FLAG=${FLAG},MAP=${MAP},CASE_START=${CASE_START},CASE_END=${CASE_END} --qos=standard --nodes=${NUM_NODES} --ntasks-per-node=${PPN} --time=${TIME_VAR} --array=${ARRAY}  archer2.slurm 
 done 
 
