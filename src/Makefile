@@ -14,7 +14,7 @@ CFLAGS = -fpic -shared  -O2 -DADIOS2_USE_MPI -Wall -Wpedantic -Werror -Wextra
 # DREADACK for printing after the data is written into different files 
 # DNOADIOS2 for disabling ADIOS2 
 # DNOHDF5 for disabling HDF5 
-IOCOMP_FLAGS += 
+IOCOMP_FLAGS += -DNOADIOS2 -DNOHDF5 
 
 # linker flags
 LFLAGS = -I$(HDF5_DIR)/include -I$(ADIOS2_DIR)/include 
@@ -38,7 +38,7 @@ IOCOMP_FLAGS += -DNOADIOS2
 ifdef NOHDF5 # if HDF5 also no wanted 
 $(info ************  HDF5 REMOVED ************)
 IOCOMP_FLAGS += -DNOHDF5
-SRCS = $(filter-out hdf5Write.c hdf5Read.c  adios2Write.c adios2Read.c ,$(wildcard *.c))
+SRCS = $(filter-out hdf5Write.c phdf5Read.c hdf5Read.c  adios2Write.c adios2Read.c ,$(wildcard *.c))
 LFLAGS = -I$(OMPI_DIR)/include 
 endif 
 

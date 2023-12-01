@@ -4,6 +4,24 @@
 #include "stdio.h"
 #include "mpi.h"
 #include "../include/iocomp.h"
+#include <stdint.h>
+#include <limits.h>
+
+// what is size_t in terms of MPI data types 
+// source: https://stackoverflow.com/questions/40807833/sending-size-t-type-data-with-mpi
+#if SIZE_MAX == UCHAR_MAX
+   #define my_MPI_SIZE_T MPI_UNSIGNED_CHAR
+#elif SIZE_MAX == USHRT_MAX
+   #define my_MPI_SIZE_T MPI_UNSIGNED_SHORT
+#elif SIZE_MAX == UINT_MAX
+   #define my_MPI_SIZE_T MPI_UNSIGNED
+#elif SIZE_MAX == ULONG_MAX
+   #define my_MPI_SIZE_T MPI_UNSIGNED_LONG
+#elif SIZE_MAX == ULLONG_MAX
+   #define my_MPI_SIZE_T MPI_UNSIGNED_LONG_LONG
+#else
+   #error "SIZE_t undefined for MPI operations."
+#endif
 
 #define HIGH_LOW 1
 #define FIXED_IO_RANK 0
@@ -14,22 +32,18 @@
 void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 {
 
+
 	int ioSize,ioRank, i; 
 	MPI_Comm_size(comm, &ioSize);
 	MPI_Comm_rank(comm, &ioRank);
 
-	/*
-	 * Array size specs initialise
-	 */ 
-	iocompParams->localArray = malloc(sizeof(size_t)*iocompParams->NDIM);
-	iocompParams->globalArray = malloc(sizeof(size_t)*iocompParams->NDIM);
-	iocompParams->dataType = MPI_DOUBLE; // data type of sent and recvd data 
+	// iocompParams->dataType = MPI_DOUBLE; // data type of sent and recvd data 
 #ifdef VERBOSE
 	fprintf(iocompParams->debug,"arrayParamsInit -> local, global size initialised \n"); 
 #endif
 
 	/*
-	 * Local and global sizes are initialised 
+	 * Obtain localSize from 1D into 2D to avoid int32 overflows.
 	 * localSize is decomposed into NDIM i.e. 2D array for now. 
 	 * works based on closest sq root. 
 	 * if not multiple then goes down the range checking for numbers below the sq
@@ -70,24 +84,66 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 			}
 		}
 	}
+
+	// final check if the array dimensions multiply to give the local data size 
+	// assert( (iocompParams->localArray[0]*iocompParams->localArray[1]) == iocompParams->localDataSize);
+
+	/* 
+	 * get count and global data size, using data from other processes by
+	 * allgather 
+	 */
+	// set data type constant.
+	unsigned long int arrayStart[iocompParams->NDIM]; 
+	unsigned long int localArray[iocompParams->NDIM]; 
+	unsigned long int all_localArray[iocompParams->NDIM][ioSize]; // cos need to get data from all arrays. 
+	unsigned long int globalArray[iocompParams->NDIM]; 
+
 	for (i = 0; i < iocompParams->NDIM; i++)
 	{
 		iocompParams->localArray[i] = dim[i]; 
-		iocompParams->globalArray[i]	= iocompParams->localArray[i]; 
+		localArray[i] = (unsigned long int)dim[i]; 
 	}
 
-	// final check if the array dimensions multiply to give the local data size 
-	// size_t mult = (iocompParams->localArray[0]*iocompParams->localArray[1]); 
-	// print("value of multiplication %li and localdatasize %li \n ", mult, iocompParams->localDataSize); 
-	assert( (iocompParams->localArray[0]*iocompParams->localArray[1]) == iocompParams->localDataSize);
+	for (i = 0; i < iocompParams->NDIM; i++)
+	{
+		// Distribute localArray split into NDIM dimensions.
+		MPI_Allgather(&localArray[i], 1, MPI_UNSIGNED_LONG, &all_localArray[i], 1, MPI_UNSIGNED_LONG, iocompParams->ioServerComm); 
+		// Sum of all local sizes will give global array 
+		MPI_Allreduce(&localArray[i], &globalArray[i], 1, MPI_UNSIGNED_LONG, MPI_SUM, iocompParams->ioServerComm); 
+	} 
+	
+	// need to initialise as array start will be iteratively summed.
+	for (i = 0; i < iocompParams->NDIM; i++)
+	{
+		arrayStart[i] = 0; 
+	} 
 
-	/*
-	 * globalArray is multiplied by total size of available processors 
-	 * since comm is dependant on hyperthread flag, if HT flag is ON, global size is half 
-	 * no need for if statements 
-	 */ 
-	iocompParams->globalArray[0]*= ioSize; // assumes outermost dimension gets expanded by each rank 
+	// after all gather, get counts for each rank which counts to elements sent to
+	// ranks before it and that becomes array start. 
+	for(int i = 0; i < ioSize; i++)
+	{
+		for(int j = 0; j < i; j++)
+		{
+			for(int z = 0; z < iocompParams->NDIM; z++)
+			{
+				arrayStart[z] += all_localArray[z][j]; 
+			} 
+		} 
+	} 	
+		
+	printf("arrayParamsInit-> globalArray:[%lu,%lu] \n",globalArray[0], globalArray[1] ); 
+	printf("arrayParamsInit-> localArray:	[%lu,%lu] \n", localArray[0],  localArray[1] ); 
+	printf("arrayParamsInit-> arrayStart:	[%lu,%lu] \n", arrayStart[0],  arrayStart[1] );
 
+	// assign all values to iocomp structure
+	for (i = 0; i < iocompParams->NDIM; i++)
+	{
+		iocompParams->globalArray[i] = (size_t)globalArray[i]; 
+		iocompParams->localArray[i] = (size_t)localArray[i]; 
+		iocompParams->arrayStart[i] = (size_t)arrayStart[i]; 	 
+	} 
+	printf("arrayParamsInit-> globalArray:[%li,%li] \n",iocompParams->globalArray[0], iocompParams->globalArray[1] ); 
+	printf("arrayParamsInit-> localArray:[%li,%li] \n", iocompParams->localArray[0],  iocompParams->localArray[1] ); 
 
 #ifdef VERBOSE   
 	fprintf(iocompParams->debug,"arrayParamsInit-> globalArray:[%li,%li] \n",iocompParams->globalArray[0], iocompParams->globalArray[1] ); 
@@ -104,19 +160,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	fprintf(iocompParams->debug,"arrayParamsInit -> size definitions, localDataSize %li, globalDataSize %li\n", iocompParams->localDataSize, iocompParams->globalDataSize); 
 #endif
 
-	/*
-	 * Define and initialise arrayStart
-	 */ 
-	iocompParams->arrayStart = malloc(sizeof(size_t)*iocompParams->NDIM);
-#ifdef VERBOSE
-	fprintf(iocompParams->debug,"arrayParamsInit -> initialise arrayStart \n");
-#endif
 
-	for (int i = 0; i < iocompParams->NDIM; i++)
-	{
-		iocompParams->arrayStart[i] = 0; 
-	}
-	iocompParams->arrayStart[0] = ioRank * iocompParams->localArray[0]; // assuming ar_size has uniform dimensions. 
 #ifdef VERBOSE
 	fprintf(iocompParams->debug,"arrayParamsInit -> arrayStart initialised ioRank = %i\n",ioRank);
 #endif

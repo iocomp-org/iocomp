@@ -158,6 +158,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 #ifdef VERBOSE 
 	fprintf(iocompParams->debug, "ioServerShared-> all windows freed \n"); 
 #endif 
+#ifndef NOADIOS2 
 	// Finalise ADIOS2 object
 	if(iocompParams->ioLibNum >=2 && iocompParams->ioLibNum <= 4)
 	{
@@ -166,6 +167,7 @@ void ioServer_shared(struct iocomp_params *iocompParams)
 		fprintf(iocompParams->debug, "ioServer->adios2 finalised\n"); 
 #endif	
 	} 
+#endif 
 
 #ifdef IOBW
 	iobw(iocompParams); 

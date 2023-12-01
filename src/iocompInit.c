@@ -47,6 +47,12 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	iocompParams->flag = (int*)malloc(iocompParams->numWin*sizeof(int)); 
 	iocompParams->array = (double**)malloc(iocompParams->numWin*sizeof(double*)); 
 	iocompParams->writeFile = (char**)malloc(iocompParams->numWin*sizeof(char*)); 
+	/*
+	 * array parameters using ndim 
+	 */ 
+	iocompParams->arrayStart = malloc(sizeof(size_t)*iocompParams->NDIM);
+	iocompParams->localArray = malloc(sizeof(size_t)*iocompParams->NDIM);
+	iocompParams->globalArray = malloc(sizeof(size_t)*iocompParams->NDIM);
 	
 
 	/*

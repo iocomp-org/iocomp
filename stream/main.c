@@ -29,9 +29,10 @@ int main(int argc, char** argv)
 
 	/*	
 	 * initialise stream param structs using command line parameters
-	 */ 
+	 */
 	commandLineArgs(&streamParams, rank, argc, argv); 
-
+	//streamParams.nx*=(size+1); // test for different local sizes 
+	//streamParams.ny*=(size+10); // test for different local sizes 	
 	if(!rank){
 		printf("STREAM benchmark starts with size %i \n", size);
 		if (streamParams.HT_flag)
