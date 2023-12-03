@@ -104,6 +104,8 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
     recv_localArray2D[i] = 0; 
   }
 
+  iocompParams->localArray[0] = (size_t)dim[0]; 
+  iocompParams->localArray[1] = (size_t)dim[1]; 
   recv_localArray1D[ioRank] = dim[0]; 
   recv_localArray2D[ioRank] = dim[1]; 
 
@@ -144,25 +146,44 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
   {
     iocompParams->arrayStart[i] = 0; 
     iocompParams->globalArray[i] = 0; 
-    iocompParams->localArray[i] = 0; 
   } 
 
   // after all gather, get localArray dimensions for each rank which counts to elements sent to
   // ranks before it and that becomes offset point at that rank. 
   // TODO: implement NDIM loop 
+  // outer dimension added up to I/O rank for array start and added up to I/O size for global array 
   for(int j = 0; j < ioRank; j++)
   {
     iocompParams->arrayStart[0] += (size_t)recv_localArray1D[j]; 
-    iocompParams->arrayStart[1] += (size_t)recv_localArray2D[j]; 
   } 
   // get global size from sum of local sizes for each rank. 
   for(i = 0; i < ioSize; i++)
   {
     iocompParams->globalArray[0] += (size_t)recv_localArray1D[i];  
-    iocompParams->globalArray[1] += (size_t)recv_localArray2D[i];  
   }
-  iocompParams->localArray[0] = (size_t)dim[0]; 
-  iocompParams->localArray[1] = (size_t)dim[1]; 
+  
+  // get max value for inner dimension for both array start and global size 
+  unsigned long int max; 
+  max = recv_localArray2D[0];  
+  for(i = 0; i < ioSize; i++)
+  {
+    if(max < recv_localArray2D[i])
+    {
+      max = recv_localArray2D[i]; 
+    }
+  }
+  // IO rank 0 should start at 0, 0.
+  // else they should start at the max of the innermost dimensions.
+  if(ioRank == 0)
+  {
+    iocompParams->arrayStart[0] = 0;  
+    iocompParams->arrayStart[1] = 0;  
+  } 
+  else
+  {
+    iocompParams->arrayStart[1] = (size_t)max;  
+  } 
+  iocompParams->globalArray[1] = (size_t)max; 
 
 //  printf("Rank %i - globalArray:[%lu,%lu], localArray:	[%lu,%lu], arrayStart:	[%lu,%lu] \n",
 //    ioRank, globalArray[0],globalArray[1],localArray[0],localArray[1],arrayStart[0],arrayStart[1] ); 
