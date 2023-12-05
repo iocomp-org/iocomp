@@ -57,7 +57,6 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	{
 		double power = (double)1/iocompParams->NDIM; 
 		int root = (int)pow(iocompParams->globalDataSize,power);
-		printf("power %lf, root %i \n",power, root); 
 
 		if(pow(root,iocompParams->NDIM) == iocompParams->globalDataSize)
 		{
