@@ -15,6 +15,7 @@ test/TEST_OUTPUT/*
 test/test
 test/*+pat
 **/*.swp 
+localruns/*
 visuals/**
 
 
