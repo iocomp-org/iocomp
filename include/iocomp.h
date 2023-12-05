@@ -1,10 +1,10 @@
 #ifndef _IOCOMP_H_
 #define _IOCOMP_H_
+#include "mpi.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "mpi.h"
 #include <stdbool.h>
 #include <stdio.h> 
 #include <stddef.h>
