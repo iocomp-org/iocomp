@@ -53,37 +53,43 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	 * if not multiple then goes down the range checking for numbers below the sq
 	 * root and checking if thats a factorial of the local size or not. 
 	 */		
-	double power = (1/iocompParams->NDIM); 
-	int root = pow(iocompParams->globalDataSize,power);
+	if(!ioRank)
+	{
+		double power = (double)1/iocompParams->NDIM; 
+		int root = (int)pow(iocompParams->globalDataSize,power);
+		printf("power %lf, root %i \n",power, root); 
 
-	if(pow(root,iocompParams->NDIM) == iocompParams->globalDataSize)
-	{
-		// if its a perfect square 
-		iocompParams->globalArray[0] = root; 
-		iocompParams->globalArray[1] = root; 
-	}
-	else if(iocompParams->globalDataSize%root == 0) 
-	{
-		// if closest sq root is a perfect factorial 
-		iocompParams->globalArray[0] = root; 
-		iocompParams->globalArray[1] = iocompParams->globalDataSize/root; 
-	}
-	else
-	{
-		// or if closest sq root is not a perfect factorial 
-		// then reduce the numbers and check for the closest factorials 
-		for(int i = 1; i < root; i++)
+		if(pow(root,iocompParams->NDIM) == iocompParams->globalDataSize)
 		{
-			if(iocompParams->globalDataSize%(root-i) == 0) 
+			// if its a perfect square 
+			iocompParams->globalArray[0] = root; 
+			iocompParams->globalArray[1] = root; 
+		}
+		else if(iocompParams->globalDataSize%root == 0) 
+		{
+			// if closest sq root is a perfect factorial 
+			iocompParams->globalArray[0] = root; 
+			iocompParams->globalArray[1] = iocompParams->globalDataSize/root; 
+		}
+		else
+		{
+			// or if closest sq root is not a perfect factorial 
+			// then reduce the numbers and check for the closest factorials 
+			for(int i = 1; i < root; i++)
 			{
-				iocompParams->globalArray[0] = root - i; 
-				iocompParams->globalArray[1] = iocompParams->globalDataSize/(root-i); 
-				break; 
+				if(iocompParams->globalDataSize%(root-i) == 0) 
+				{
+					iocompParams->globalArray[0] = root - i; 
+					iocompParams->globalArray[1] = iocompParams->globalDataSize/(root-i); 
+					break; 
+				}
 			}
 		}
-	}
+		assert( (iocompParams->globalArray[0]*iocompParams->globalArray[1]) == iocompParams->globalDataSize);
+	} 
 
-	assert( (iocompParams->globalArray[0]*iocompParams->globalArray[1]) == iocompParams->globalDataSize);
+	// broadcast global array values to avoid different global values. 
+	MPI_Bcast(iocompParams->globalArray, 2, MPI_UNSIGNED_LONG, 0, iocompParams->cartcomm); 
 #ifdef VERBOSE
 	fprintf(iocompParams->debug,"arrayParamsInit -> local data size %ld, global data size %ld\n",
 		iocompParams->localDataSize, iocompParams->globalDataSize); 
@@ -101,7 +107,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	if(iocompParams->localDataSize > iocompParams->globalArray[1])
 	{
 		iocompParams->localArray[1] = iocompParams->globalArray[1]; 
-		iocompParams->localArray[0] = ceil(iocompParams->localDataSize/iocompParams->localArray[1]); 
+		iocompParams->localArray[0] = (size_t)ceil(((double)iocompParams->localDataSize/(double)iocompParams->localArray[1])); 
 	} 
 	else
 	{
@@ -114,7 +120,7 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	 * Convert the sum to a point in the global array
 	 */
 	unsigned long int offset = 0; 
-	for(i = 0; i < ioSize; i++)
+	for(i = 0; i < ioRank; i++)
 	{
 		offset += localSizes_array[i]; 
 	} 
