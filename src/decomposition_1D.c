@@ -23,7 +23,7 @@ void decomposition_1D(struct iocomp_params *iocompParams, MPI_Comm comm)
 	{
 		localSizes_array[i] = 0; 
 	}
-	localSizes_array[ioRank] = iocompParams->localDataSize;  
+	localSizes_array[ioRank] = (unsigned long int)iocompParams->localDataSize;  
 	// get all values from all ranks 
 	MPI_Allreduce(MPI_IN_PLACE, localSizes_array, ioSize, MPI_UNSIGNED_LONG, MPI_SUM, iocompParams->ioServerComm); 
 
@@ -31,14 +31,14 @@ void decomposition_1D(struct iocomp_params *iocompParams, MPI_Comm comm)
 	iocompParams->globalDataSize = 0; 
 	for(i = 0; i < ioSize; i++)
 	{	
-		iocompParams->globalDataSize += iocompParams->localDataSize; 
+		iocompParams->globalDataSize += localSizes_array[i]; 
 	} 
 
 	// get offset by calculating sum of all sizes before process rank 
 	iocompParams->arrayStart[0] = 0; 
 	for(i = 0; i < ioRank; i++)
 	{
-		iocompParams->arrayStart[0] += localSizes_array[i];  
+		iocompParams->arrayStart[0] += (size_t)localSizes_array[i];  
 	} 
 
 	// local and global array parameters are same as local and global data sizes. 
@@ -48,7 +48,6 @@ void decomposition_1D(struct iocomp_params *iocompParams, MPI_Comm comm)
 	printf("Rank %i - global data size %li, local data size %li, globalArray:[%li], localArray:[%li], arrayStart:[%li] \n",
 			ioRank, iocompParams->globalDataSize, iocompParams->localDataSize, 
 			iocompParams->globalArray[0], iocompParams->localArray[0], iocompParams->arrayStart[0]); 
-
 #ifdef VERBOSE   
 	fprintf(iocompParams->debug, "Rank %i - global data size %li, local data size %li, globalArray:[%li], localArray:[%li], arrayStart:[%li] \n", ioRank, iocompParams->globalDataSize, iocompParams->localDataSize, iocompParams->globalArray[0], iocompParams->localArray[0], iocompParams->arrayStart[0]); 
 #endif 
