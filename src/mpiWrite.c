@@ -103,11 +103,12 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams, int windowNu
 	fprintf(iocompParams->debug,"mpiWrite -> MPI file set view \n"); 
 #endif       
 
-	int total_data = 1; 
-	for (i = 0; i< iocompParams->NDIM; i++)
-	{
-		total_data *= localArray[i]; 
-	}
+	int total_data = (int)iocompParams->localDataSize; 
+
+	//for (i = 0; i< iocompParams->NDIM; i++)
+	//{
+	//	total_data *= localArray[i]; 
+	//}
 	ierr = MPI_File_write_all(fh, iodata, total_data, MPI_DOUBLE, &status);   
 	mpi_error_check(ierr); 
 #ifdef VERBOSE   
