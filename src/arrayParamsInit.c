@@ -122,9 +122,16 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	for(i = 0; i < ioRank; i++)
 	{
 		offset += localSizes_array[i]; 
-	} 
-	iocompParams->arrayStart[0] = (int)(offset/iocompParams->globalArray[1]); 
-	iocompParams->arrayStart[1] = offset%iocompParams->globalArray[1];  	
+	}
+	// * use cieling function on array start pushing them upwards. 
+	iocompParams->arrayStart[0] = (size_t)ceil((double)offset/(double)iocompParams->globalArray[1]); 
+	iocompParams->arrayStart[1] = 0;
+	// * global array [0] is sum of all array starts[0] -> updated values. 
+	MPI_Allreduce(&iocompParams->localArray[0], &iocompParams->globalArray[0], 1, MPI_UNSIGNED_LONG, MPI_SUM, iocompParams->cartcomm); 
+
+	// * old method.
+	// iocompParams->arrayStart[0] = (int)(offset/iocompParams->globalArray[1]); 
+	// iocompParams->arrayStart[1] = offset%iocompParams->globalArray[1];  	
 	
 	printf("Rank %i - globalArray:[%lu,%lu], localArray:	[%lu,%lu], arrayStart:	[%lu,%lu] \n",
 			ioRank, iocompParams->globalArray[0], iocompParams->globalArray[1],iocompParams->localArray[0],
