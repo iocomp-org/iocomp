@@ -67,8 +67,8 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 		else if(iocompParams->globalDataSize%root == 0) 
 		{
 			// if closest sq root is a perfect factorial 
-			iocompParams->globalArray[0] = root; 
-			iocompParams->globalArray[1] = iocompParams->globalDataSize/root; 
+			iocompParams->globalArray[1] = root; 
+			iocompParams->globalArray[0] = iocompParams->globalDataSize/root; 
 		}
 		else
 		{
@@ -78,8 +78,8 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 			{
 				if(iocompParams->globalDataSize%(root-i) == 0) 
 				{
-					iocompParams->globalArray[0] = root - i; 
-					iocompParams->globalArray[1] = iocompParams->globalDataSize/(root-i); 
+					iocompParams->globalArray[1] = root - i; 
+					iocompParams->globalArray[0] = iocompParams->globalDataSize/(root-i); 
 					break; 
 				}
 			}
@@ -133,9 +133,11 @@ void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm )
 	// iocompParams->arrayStart[0] = (int)(offset/iocompParams->globalArray[1]); 
 	// iocompParams->arrayStart[1] = offset%iocompParams->globalArray[1];  	
 	
-	printf("Rank %i - globalArray:[%lu,%lu], localArray:	[%lu,%lu], arrayStart:	[%lu,%lu] \n",
-			ioRank, iocompParams->globalArray[0], iocompParams->globalArray[1],iocompParams->localArray[0],
-			iocompParams->localArray[1],iocompParams->arrayStart[0],iocompParams->arrayStart[1]); 
+	printf("Rank %i - global data size %li, local data size %li, globalArray:[%lu,%lu], localArray:	[%lu,%lu], arrayStart:	[%lu,%lu] \n",
+			ioRank, iocompParams->globalDataSize, iocompParams->localDataSize, 
+      iocompParams->globalArray[0],  iocompParams->globalArray[1], 
+      iocompParams->localArray[0], iocompParams->localArray[1],
+      iocompParams->arrayStart[0],iocompParams->arrayStart[1]); 
 
 #ifdef VERBOSE   
 	fprintf(iocompParams->debug,"arrayParamsInit-> globalArray:[%li,%li] \n",iocompParams->globalArray[0], iocompParams->globalArray[1] ); 
