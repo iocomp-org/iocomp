@@ -10,9 +10,9 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams, int windowNu
 	int			i, ierr, nprocs, ioRank; 
 
 	int			dims[iocompParams->NDIM],
-					coords[iocompParams->NDIM], 
-					periods[iocompParams->NDIM]; 
-	
+	coords[iocompParams->NDIM], 
+	periods[iocompParams->NDIM]; 
+
 	ierr = MPI_Comm_size(iocompParams->cartcomm, &nprocs);
 	mpi_error_check(ierr); 
 	ierr = MPI_Comm_rank(iocompParams->ioServerComm, &ioRank);
@@ -43,89 +43,107 @@ void mpiiowrite(double* iodata, struct iocomp_params *iocompParams, int windowNu
 	fprintf(iocompParams->debug,"mpiWrite -> MPI cartget \n"); 
 #endif 
 	double openTime = MPI_Wtime(); 
-	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->writeFile[windowNum],
-			MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh); 
-	mpi_error_check(ierr); 
-	openTime = MPI_Wtime() - openTime; 
-
-#ifdef VERBOSE   
-	fprintf(iocompParams->debug,"mpiWrite -> MPI file open\n"); 
-#endif 
 
 	// Initialise int arrays for MPIIO 
 	int localArray[iocompParams->NDIM]; 
 	int globalArray[iocompParams->NDIM]; 
 	int arrayStart[iocompParams->NDIM]; 
+	int total_data = (int)iocompParams->localDataSize; 
 #ifdef VERBOSE   
 	fprintf(iocompParams->debug,"mpiWrite -> declare arrays in integers\n"); 
 #endif 
 	
-	for(i = 0; i < iocompParams->NDIM; i++)
+	/* 
+	 * If 1D chosen, use File write all at to use offsets, which are size_t
+	 * compatible to avoid int 32 overflows.
+	 * Otherwise stick to array decomposition. 
+	 */ 
+	if(iocompParams->NDIM == 1)
 	{
-		localArray[i] =	 (int)iocompParams->localArray[i]; 
-		globalArray[i] = (int)iocompParams->globalArray[i]; 
-		arrayStart[i] =  (int)iocompParams->arrayStart[i]; 
-		assert(localArray[i] > 0); 
-		assert(globalArray[i] > 0); 
-	}
-
+		ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->writeFile[windowNum],
+				MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh); 
+		mpi_error_check(ierr); 
+		openTime = MPI_Wtime() - openTime; 
 #ifdef VERBOSE   
-	fprintf(iocompParams->debug,"mpiWrite -> globalArray:[%i,%i] \n",globalArray[0], globalArray[1] ); 
-	fprintf(iocompParams->debug,"mpiWrite -> localArray:[%i,%i] \n",localArray[0], localArray[1] ); 
-	fprintf(iocompParams->debug,"mpiWrite -> startArray:[%i,%i] \n",arrayStart[0], arrayStart[1] ); 
+		fprintf(iocompParams->debug,"mpiWrite -> MPI file open\n"); 
 #endif 
 
-	ierr = MPI_Type_create_subarray(iocompParams->NDIM, globalArray, localArray, arrayStart,
-			MPI_ORDER_C, MPI_DOUBLE, &filetype); 
-	mpi_error_check(ierr); 
+		MPI_Offset offset = iocompParams->arrayStart[0];
 #ifdef VERBOSE   
-	fprintf(iocompParams->debug,"mpiWrite -> MPI create subarray \n"); 
+		fprintf(iocompParams->debug,"mpiWrite -> MPI offset assigned\n"); 
+#endif       
+
+		ierr = MPI_File_write_at_all(fh, offset*sizeof(double), iodata, total_data, MPI_DOUBLE, &status);   
+		mpi_error_check(ierr); 
+#ifdef VERBOSE   
+		fprintf(iocompParams->debug,"mpiWrite -> MPI file write at all\n"); 
+#endif       
+
+		ierr = MPI_File_close(&fh);
+		mpi_error_check(ierr); 
+#ifdef VERBOSE   
+		fprintf(iocompParams->debug,"mpiWrite -> MPI file close \n"); 
+#endif       
+	} 
+	else 
+	{
+		for(i = 0; i < iocompParams->NDIM; i++)
+		{
+			localArray[i] =	 (int)iocompParams->localArray[i]; 
+			globalArray[i] = (int)iocompParams->globalArray[i]; 
+			arrayStart[i] =  (int)iocompParams->arrayStart[i]; 
+			assert(localArray[i] > 0); 
+			assert(globalArray[i] > 0); 
+		}
+
+#ifdef VERBOSE   
+		fprintf(iocompParams->debug,"mpiWrite -> globalArray:[%i,%i] \n",globalArray[0], globalArray[1] ); 
+		fprintf(iocompParams->debug,"mpiWrite -> localArray:[%i,%i] \n",localArray[0], localArray[1] ); 
+		fprintf(iocompParams->debug,"mpiWrite -> startArray:[%i,%i] \n",arrayStart[0], arrayStart[1] ); 
+#endif 
+
+		ierr = MPI_Type_create_subarray(iocompParams->NDIM, globalArray, localArray, arrayStart,
+				MPI_ORDER_C, MPI_DOUBLE, &filetype); 
+		mpi_error_check(ierr); 
+#ifdef VERBOSE   
+		fprintf(iocompParams->debug,"mpiWrite -> MPI create subarray \n"); 
 #endif                                   
-
-	ierr = MPI_Type_commit(&filetype); 
-	mpi_error_check(ierr); 
+		ierr = MPI_Type_commit(&filetype); 
+		mpi_error_check(ierr); 
 #ifdef VERBOSE   
-	fprintf(iocompParams->debug,"mpiWrite -> MPI type commit \n"); 
+		fprintf(iocompParams->debug,"mpiWrite -> MPI type commit \n"); 
+#endif       
+		// Set view for this process using datatype 
+		ierr = MPI_File_set_view(fh, 0, MPI_DOUBLE, filetype, "native",  MPI_INFO_NULL); 
+		mpi_error_check(ierr); 
+#ifdef VERBOSE   
+		fprintf(iocompParams->debug,"mpiWrite -> MPI file set view \n"); 
+#endif       
+		ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->writeFile[windowNum],
+				MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh); 
+		mpi_error_check(ierr); 
+		openTime = MPI_Wtime() - openTime; 
+
+#ifdef VERBOSE   
+		fprintf(iocompParams->debug,"mpiWrite -> MPI file open\n"); 
+#endif 
+		ierr = MPI_File_write_all(fh, iodata, total_data, MPI_DOUBLE, &status);   
+		mpi_error_check(ierr); 
+#ifdef VERBOSE   
+		fprintf(iocompParams->debug,"mpiWrite -> MPI file write all \n"); 
 #endif       
 
-	// Open file
-	ierr = MPI_File_open(iocompParams->cartcomm, iocompParams->writeFile[windowNum], 
-					MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh); 
-	mpi_error_check(ierr); 
+		ierr = MPI_File_close(&fh);
+		mpi_error_check(ierr); 
 #ifdef VERBOSE   
-	fprintf(iocompParams->debug,"mpiWrite -> MPI file open \n"); 
+		fprintf(iocompParams->debug,"mpiWrite -> MPI file close \n"); 
 #endif       
-
-	// Set view for this process using datatype 
-	ierr = MPI_File_set_view(fh, 0, MPI_DOUBLE, filetype, "native",  MPI_INFO_NULL); 
-	mpi_error_check(ierr); 
+		ierr = MPI_Type_free(&filetype); 
+		mpi_error_check(ierr); 
 #ifdef VERBOSE   
-	fprintf(iocompParams->debug,"mpiWrite -> MPI file set view \n"); 
+		fprintf(iocompParams->debug,"mpiWrite -> MPI filetype free\n"); 
 #endif       
-
-	int total_data = (int)iocompParams->localDataSize; 
-
-	//for (i = 0; i< iocompParams->NDIM; i++)
-	//{
-	//	total_data *= localArray[i]; 
-	//}
-	ierr = MPI_File_write_all(fh, iodata, total_data, MPI_DOUBLE, &status);   
-	mpi_error_check(ierr); 
-#ifdef VERBOSE   
-	fprintf(iocompParams->debug,"mpiWrite -> MPI file write all \n"); 
-#endif       
-
-	ierr = MPI_File_close(&fh);
-	mpi_error_check(ierr); 
-#ifdef VERBOSE   
-	fprintf(iocompParams->debug,"mpiWrite -> MPI file close \n"); 
-#endif       
-
-	ierr = MPI_Type_free(&filetype); 
-	mpi_error_check(ierr); 
-#ifdef VERBOSE   
-	fprintf(iocompParams->debug,"mpiWrite -> MPI filetype\n"); 
-#endif       
+	}
 }
 
 

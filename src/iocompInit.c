@@ -8,7 +8,7 @@
 #include <string.h> 
 #include "../include/iocomp.h"
 #define atoa(x) #x
-
+// TODO: set NDIM using initialising function
 /*
  * Initialises the library 
  */
