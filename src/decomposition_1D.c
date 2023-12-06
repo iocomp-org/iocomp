@@ -45,11 +45,10 @@ void decomposition_1D(struct iocomp_params *iocompParams, MPI_Comm comm)
 	iocompParams->localArray[0] = iocompParams->localDataSize;
 	iocompParams->globalArray[0] = iocompParams->globalDataSize; 
 
-	printf("Rank %i - global data size %li, local data size %li, globalArray:[%li], localArray:[%li], arrayStart:[%li] \n",
+#ifdef VERBOSE   
+	fprintf(iocompParams->debug,"Rank %i - global data size %li, local data size %li, globalArray:[%li], localArray:[%li], arrayStart:[%li] \n",
 			ioRank, iocompParams->globalDataSize, iocompParams->localDataSize, 
 			iocompParams->globalArray[0], iocompParams->localArray[0], iocompParams->arrayStart[0]); 
-#ifdef VERBOSE   
-	fprintf(iocompParams->debug, "Rank %i - global data size %li, local data size %li, globalArray:[%li], localArray:[%li], arrayStart:[%li] \n", ioRank, iocompParams->globalDataSize, iocompParams->localDataSize, iocompParams->globalArray[0], iocompParams->localArray[0], iocompParams->arrayStart[0]); 
 #endif 
 
 } 
