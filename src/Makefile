@@ -28,6 +28,16 @@ DEPS = ../include/iocomp.h
 # define C source files 
 SRCS = $(wildcard *.c)
 
+# define library paths 
+LIBS = -lm 
+ifndef NOADIOS2 
+LIBS +=   -L$(ADIOS2_DIR)/lib64 -ladios2_c -ladios2_c_mpi -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi 
+endif 
+
+ifndef NOHDF5
+LIBS +=   -L$(HDF5_DIR)/lib -lhdf5_hl -lhdf5 
+endif 
+
 # remove adios2 file from compilation if NOADIOS2 passed to Makefile 
 # and remove linker files 
 # and pass appropriate flag to iocomp files to remove the references 
@@ -59,7 +69,7 @@ _OBJS = $(SRCS:.c=.o)
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
 $(ODIR)/%.o: %.c $(DEPS)
-	$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -c $< -o $@ 
 
 # if DIR specified then build under that directory, else build under ../lib  
 ifdef DIR 
@@ -69,7 +79,7 @@ $(MAIN): $(OBJS)
 	mkdir $(DIR)/include 
 	mkdir $(DIR)/lib 
 	cp $(DEPS) $(DIR)/include 
-	$(CC) $(CFLAGS) $(LFLAGS) -o $(MAIN)  $(OBJS) 
+	$(CC) $(CFLAGS) $(LFLAGS) -o $(MAIN)  $(OBJS) $(LIBS)
 else
 $(MAIN): $(OBJS) 
 	#$(CC) $(CFLAGS) $(IOCOMP_FLAGS) $(LFLAGS) -o $(MAIN) Object_files/*.o

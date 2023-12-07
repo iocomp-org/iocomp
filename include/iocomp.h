@@ -10,17 +10,15 @@ extern "C" {
 #include <stddef.h>
 #include <stdlib.h>
 #include <assert.h>  
-//#ifndef NOADIOS2 
-//#include <adios2_c.h>
-//#include <adios2/c/adios2_c_types.h>
-//#endif 
+#include <adios2_c.h>
+#include <adios2/c/adios2_c_types.h>
 
 #define ioColour 0
 #define compColour 1 
 #define ioLibCount 5
 #define NUM_DIM 1 // TODO: assignable from iocompInit? 
 
-	// define window control integers 
+// define window control integers 
 #define WIN_DEACTIVATE 0 
 #define WIN_TEST 1
 #define WIN_ACTIVATE 2 
@@ -87,14 +85,14 @@ extern "C" {
 
 		// adios2 config file list 
 		char *ADIOS2_IOENGINES[3]; 
-//#ifndef NOADIOS2
-//		// adios2 object 
-//		adios2_adios *adios;  
-//		// adios2 io object 
-//		adios2_io* io; 
-//		// adios2 variable object 
-//		adios2_variable *var_iodata; 
-//#endif 
+#ifndef NOADIOS2
+		// adios2 object 
+		adios2_adios *adios;  
+		// adios2 io object 
+		adios2_io* io; 
+		// adios2 variable object 
+		adios2_variable *var_iodata; 
+#endif 
 		// previously initialised counter
 		int previousInit;  
 		// previous element count
