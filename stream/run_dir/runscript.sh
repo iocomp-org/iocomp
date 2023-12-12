@@ -1,36 +1,108 @@
-# bash script to perform global scaling on stream 
-# export SIZE variable to archer2 slurm script 
+# bash script to call different kinds of scaling scripts for archer2 job submissions. 
 
-# tasks per node
-PPN=128
+callWeakScaling () {
+  (
+    echo 'calling weak scaling function' 
+    export PPN=128
+    export NX=$((2**11))
+    export NY=$((2**11)) 
+    export NODE_START=3
+    export NODE_END=4
+    export IO_START=0
+    export IO_END=3
+    export ARRAY="0"
+    # export TIME="01:30:00"
+    export MAP=0
+    export CASE_START=1
+    export CASE_END=5
+    export DIR=CRAY_PAT/100COMPUTE/WEAK
+    export MAP=0
+    sh ./weakScaling.sh
+  ) 
+}
 
-# array parameters 
-NX=$((2**11)) 
-NY=$((2**11)) 
+callStrongScaling () {
+  (
+    echo 'calling strong scaling function' 
+    export PPN=128
+    export NX=$((2**12))
+    export NY=$((2**12)) 
+    export NODE_START=5
+    export NODE_END=5
+    export IO_START=2
+    export IO_END=2
+    export ARRAY="0-2"
+    export TIME="01:00:00"
+    export CASE_START=4
+    export CASE_END=5
+    export MAP=0
+    export DIR=OUTPUT/v2.0.0/STRONG/GLOBALSIZE_8GB/100COMPUTE
+    sh strongScaling.sh
+  )
+} 
 
-# node start and end as power of 2s 
-NODE_START=0
-NODE_END=0
+callTest () {
+  (
+    echo 'calling test function' 
+    export PPN=128
+    export NX=$((2**11))
+    export NY=$((2**11)) 
+    export NODE_START=1
+    export NODE_END=1
+    export IO_START=0
+    export IO_END=0
+    export ARRAY="0-2"
+    export TIME="00:30:00"
+    export DIR=OUTPUT/v2.0.0/WEAK/1COMPUTE
+    export MAP=0
+    export CASE_START=1
+    export CASE_END=1
+    sh weakScaling.sh
+  )
+} 
 
-# I/O selection range 
-IO_START=0
-IO_END=0 
+callMAP() {
+  (
+    echo 'calling map function' 
+    export PPN=128
+    export NX=$((2**11))
+    export NY=$((2**11)) 
+    export NODE_START=4
+    export NODE_END=4
+    export ARRAY="0"
+    export TIME="00:10:00"
+    export DIR=MAP_PROFILES/100COMPUTE/STRONG # or weak 
+    export MAP=1
+    # loop over IO layers for MAP from 0 to 3 
+    for io in $(seq 2 2)
+    do 
+      export IO_START=${io}
+      export IO_END=${io} 
+      # loop over cases 1 by 1 for MAP # from 1 - 5 
+      for case in $(seq 1 1)
+      do 
+        export CASE_START=${case}
+        export CASE_END=${case}
+        sh ./weakScaling.sh
+        wait 
+      done 
+    done 
+  ) 
+}
 
-# Job numbers for averaging 
-ARRAY="0"
-
-# time per job for custom time
-TIME="00:10:00"
-
-# Directory for the tests 
-DIR=TESTING/v2.0.0/SHARED
-FLAG="shared"
-# FLAG="HT"
-
-# weak scaling script 
-source weakScaling.sh 
-
-# directory for strong scaling 
-#DIR=v1.1.4/STRONG
-#source strongScaling.sh 
-
+# Command line arguments 
+if [[ $1 == 'map' ]]
+then 
+  callMAP
+elif  [[ $1 == 'weak' ]]
+then  
+  callWeakScaling
+elif  [[ $1 == 'strong' ]]
+then
+  callStrongScaling 
+elif  [[ $1 == 'test' ]]
+then
+  callTest 
+else
+  echo 'Invalid argument' 
+fi 

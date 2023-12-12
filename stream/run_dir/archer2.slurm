@@ -1,5 +1,5 @@
 #!/bin/bash --login
-#SBATCH --job-name=xthi
+#SBATCH --job-name=stream
 #SBATCH --nodes=1
 #SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
@@ -13,8 +13,8 @@ export STREAM_DIR=$(cd ${SLURM_SUBMIT_DIR}/../../ && pwd)
 # different module loads. Swap cray env to gnu env 
 module swap PrgEnv-cray PrgEnv-gnu
 module use /work/y07/shared/archer2-lmod/dev
-module swap craype-network-ofi craype-network-ucx 
-module swap cray-mpich cray-mpich-ucx 
+#module swap craype-network-ofi craype-network-ucx 
+#module swap cray-mpich cray-mpich-ucx 
 module load cray-hdf5-parallel
 
 # different directories and their paths
@@ -44,16 +44,19 @@ export FI_OFI_RXM_SAR_LIMIT=64K
 #module load darshan
 
 ## for perftools, comment them out 
-#module load perftools-base/21.02.0
-#export EXE=${STREAM_DIR}/stream/test+pat # cray pat 
+# module load perftools
+# export EXE=${STREAM_DIR}/stream/test+pat # cray pat 
 
 # Setup environment
 export PPN=${SLURM_NTASKS_PER_NODE}
 export OMP_NUM_THREADS=1
 
-# for ARM MAP 
-# module load arm/forge 
-export MAP=0
+# check if MAP variable is set to ON from runscripts.
+# if not, then scripts go through SLURM instead of MAP
+if (( ${MAP} == 1 )); 
+then 
+  module load arm/forge 
+fi 
 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
 SIZE=$(( ${NX}*${NY}*8 / 2**20 )) # local size in MiB
@@ -64,23 +67,53 @@ for IO in $(seq ${IO_START} ${IO_END})
 do 
   export PARENT_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}
 
-  ## Case 1 
-  export UCX_IB_REG_METHODS=direct
-  source ${SLURM_SUBMIT_DIR}/slurm_files/sequential.sh
-  wait 
-  #Case 2
-  #source ${SLURM_SUBMIT_DIR}/slurm_files/oversubscribe.sh 
-  # Case 3
-  export UCX_IB_REG_METHODS=direct
-  source ${SLURM_SUBMIT_DIR}/slurm_files/hyperthread.sh 
-  wait 
-  ## Case 4
-  export UCX_IB_REG_METHODS=direct
-  source ${SLURM_SUBMIT_DIR}/slurm_files/consecutive.sh
-  wait 
+  for MAPPING_CASE in $( seq ${CASE_START} ${CASE_END} ) 
+  do 
 
-done 
+    if (( ${MAPPING_CASE} == 1 )); 
+    then 
+      # Case 1; sequential case 
+      export UCX_IB_REG_METHODS=direct
+      source ${SLURM_SUBMIT_DIR}/eq_local_size/sequential.sh
+      wait 
+    fi 
+
+    if (( ${MAPPING_CASE} == 2 )); 
+    then
+      # Case 2; shared memory in HT 
+      export UCX_IB_REG_METHODS=direct
+      export FLAG="shared"
+      source ${SLURM_SUBMIT_DIR}/eq_local_size/hyperthread.sh 
+    fi 
+
+    if (( ${MAPPING_CASE} == 3 )); 
+    then 
+      # Case 3; message passing in HT 
+      export UCX_IB_REG_METHODS=direct
+      export FLAG="HT"
+      source ${SLURM_SUBMIT_DIR}/eq_local_size/hyperthread.sh 
+      wait 
+    fi  
+
+    if (( ${MAPPING_CASE} == 4 )); 
+    then 
+      # Case 4; shared memory in consecutive 
+      export UCX_IB_REG_METHODS=direct
+      export FLAG="shared"
+      source ${SLURM_SUBMIT_DIR}/eq_local_size/consecutive.sh
+    fi 
+
+    if (( ${MAPPING_CASE} == 5 )); 
+    then 
+      # Case 5; message passing in consecutive 
+      export UCX_IB_REG_METHODS=direct
+      export FLAG="HT"
+      source ${SLURM_SUBMIT_DIR}/eq_local_size/consecutive.sh
+      wait 
+    fi 
+
+  done  # mapping case loop
+done # IO loop 
 
 echo $(module list) 
-
 echo "Job ended " $(date +"%T") # end time 

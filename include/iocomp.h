@@ -1,26 +1,24 @@
 #ifndef _IOCOMP_H_
 #define _IOCOMP_H_
+#include "mpi.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "mpi.h"
 #include <stdbool.h>
 #include <stdio.h> 
 #include <stddef.h>
 #include <stdlib.h>
 #include <assert.h>  
-#ifndef NOADIOS2 
 #include <adios2_c.h>
 #include <adios2/c/adios2_c_types.h>
-#endif 
 
 #define ioColour 0
 #define compColour 1 
 #define ioLibCount 5
-#define NUM_DIM 2
+#define NUM_DIM 1 // TODO: assignable from iocompInit? 
 
-	// define window control integers 
+// define window control integers 
 #define WIN_DEACTIVATE 0 
 #define WIN_TEST 1
 #define WIN_ACTIVATE 2 
@@ -150,7 +148,7 @@ extern "C" {
 	int getPair(struct iocomp_params *iocompParams); 
 	void compute_comm_create(int color, MPI_Comm splitComm, MPI_Comm *computeComm);
 	void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm); 
-	void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm ); 
+	void arrayParamsInit(struct iocomp_params *iocompParams, MPI_Comm comm); 
 	void highlowOrdering(struct iocomp_params *iocompParams); 
 	MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG, 
 			int ioLibNum, int fullNode, bool sharedFlag, int numWin); 
@@ -159,7 +157,8 @@ extern "C" {
 	void stopSend(struct iocomp_params *iocompParams); // ghost send function that signals MPI_Sends are stopping
 	void dataWait(struct iocomp_params *iocompParams,MPI_Request *request, double* array, char* fileName); 
 	int dataSendTest(struct iocomp_params *iocompParams,MPI_Request *request, double* array); // wrapper function to implement testing of send data IF HT flag is on 
-
+	void decomposition_1D(struct iocomp_params *iocompParams, MPI_Comm comm); // decompose data into 1D array
+	void decomposition_2D(struct iocomp_params *iocompParams, MPI_Comm comm); // decompose data into 2D array
 	// checks 
 	void malloc_check(double* test); 
 	void free_check(double* test); 

@@ -108,11 +108,11 @@ void STREAM_tests(struct test_params *testParams, struct iocomp_params *iocompPa
 			} 
 			MPI_Barrier(comm); 
 #endif 
+      free(read_ptr); 
+      read_ptr = NULL; 
 		} 
 	} 
 
-	free(read_ptr); 
-	read_ptr = NULL; 
 	if(!myRank) {
 		printf("Verification tests finished. %i tests passed and %i tests failed. \n", passed, failed); 
 	} 

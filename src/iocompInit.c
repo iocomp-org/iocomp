@@ -70,10 +70,16 @@ MPI_Comm iocompInit(struct iocomp_params *iocompParams, MPI_Comm comm, bool FLAG
 	 * Initialise pointers with size of num win 
 	 */ 
 	iocompParams->wintestflags = (int*)malloc(iocompParams->numWin*sizeof(int)); 
-	iocompParams->winMap =(int*)malloc(iocompParams->numWin*sizeof(int)); 
+	iocompParams->winMap =(MPI_Win*)malloc(iocompParams->numWin*sizeof(MPI_Win)); 
 	iocompParams->flag = (int*)malloc(iocompParams->numWin*sizeof(int)); 
 	iocompParams->array = (double**)malloc(iocompParams->numWin*sizeof(double*)); 
 	iocompParams->writeFile = (char**)malloc(iocompParams->numWin*sizeof(char*)); 
+	/*
+	 * array parameters using ndim 
+	 */ 
+	iocompParams->arrayStart = malloc(sizeof(size_t)*iocompParams->NDIM);
+	iocompParams->localArray = malloc(sizeof(size_t)*iocompParams->NDIM);
+	iocompParams->globalArray = malloc(sizeof(size_t)*iocompParams->NDIM);
 	
 
 	/*
