@@ -44,6 +44,10 @@ void decomposition_1D(struct iocomp_params *iocompParams, MPI_Comm comm)
 	// local and global array parameters are same as local and global data sizes. 
 	iocompParams->localArray[0] = iocompParams->localDataSize;
 	iocompParams->globalArray[0] = iocompParams->globalDataSize; 
+  if(!ioRank)
+  {
+	  printf("Global data size %li \n", iocompParams->globalDataSize); 
+  }
 
 #ifdef VERBOSE   
 	fprintf(iocompParams->debug,"Rank %i - global data size %li, local data size %li, globalArray:[%li], localArray:[%li], arrayStart:[%li] \n",
