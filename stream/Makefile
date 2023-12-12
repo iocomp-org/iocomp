@@ -23,9 +23,9 @@ ODIR = Object_files
 
 # define library paths 
 LIBS =   	-L$(IOCOMP_DIR)/lib -liocomp \
-					-L${FORGE_DIR}/map/libs/default/gnu/ofi \
-					-lmap-sampler-pmpi -lmap-sampler \
-					-Wl,--eh-frame-hdr -Wl,-rpath=${FORGE_DIR}/map/libs/default/gnu/ofi
+					#-L${FORGE_DIR}/map/libs/default/gnu/ofi \
+					#-lmap-sampler-pmpi -lmap-sampler \
+					#-Wl,--eh-frame-hdr -Wl,-rpath=${FORGE_DIR}/map/libs/default/gnu/ofi
 
 ifndef NOADIOS2 
 LIBS +=   -L$(ADIOS2_DIR)/lib64 -ladios2_c -ladios2_c_mpi -lm -L$(ADIOS2_DIR)/lib -ladios2_c -ladios2_c_mpi -lm 
