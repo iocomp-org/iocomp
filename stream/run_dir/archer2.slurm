@@ -74,7 +74,7 @@ do
     then 
       # Case 1; sequential case 
       export UCX_IB_REG_METHODS=direct
-      source ${SLURM_SUBMIT_DIR}/eq_local_size/sequential.sh
+      source ${SLURM_SUBMIT_DIR}/const_num_nodes/sequential.sh
       wait 
     fi 
 
@@ -83,7 +83,7 @@ do
       # Case 2; shared memory in HT 
       export UCX_IB_REG_METHODS=direct
       export FLAG="shared"
-      source ${SLURM_SUBMIT_DIR}/eq_local_size/hyperthread.sh 
+      source ${SLURM_SUBMIT_DIR}/const_num_nodes/hyperthread.sh 
     fi 
 
     if (( ${MAPPING_CASE} == 3 )); 
@@ -91,7 +91,7 @@ do
       # Case 3; message passing in HT 
       export UCX_IB_REG_METHODS=direct
       export FLAG="HT"
-      source ${SLURM_SUBMIT_DIR}/eq_local_size/hyperthread.sh 
+      source ${SLURM_SUBMIT_DIR}/const_num_nodes/hyperthread.sh 
       wait 
     fi  
 
@@ -100,7 +100,7 @@ do
       # Case 4; shared memory in consecutive 
       export UCX_IB_REG_METHODS=direct
       export FLAG="shared"
-      source ${SLURM_SUBMIT_DIR}/eq_local_size/consecutive.sh
+      source ${SLURM_SUBMIT_DIR}/const_num_nodes/consecutive.sh
     fi 
 
     if (( ${MAPPING_CASE} == 5 )); 
@@ -108,7 +108,7 @@ do
       # Case 5; message passing in consecutive 
       export UCX_IB_REG_METHODS=direct
       export FLAG="HT"
-      source ${SLURM_SUBMIT_DIR}/eq_local_size/consecutive.sh
+      source ${SLURM_SUBMIT_DIR}/const_num_nodes/consecutive.sh
       wait 
     fi 
 
