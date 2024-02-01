@@ -10,6 +10,8 @@
 
 export STREAM_DIR=$(cd ${SLURM_SUBMIT_DIR}/../../ && pwd) 
 
+set -euf -o pipefail # error handling for bash 
+
 # different module loads. Swap cray env to gnu env 
 module swap PrgEnv-cray PrgEnv-gnu
 module use /work/y07/shared/archer2-lmod/dev
@@ -32,7 +34,7 @@ module load xthi
 export EXE=xthi
 
 # avg jobs directories
-iter=${SLURM_ARRAY_TASK_ID}
+ITER=${SLURM_ARRAY_TASK_ID}
 
 # flag for archer2 runs 
 export FI_OFI_RXM_SAR_LIMIT=64K
@@ -75,8 +77,8 @@ do
   for MAPPING_CASE in $( seq ${CASE_START} ${CASE_END} ) 
   do 
     
-    export WORKING_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}/${CASES[${MAPPING_CASE}]} 
-    
+    export WORKING_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}/${CASES[${MAPPING_CASE}]}/${ITER}
+    echo ${WORKING_DIR}  
     # create directories, max stripings etc. 
     source ${SLURM_SUBMIT_DIR}/bash_scripts/setup.sh
     
