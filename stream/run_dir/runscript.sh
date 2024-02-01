@@ -44,19 +44,20 @@ callStrongScaling () {
 callTest () {
   (
     echo 'calling test function' 
-    export PPN=128
+    export PPN=16
     export NX=$((2**11))
     export NY=$((2**11)) 
     export NODE_START=1
     export NODE_END=1
     export IO_START=0
     export IO_END=0
-    export ARRAY="0-2"
-    export TIME="00:30:00"
-    export DIR=OUTPUT/v2.0.0/WEAK/1COMPUTE
+    export ARRAY="0"
+    export TIME="00:05:00"
+    export DIR=XTHI 
     export MAP=0
-    export CASE_START=1
-    export CASE_END=1
+    export CASE_START=0
+    export CASE_END=4
+    # export WAIT='--wait'
     sh weakScaling.sh
   )
 } 

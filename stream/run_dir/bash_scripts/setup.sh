@@ -1,4 +1,4 @@
-export RUNDIR=${PARENT_DIR}/${CASE}/${iter}
+export RUNDIR=${WORKING_DIR}/${CASE}/${iter}
 echo "**" $CASE 
 echo $RUNDIR
 rm -rf ${RUNDIR}
