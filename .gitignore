@@ -5,6 +5,8 @@ build/*
 docs/*
 src/Object_files/*
 stream/run_dir/*
+!stream/run_dir/bash_scripts
+!stream/run_dir/bash_scripts/* 
 lib/*.so 
 stream/test
 stream/*+pat
