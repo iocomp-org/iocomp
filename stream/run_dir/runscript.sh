@@ -44,19 +44,20 @@ callStrongScaling () {
 callTest () {
   (
     echo 'calling test function' 
-    export PPN=128
+    export PPN=16
     export NX=$((2**11))
     export NY=$((2**11)) 
     export NODE_START=1
     export NODE_END=1
     export IO_START=0
     export IO_END=0
-    export ARRAY="0-2"
-    export TIME="00:30:00"
-    export DIR=OUTPUT/v2.0.0/WEAK/1COMPUTE
+    export ARRAY="0"
+    export TIME="00:05:00"
+    export DIR=XTHI 
     export MAP=0
-    export CASE_START=1
-    export CASE_END=1
+    export CASE_START=0
+    export CASE_END=4
+    # export WAIT='--wait'
     sh weakScaling.sh
   )
 } 
@@ -67,23 +68,25 @@ callMAP() {
     export PPN=128
     export NX=$((2**11))
     export NY=$((2**11)) 
-    export NODE_START=4
-    export NODE_END=4
+    export NODE_START=3
+    export NODE_END=3
     export ARRAY="0"
-    export TIME="00:10:00"
-    export DIR=MAP_PROFILES/100COMPUTE/STRONG # or weak 
+    export TIME="01:00:00"
+    export DIR=MAP_PROFILES/100COMPUTE/WEAK/CONST_NUM_NODES # or weak 
     export MAP=1
     # loop over IO layers for MAP from 0 to 3 
-    for io in $(seq 2 2)
+    # for io in $(seq 0 0)
+    for io in 0 2 
     do 
       export IO_START=${io}
       export IO_END=${io} 
       # loop over cases 1 by 1 for MAP # from 1 - 5 
-      for case in $(seq 1 1)
+      for case in $(seq 1 5)
       do 
         export CASE_START=${case}
         export CASE_END=${case}
         sh ./weakScaling.sh
+        # sh ./strongScaling.sh
         wait 
       done 
     done 

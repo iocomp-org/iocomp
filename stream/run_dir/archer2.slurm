@@ -10,11 +10,11 @@
 
 export STREAM_DIR=$(cd ${SLURM_SUBMIT_DIR}/../../ && pwd) 
 
+set -euf -o pipefail # error handling for bash 
+
 # different module loads. Swap cray env to gnu env 
 module swap PrgEnv-cray PrgEnv-gnu
 module use /work/y07/shared/archer2-lmod/dev
-#module swap craype-network-ofi craype-network-ucx 
-#module swap cray-mpich cray-mpich-ucx 
 module load cray-hdf5-parallel
 
 # different directories and their paths
@@ -30,11 +30,11 @@ export IOCOMP_MAKEOUTPUT=${STREAM_DIR}/src/iocomp_make.out # production run
 export STREAM_MAKEOUTPUT=${STREAM_DIR}/stream/stream_make.out # production run 
 export CONFIG=${SLURM_SUBMIT_DIR}/config.xml 
 
-# Ensure the cpus-per-task option is propagated to srun commands
-# export SRUN_CPUS_PER_TASK=$SLURM_CPUS_PER_TASK
+module load xthi 
+export EXE=xthi
 
 # avg jobs directories
-iter=${SLURM_ARRAY_TASK_ID}
+ITER=${SLURM_ARRAY_TASK_ID}
 
 # flag for archer2 runs 
 export FI_OFI_RXM_SAR_LIMIT=64K
@@ -43,75 +43,86 @@ export FI_OFI_RXM_SAR_LIMIT=64K
 #export DXT_ENABLE_IO_TRACE=1
 #module load darshan
 
-## for perftools, comment them out 
-# module load perftools
-# export EXE=${STREAM_DIR}/stream/test+pat # cray pat 
-
 # Setup environment
 export PPN=${SLURM_NTASKS_PER_NODE}
+export N_NODES=${SLURM_NNODES}
 export OMP_NUM_THREADS=1
 
-# check if MAP variable is set to ON from runscripts.
-# if not, then scripts go through SLURM instead of MAP
 if (( ${MAP} == 1 )); 
 then 
   module load arm/forge 
 fi 
 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
+CASES=("Sequential" "Hyperthread/split" "Hyperthread/shared" "Consecutive/split" "Consecutive/shared")
 SIZE=$(( ${NX}*${NY}*8 / 2**20 )) # local size in MiB
 
 echo "Job started " $(date +"%T") "size " ${SIZE} MiB # start time
 
+# if variables not set then set them to be MPIIO and all the cases. 
+if [ -z ${IO_START} ] && [ -z ${IO_END} ]
+then 
+  export IO_START=0
+  export IO_END=0
+fi 
+
+if [ -z ${CASE_START} ] && [ -z ${CASE_END} ]
+then 
+  export CASE_START=0
+  export CASE_END=4
+fi 
+
 for IO in $(seq ${IO_START} ${IO_END})
 do 
-  export PARENT_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}
-
   for MAPPING_CASE in $( seq ${CASE_START} ${CASE_END} ) 
   do 
-
-    if (( ${MAPPING_CASE} == 1 )); 
+    
+    export WORKING_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}/${CASES[${MAPPING_CASE}]}/${ITER}
+    echo ${WORKING_DIR}  
+    # create directories, max stripings etc. 
+    source ${SLURM_SUBMIT_DIR}/bash_scripts/setup.sh
+    
+    # select appropriate mapping case 
+    echo ${CASES[${MAPPING_CASE}]} ' selected' 
+    if (( ${MAPPING_CASE} == 0 )); 
     then 
-      # Case 1; sequential case 
-      export UCX_IB_REG_METHODS=direct
-      source ${SLURM_SUBMIT_DIR}/eq_local_size/sequential.sh
-      wait 
-    fi 
-
-    if (( ${MAPPING_CASE} == 2 )); 
+      export HINT="nomultithread"
+      source ${SLURM_SUBMIT_DIR}/bash_scripts/sequential.sh 
+    elif (( ${MAPPING_CASE} == 1 )); 
     then
-      # Case 2; shared memory in HT 
-      export UCX_IB_REG_METHODS=direct
-      export FLAG="shared"
-      source ${SLURM_SUBMIT_DIR}/eq_local_size/hyperthread.sh 
-    fi 
-
-    if (( ${MAPPING_CASE} == 3 )); 
-    then 
-      # Case 3; message passing in HT 
-      export UCX_IB_REG_METHODS=direct
       export FLAG="HT"
-      source ${SLURM_SUBMIT_DIR}/eq_local_size/hyperthread.sh 
-      wait 
-    fi  
-
-    if (( ${MAPPING_CASE} == 4 )); 
+      export HINT="multithread"
+      source ${SLURM_SUBMIT_DIR}/bash_scripts/hyperthread.sh 
+    elif (( ${MAPPING_CASE} == 2 )); 
     then 
-      # Case 4; shared memory in consecutive 
-      export UCX_IB_REG_METHODS=direct
       export FLAG="shared"
-      source ${SLURM_SUBMIT_DIR}/eq_local_size/consecutive.sh
-    fi 
-
-    if (( ${MAPPING_CASE} == 5 )); 
+      export HINT="multithread"
+      source ${SLURM_SUBMIT_DIR}/bash_scripts/hyperthread_shared.sh 
+    elif (( ${MAPPING_CASE} == 3 )); 
     then 
-      # Case 5; message passing in consecutive 
-      export UCX_IB_REG_METHODS=direct
       export FLAG="HT"
-      source ${SLURM_SUBMIT_DIR}/eq_local_size/consecutive.sh
-      wait 
+      export HINT="nomultithread"
+      source ${SLURM_SUBMIT_DIR}/bash_scripts/consecutive.sh
+    elif (( ${MAPPING_CASE} == 4 )); 
+    then 
+      export FLAG="shared"
+      export HINT="nomultithread"
+      source ${SLURM_SUBMIT_DIR}/bash_scripts/consecutive.sh
+    else
+      echo 'Invalid mapping case number' 
     fi 
 
+    wait 
+    
+    echo "nodes" $NUM_NODES "tasks" $NUM_TASKS
+
+    export UCX_IB_REG_METHODS=direct # archer2 recommended option
+
+    NUM_TASKS_PER_NODE=$(( ${NUM_TASKS}/${NUM_NODES} ))  # to avoid srun complaining for hyperthread cases 
+    srun  --hint=${HINT} --distribution=block:block  --nodes=${NUM_NODES} --ntasks=${NUM_TASKS} \
+      --ntasks-per-node=${NUM_TASKS_PER_NODE}\
+      --cpu-bind=map_cpu:${seq[@]} ${EXE} \
+    # --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
   done  # mapping case loop
 done # IO loop 
 
