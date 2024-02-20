@@ -32,7 +32,7 @@ void computeStep(struct iocomp_params *iocompParams, struct stream_params *strea
 	double* a = NULL; // initialise data pointer  
 
 	// extension for filenames 
-	char ext[5][5] = {".dat", ".h5", ".h5", "", ""};
+	char ext[5][5] = {".dat", ".h5", ".h5", ".bp4", "bp5"};
 
 	/*
 	 * Initialise a, b, c. 
