@@ -6,17 +6,16 @@ callWeakScaling () {
     export PPN=128
     export NX=$((2**11))
     export NY=$((2**11)) 
-    export NODE_START=3
-    export NODE_END=4
+    export NODE_START=6
+    export NODE_END=6
     export IO_START=0
     export IO_END=3
-    export ARRAY="0"
-    # export TIME="01:30:00"
+    export ARRAY="0-2"
+    export TIME="02:00:00"
     export MAP=0
-    export CASE_START=1
-    export CASE_END=5
-    export DIR=CRAY_PAT/100COMPUTE/WEAK
-    export MAP=0
+    export CASE_START=0
+    export CASE_END=0
+    export DIR=/mnt/lustre/a2fs-nvme/e609/shr203/mount/STREAM
     sh ./weakScaling.sh
   ) 
 }
@@ -29,38 +28,61 @@ callStrongScaling () {
     export NY=$((2**12)) 
     export NODE_START=5
     export NODE_END=5
-    export IO_START=2
+    export IO_START=3
     export IO_END=2
     export ARRAY="0-2"
     export TIME="01:00:00"
     export CASE_START=4
     export CASE_END=5
     export MAP=0
-    export DIR=OUTPUT/v2.0.0/STRONG/GLOBALSIZE_8GB/100COMPUTE
-    sh strongScaling.sh
+    # export DIR=OUTPUT/v2.0.0/STRONG/GLOBALSIZE_8GB/100COMPUTE
+    sh ./strongScaling.sh
   )
 } 
 
 callTest () {
   (
     echo 'calling test function' 
-    export PPN=16
-    export NX=$((2**11))
-    export NY=$((2**11)) 
-    export NODE_START=1
-    export NODE_END=1
+    export PPN=128
+    export NX=$((2**8))
+    export NY=$((2**8)) 
+    export NODE_START=3
+    export NODE_END=3
     export IO_START=0
     export IO_END=0
     export ARRAY="0"
-    export TIME="00:05:00"
-    export DIR=XTHI 
+    export TIME="0:5:00"
     export MAP=0
     export CASE_START=0
     export CASE_END=4
-    # export WAIT='--wait'
-    sh weakScaling.sh
+    export DIR=$(pwd)/DARSHAN
+    export WAIT=""
+    export DARSHAN=1
+    sh ./weakScaling.sh
   )
 } 
+
+callDARSHAN() {
+  (
+    echo 'calling darshan function' 
+    export PPN=128
+    export NX=$((2**11))
+    export NY=$((2**11)) 
+    export NODE_START=3
+    export NODE_END=3
+    export IO_START=1
+    export IO_END=3
+    export ARRAY="0"
+    export TIME="05:00:00"
+    export MAP=0
+    export CASE_START=0
+    export CASE_END=4
+    export DIR=$(pwd)/DARSHAN/100COMP
+    export WAIT=""
+    export DARSHAN=1
+    sh ./weakScaling.sh
+  ) 
+}
 
 callMAP() {
   (
@@ -106,6 +128,9 @@ then
 elif  [[ $1 == 'test' ]]
 then
   callTest 
+elif  [[ $1 == 'darshan' ]]
+then
+  callDARSHAN 
 else
   echo 'Invalid argument' 
 fi 

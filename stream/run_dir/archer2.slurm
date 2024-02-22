@@ -10,7 +10,7 @@
 
 export STREAM_DIR=$(cd ${SLURM_SUBMIT_DIR}/../../ && pwd) 
 
-set -euf -o pipefail # error handling for bash 
+# set -euo pipefail # error handling for bash 
 
 # different module loads. Swap cray env to gnu env 
 module swap PrgEnv-cray PrgEnv-gnu
@@ -30,9 +30,6 @@ export IOCOMP_MAKEOUTPUT=${STREAM_DIR}/src/iocomp_make.out # production run
 export STREAM_MAKEOUTPUT=${STREAM_DIR}/stream/stream_make.out # production run 
 export CONFIG=${SLURM_SUBMIT_DIR}/config.xml 
 
-module load xthi 
-export EXE=xthi
-
 # avg jobs directories
 ITER=${SLURM_ARRAY_TASK_ID}
 
@@ -41,7 +38,6 @@ export FI_OFI_RXM_SAR_LIMIT=64K
 
 ## for darshan runs 
 #export DXT_ENABLE_IO_TRACE=1
-#module load darshan
 
 # Setup environment
 export PPN=${SLURM_NTASKS_PER_NODE}
@@ -54,10 +50,10 @@ then
 fi 
 
 IOLAYERS=("MPIIO" "HDF5" "ADIOS2_HDF5" "ADIOS2_BP4" "ADIOS2_BP5") # assign IO layer array 
-CASES=("Sequential" "Hyperthread/split" "Hyperthread/shared" "Consecutive/split" "Consecutive/shared")
-SIZE=$(( ${NX}*${NY}*8 / 2**20 )) # local size in MiB
+  CASES=("Sequential" "Hyperthread/split" "Hyperthread/shared" "Consecutive/split" "Consecutive/shared")
+  SIZE=$(( ${NX}*${NY}*8 / 2**20 )) # local size in MiB
 
-echo "Job started " $(date +"%T") "size " ${SIZE} MiB # start time
+  echo "Job started " $(date +"%T") "size " ${SIZE} MiB # start time
 
 # if variables not set then set them to be MPIIO and all the cases. 
 if [ -z ${IO_START} ] && [ -z ${IO_END} ]
@@ -76,17 +72,18 @@ for IO in $(seq ${IO_START} ${IO_END})
 do 
   for MAPPING_CASE in $( seq ${CASE_START} ${CASE_END} ) 
   do 
-    
-    export WORKING_DIR=${SLURM_SUBMIT_DIR}/${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}/${CASES[${MAPPING_CASE}]}/${ITER}
+
+    export WORKING_DIR=${DIR}/${SLURM_NNODES}_${SLURM_NTASKS_PER_NODE}/${SIZE}MiB/${IOLAYERS[${IO}]}/${CASES[${MAPPING_CASE}]}/${ITER}
     echo ${WORKING_DIR}  
     # create directories, max stripings etc. 
     source ${SLURM_SUBMIT_DIR}/bash_scripts/setup.sh
-    
+
     # select appropriate mapping case 
     echo ${CASES[${MAPPING_CASE}]} ' selected' 
     if (( ${MAPPING_CASE} == 0 )); 
     then 
       export HINT="nomultithread"
+      export FLAG="" 
       source ${SLURM_SUBMIT_DIR}/bash_scripts/sequential.sh 
     elif (( ${MAPPING_CASE} == 1 )); 
     then
@@ -111,18 +108,41 @@ do
     else
       echo 'Invalid mapping case number' 
     fi 
+    if (( ${MAPPING_CASE} != 0 )); # don't wait for sequential 
+    then 
+      wait 
+    fi 
 
-    wait 
-    
     echo "nodes" $NUM_NODES "tasks" $NUM_TASKS
 
     export UCX_IB_REG_METHODS=direct # archer2 recommended option
+    if (( ${DARSHAN} == 1 )); 
+    then 
+      module load darshan
+    fi 
 
     NUM_TASKS_PER_NODE=$(( ${NUM_TASKS}/${NUM_NODES} ))  # to avoid srun complaining for hyperthread cases 
     srun  --hint=${HINT} --distribution=block:block  --nodes=${NUM_NODES} --ntasks=${NUM_TASKS} \
       --ntasks-per-node=${NUM_TASKS_PER_NODE}\
-      --cpu-bind=map_cpu:${seq[@]} ${EXE} \
-    # --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
+      --cpu-bind=map_cpu:${seq[@]} ${EXE} --${FLAG} --nx ${NX} --ny ${NY}  --io ${IO} > test.out 
+
+    # wait and delete data 
+    wait 
+  
+    # get darshan file from the folder and copy to the right one.
+    if (( ${DARSHAN} == 1 )); 
+    then 
+      module remove darshan
+      day=$( date +%-d )
+      month=$( date +%-m )
+      mv /mnt/lustre/a2fs-nvme/system/darshan/2024/${month}/${day}/shr203*.darshan .  
+    fi 
+
+    find ./ -name "*.dat" -exec rm -rf {} \; 
+    find ./ -name "*.h5" -exec rm -rf {} \; 
+    find ./ -name "*.bp4" -exec rm -rf {} \; -prune
+    # copy the latest darshan file to current directory
+
   done  # mapping case loop
 done # IO loop 
 
