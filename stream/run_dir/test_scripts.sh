@@ -1,14 +1,13 @@
-if [ -e $1 ]; then 
-  export N_NODES=$1
-else
+if [ $# -eq 0 ]
+then
+  echo "No arguments supplied"
   export N_NODES=2
-fi 
-
-if [ -e $2 ]; then 
-  export PPN=$2
-else
   export PPN=16
-fi 
+else
+  export N_NODES=$1
+  export PPN=$2
+fi
+
 export SLURM_SUBMIT_DIR=$(pwd)
 
 CASES=("Sequential" "Hyperthread/split" "Hyperthread/shared" "Consecutive/split" "Consecutive/shared")
@@ -35,7 +34,7 @@ do
     then 
       export FLAG="HT"
       export HINT="nomultithread"
-      source ${SLURM_SUBMIT_DIR}/bash_scripts/consecutive.sh
+      source ${SLURM_SUBMIT_DIR}/bash_scripts/consecutive_nodesplit.sh
     elif (( ${MAPPING_CASE} == 4 )); 
     then 
       export FLAG="shared"

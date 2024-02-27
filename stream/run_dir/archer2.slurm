@@ -37,7 +37,6 @@ ITER=${SLURM_ARRAY_TASK_ID}
 export FI_OFI_RXM_SAR_LIMIT=64K
 
 ## for darshan runs 
-#export DXT_ENABLE_IO_TRACE=1
 
 # Setup environment
 export PPN=${SLURM_NTASKS_PER_NODE}
@@ -99,7 +98,7 @@ do
     then 
       export FLAG="HT"
       export HINT="nomultithread"
-      source ${SLURM_SUBMIT_DIR}/bash_scripts/consecutive.sh
+      source ${SLURM_SUBMIT_DIR}/bash_scripts/consecutive_nodesplit.sh
     elif (( ${MAPPING_CASE} == 4 )); 
     then 
       export FLAG="shared"
@@ -115,9 +114,12 @@ do
 
     echo "nodes" $NUM_NODES "tasks" $NUM_TASKS
 
-    export UCX_IB_REG_METHODS=direct # archer2 recommended option
+    export FI_OFI_RXM_SAR_LIMIT=64K 
+    export MPICH_MPIIO_HINTS=":cray_cb_write_lock_mode=2,:cray_cb_nodes_multiplier=4"
+
     if (( ${DARSHAN} == 1 )); 
     then 
+      export DXT_ENABLE_IO_TRACE=1 # darshan DXT trace 
       module load darshan
     fi 
 

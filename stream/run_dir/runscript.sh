@@ -6,16 +6,19 @@ callWeakScaling () {
     export PPN=128
     export NX=$((2**11))
     export NY=$((2**11)) 
-    export NODE_START=6
-    export NODE_END=6
+    export NODE_START=4
+    export NODE_END=5
     export IO_START=0
-    export IO_END=3
+    export IO_END=0
     export ARRAY="0-2"
-    export TIME="02:00:00"
+    export TIME="1:00:00"
+    export CASE_START=3
+    export CASE_END=3
     export MAP=0
-    export CASE_START=0
-    export CASE_END=0
-    export DIR=/mnt/lustre/a2fs-nvme/e609/shr203/mount/STREAM
+    export WAIT=""
+    export DARSHAN=0
+    # export DIR=/mnt/lustre/a2fs-nvme/e609/shr203/mount/STREAM
+    export DIR=$(pwd)/OUTPUT/v2.0.0/WEAK/100COMPUTE/NEW_ARCHER2FLAGS/nodesplit_samesocket
     sh ./weakScaling.sh
   ) 
 }
@@ -46,18 +49,18 @@ callTest () {
     export PPN=128
     export NX=$((2**8))
     export NY=$((2**8)) 
-    export NODE_START=3
-    export NODE_END=3
+    export NODE_START=0
+    export NODE_END=0
     export IO_START=0
     export IO_END=0
     export ARRAY="0"
-    export TIME="0:5:00"
+    export TIME="0:2:00"
     export MAP=0
-    export CASE_START=0
-    export CASE_END=4
-    export DIR=$(pwd)/DARSHAN
+    export CASE_START=3
+    export CASE_END=3
+    export DIR=$(pwd)/TEST/nodesplit_samesocket
     export WAIT=""
-    export DARSHAN=1
+    export DARSHAN=0
     sh ./weakScaling.sh
   )
 } 
@@ -70,14 +73,14 @@ callDARSHAN() {
     export NY=$((2**11)) 
     export NODE_START=3
     export NODE_END=3
-    export IO_START=1
+    export IO_START=0
     export IO_END=3
     export ARRAY="0"
     export TIME="05:00:00"
     export MAP=0
     export CASE_START=0
     export CASE_END=4
-    export DIR=$(pwd)/DARSHAN/100COMP
+    export DIR=$(pwd)/DARSHAN_DXT/100COMP
     export WAIT=""
     export DARSHAN=1
     sh ./weakScaling.sh
