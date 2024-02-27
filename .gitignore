@@ -1,6 +1,7 @@
 **/Object_files/*
 *.out 
 lib/* 
+local_output/*
 build/* 
 docs/latex/**
 src/Object_files/*
@@ -19,5 +20,5 @@ test/*+pat
 **/*.swp 
 localruns/*
 visuals/**
-
+**/*.csv 
 
