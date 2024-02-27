@@ -40,16 +40,6 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 	fprintf(iocompParams->debug,"commSplit -> comm duplicate \n"); 
 #endif
 
-	// header file for printing ordering 
-#ifdef PRINT_ORDERING
-	MPI_Barrier(iocompParams->globalComm); // so that the header is written first.
-	if(!globalRank) // header file by global rank 0
-	{
-		printf("%*s | %*s | %*s | %*s | %*s | %*s \n", 10, "TYPE", MAXSPACE, "MPI RANK", 
-				MAXSPACE, "MPI SIZE", MAXSPACE,"CPU-ID", MAXSPACE, "NODE-ID", MAXSPACE, "PAIR");
-	} 
-#endif
-
 	if(iocompParams->hyperthreadFlag || iocompParams->sharedFlag) 
 	{
 		/* 
@@ -82,10 +72,6 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 		if(ordering == HIGH_LOW)
 		{	   
 			highlowOrdering(iocompParams); 
-#ifdef PRINT_ORDERING
-			// so that io and comm processes dont print too many messages.
-			iocompParams->pairPrintCounter = 0;  
-#endif 
 		}
 #ifdef VERBOSE
 		fprintf(iocompParams->debug,"commSplit -> colour assigned based on HIGH LOW ordering \n"); 
@@ -119,9 +105,11 @@ void comm_split(struct iocomp_params *iocompParams, MPI_Comm comm)
 			fprintf(iocompParams->debug,"commSplit -> MPI ioServerComm initialised \n"); 
 #endif
 		} 
-
+	
+#ifdef PRINT_ORDERING
+		do_xthi(iocompParams); 	
+#endif 
 	}
-
 
 	else // if HT flag is false 
 	{

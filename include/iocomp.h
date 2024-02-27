@@ -212,6 +212,12 @@ extern "C" {
 	// print timers
 	void printWriteTimers(struct iocomp_params *iocompParams); 
 
+#ifdef PRINT_ORDERING
+	void do_xthi(struct iocomp_params *iocompParams); 
+	void output_records(const char *records, int count, const char **heads);
+	void update_widths(size_t *widths, const char *record);
+	void format_record(const char *record, const size_t *sizes, const char **heads);
+#endif 
 #ifdef __cplusplus
 }
 #endif 
